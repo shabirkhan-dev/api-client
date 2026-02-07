@@ -460,6 +460,187 @@ code, pre, .mono, textarea.code-input, input.mono-input {
   </div>
 </div>
 
+<!-- REQUEST CHAINING MODAL -->
+<div id="chainModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[800px] max-h-[85vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--lavender)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span class="font-semibold">Request Chain Builder</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="runChain()" class="btn-primary px-4 py-1.5 rounded-lg text-xs">Run Chain</button>
+        <button onclick="closeChainModal()" class="btn-ghost px-2 py-1 rounded">&#10005;</button>
+      </div>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+      <div class="text-xs mb-2" style="color:var(--overlay0)">Chain requests together. Extract data from responses using JSONPath and use them in subsequent requests via <code class="px-1 rounded" style="background:var(--surface0);">{{chain.variableName}}</code></div>
+      <div id="chainSteps" class="space-y-3"></div>
+      <button onclick="addChainStep()" class="btn-ghost text-xs px-3 py-1.5 rounded-lg border w-full" style="border-color:var(--surface0);">+ Add Step</button>
+    </div>
+    <div id="chainResults" class="border-t p-4 max-h-[200px] overflow-y-auto hidden" style="border-color:var(--surface0);"></div>
+  </div>
+</div>
+
+<!-- API DOCS GENERATOR MODAL -->
+<div id="docsModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[900px] max-h-[85vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--lavender)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="font-semibold">API Documentation Generator</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportDocsMarkdown()" class="btn-ghost px-3 py-1 rounded-lg text-xs border" style="border-color:var(--surface0);">Export Markdown</button>
+        <button onclick="exportDocsHTML()" class="btn-ghost px-3 py-1 rounded-lg text-xs border" style="border-color:var(--surface0);">Export HTML</button>
+        <button onclick="closeDocsModal()" class="btn-ghost px-2 py-1 rounded">&#10005;</button>
+      </div>
+    </div>
+    <div class="flex flex-1 overflow-hidden">
+      <div class="flex-1 p-4 overflow-y-auto border-r" style="border-color:var(--surface0);">
+        <div class="text-xs mb-3 font-semibold" style="color:var(--overlay0)">SELECT COLLECTION</div>
+        <select id="docsCollectionSelect" onchange="generateDocs()" class="input-field w-full rounded-lg px-3 py-2 text-xs mb-3"></select>
+        <div id="docsEndpointList" class="space-y-1"></div>
+      </div>
+      <div class="flex-1 p-4 overflow-y-auto">
+        <div id="docsPreview" class="prose prose-sm" style="color:var(--text);"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DATA GENERATOR MODAL -->
+<div id="dataGenModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[600px] max-h-[80vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <div class="flex items-center gap-2">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--lavender)" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="font-semibold">Data Generator</span>
+      </div>
+      <button onclick="closeDataGenModal()" class="btn-ghost px-2 py-1 rounded">&#10005;</button>
+    </div>
+    <div class="p-4 space-y-3 overflow-y-auto flex-1">
+      <div class="text-xs" style="color:var(--overlay0)">Generate mock data for your requests. Click a type to generate and insert into the body editor.</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button onclick="insertGenerated('name')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Name</div><div style="color:var(--overlay0)">Random full name</div>
+        </button>
+        <button onclick="insertGenerated('email')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Email</div><div style="color:var(--overlay0)">Random email address</div>
+        </button>
+        <button onclick="insertGenerated('uuid')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">UUID</div><div style="color:var(--overlay0)">Random UUID v4</div>
+        </button>
+        <button onclick="insertGenerated('phone')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Phone</div><div style="color:var(--overlay0)">Random phone number</div>
+        </button>
+        <button onclick="insertGenerated('address')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Address</div><div style="color:var(--overlay0)">Random street address</div>
+        </button>
+        <button onclick="insertGenerated('date')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Date</div><div style="color:var(--overlay0)">Random ISO date</div>
+        </button>
+        <button onclick="insertGenerated('number')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Number</div><div style="color:var(--overlay0)">Random integer</div>
+        </button>
+        <button onclick="insertGenerated('boolean')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Boolean</div><div style="color:var(--overlay0)">true or false</div>
+        </button>
+        <button onclick="insertGenerated('lorem')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Lorem</div><div style="color:var(--overlay0)">Lorem ipsum paragraph</div>
+        </button>
+        <button onclick="insertGenerated('color')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">Color</div><div style="color:var(--overlay0)">Random hex color</div>
+        </button>
+        <button onclick="insertGenerated('url')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">URL</div><div style="color:var(--overlay0)">Random URL</div>
+        </button>
+        <button onclick="insertGenerated('ip')" class="btn-ghost text-left px-3 py-2 rounded-lg border text-xs" style="border-color:var(--surface0);">
+          <div class="font-medium">IP Address</div><div style="color:var(--overlay0)">Random IPv4</div>
+        </button>
+      </div>
+      <div class="border-t pt-3" style="border-color:var(--surface0);">
+        <label class="text-xs block mb-2 font-medium">Bulk Generate JSON Objects</label>
+        <div class="flex gap-2 mb-2">
+          <input id="bulkCount" type="number" value="5" min="1" max="100" class="input-field rounded-lg px-2 py-1.5 text-xs" style="width:80px;" placeholder="Count">
+          <button onclick="bulkGenerate()" class="btn-primary px-4 py-1.5 rounded-lg text-xs">Generate Array</button>
+        </div>
+        <textarea id="bulkTemplate" class="input-field w-full rounded-lg px-3 py-2 mono text-xs" rows="4" placeholder='Template (use $name, $email, $uuid, $number):\n{\n  "name": "$name",\n  "email": "$email",\n  "id": "$uuid"\n}'></textarea>
+      </div>
+      <div>
+        <label class="text-xs block mb-1 font-medium">Generated Output</label>
+        <textarea id="dataGenOutput" class="input-field w-full rounded-lg px-3 py-2 mono text-xs" rows="6" readonly></textarea>
+        <div class="flex gap-2 mt-2">
+          <button onclick="copyGenerated()" class="btn-ghost px-3 py-1 rounded-lg text-xs border" style="border-color:var(--surface0);">Copy</button>
+          <button onclick="insertGeneratedToBody()" class="btn-primary px-3 py-1 rounded-lg text-xs">Insert to Body</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTO-RETRY CONFIG MODAL -->
+<div id="retryModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[450px] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <span class="font-semibold">Auto-Retry Configuration</span>
+      <button onclick="closeRetryModal()" class="btn-ghost px-2 py-1 rounded">&#10005;</button>
+    </div>
+    <div class="p-4 space-y-3">
+      <label class="flex items-center gap-2 text-xs">
+        <input type="checkbox" id="retryEnabled" onchange="saveRetryConfig()"> Enable Auto-Retry
+      </label>
+      <div>
+        <label class="text-[10px] block mb-1" style="color:var(--overlay0)">Max Retries</label>
+        <input id="retryMax" type="number" value="3" min="1" max="10" class="input-field w-full rounded-lg px-2 py-1.5 text-xs" onchange="saveRetryConfig()">
+      </div>
+      <div>
+        <label class="text-[10px] block mb-1" style="color:var(--overlay0)">Initial Delay (ms)</label>
+        <input id="retryDelay" type="number" value="1000" min="100" class="input-field w-full rounded-lg px-2 py-1.5 text-xs" onchange="saveRetryConfig()">
+      </div>
+      <div>
+        <label class="text-[10px] block mb-1" style="color:var(--overlay0)">Backoff Multiplier</label>
+        <input id="retryBackoff" type="number" value="2" min="1" max="5" step="0.5" class="input-field w-full rounded-lg px-2 py-1.5 text-xs" onchange="saveRetryConfig()">
+      </div>
+      <div>
+        <label class="text-[10px] block mb-1" style="color:var(--overlay0)">Retry on Status Codes (comma separated)</label>
+        <input id="retryCodes" type="text" value="502,503,504" class="input-field w-full rounded-lg px-2 py-1.5 text-xs mono" onchange="saveRetryConfig()">
+      </div>
+      <div>
+        <label class="flex items-center gap-2 text-xs">
+          <input type="checkbox" id="retryCircuitBreaker" onchange="saveRetryConfig()"> Circuit Breaker (stop after 5 consecutive failures)
+        </label>
+      </div>
+      <div id="retryLog" class="text-xs space-y-1 max-h-[150px] overflow-y-auto" style="color:var(--overlay0)"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="shareModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[500px] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <span class="font-semibold">Share Request</span>
+      <button onclick="closeShareModal()" class="btn-ghost px-2 py-1 rounded">&#10005;</button>
+    </div>
+    <div class="p-4 space-y-3">
+      <div class="text-xs" style="color:var(--overlay0)">Share the current request as an encoded URL or export in various formats.</div>
+      <div>
+        <label class="text-[10px] block mb-1 font-medium" style="color:var(--overlay0)">Shareable Link</label>
+        <div class="flex gap-2">
+          <input id="shareLink" class="input-field flex-1 rounded-lg px-3 py-2 text-xs mono" readonly>
+          <button onclick="copyShareLink()" class="btn-primary px-3 py-2 rounded-lg text-xs">Copy</button>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportCurrentAsCurl()" class="btn-ghost flex-1 px-3 py-2 rounded-lg text-xs border" style="border-color:var(--surface0);">Export cURL</button>
+        <button onclick="exportCurrentAsHAR()" class="btn-ghost flex-1 px-3 py-2 rounded-lg text-xs border" style="border-color:var(--surface0);">Export HAR</button>
+        <button onclick="exportAsOpenAPI()" class="btn-ghost flex-1 px-3 py-2 rounded-lg text-xs border" style="border-color:var(--surface0);">OpenAPI Spec</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MAIN APP -->
 <div class="flex flex-col h-screen">
   <!-- HEADER -->
@@ -501,6 +682,21 @@ code, pre, .mono, textarea.code-input, input.mono-input {
     </button>
     <button onclick="openSecurityScanner()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Security Scanner">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </button>
+    <button onclick="openChainModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Request Chaining">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button onclick="openDocsModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="API Docs">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </button>
+    <button onclick="openDataGenModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Data Generator">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    </button>
+    <button onclick="openRetryModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Auto-Retry Config">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    </button>
+    <button onclick="openShareModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Share Request">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     </button>
 
     <!-- Command Palette -->
@@ -1506,7 +1702,7 @@ async function sendRequest() {
     if (body && !['GET', 'HEAD', 'OPTIONS'].includes(method)) fetchOpts.body = body;
 
     timingData.connectStart = performance.now() - startTime;
-    const response = await fetch(url, fetchOpts);
+    const response = await fetchWithRetry(url, fetchOpts);
     timingData.ttfb = performance.now() - startTime;
 
     const responseBody = await response.text();
@@ -2582,6 +2778,11 @@ const commands = [
   { name: 'Environment Variables', shortcut: '', action: openEnvModal, icon: '⚙' },
   { name: 'Clear History', shortcut: '', action: clearHistory, icon: '🗑' },
   { name: 'Save Request', shortcut: '⌘S', action: saveCurrentRequest, icon: '💾' },
+  { name: 'Request Chaining', shortcut: '', action: openChainModal, icon: '🔗' },
+  { name: 'API Documentation', shortcut: '', action: openDocsModal, icon: '📄' },
+  { name: 'Data Generator', shortcut: '', action: openDataGenModal, icon: '🎲' },
+  { name: 'Auto-Retry Config', shortcut: '', action: openRetryModal, icon: '🔄' },
+  { name: 'Share Request', shortcut: '', action: openShareModal, icon: '🔗' },
 ];
 
 let cmdSelectedIndex = 0;
@@ -2838,6 +3039,11 @@ document.addEventListener('keydown', (e) => {
     closeImportModal();
     closeDiffModal();
     closeMockModal();
+    closeChainModal();
+    closeDocsModal();
+    closeDataGenModal();
+    closeRetryModal();
+    closeShareModal();
   }
   // F10: Step breakpoint
   if (e.key === 'F10' && state.breakpointResolve) { e.preventDefault(); breakpointResume(); }
@@ -2912,6 +3118,551 @@ function insertVariable(name) {
 urlInput.addEventListener('input', () => showAutocomplete(urlInput));
 urlInput.addEventListener('blur', () => setTimeout(hideAutocomplete, 200));
 
+// ==================== REQUEST CHAINING ====================
+function openChainModal() { $('chainModal').classList.remove('hidden'); if (!state.chainSteps) state.chainSteps = []; if (state.chainSteps.length === 0) addChainStep(); renderChainSteps(); }
+function closeChainModal() { $('chainModal').classList.add('hidden'); }
+
+if (!state.chainSteps) state.chainSteps = [];
+
+function addChainStep() {
+  state.chainSteps = state.chainSteps || [];
+  state.chainSteps.push({
+    id: Date.now(),
+    name: 'Step ' + (state.chainSteps.length + 1),
+    method: 'GET',
+    url: '',
+    headers: '{}',
+    body: '',
+    extractors: [{ variable: '', jsonpath: '' }],
+    condition: '',
+    conditionValue: ''
+  });
+  renderChainSteps();
+}
+
+function renderChainSteps() {
+  const container = $('chainSteps');
+  container.innerHTML = (state.chainSteps || []).map((step, i) => `
+    <div class="rounded-lg border p-3 space-y-2" style="border-color:var(--surface0);background:rgba(17,17,27,0.3);">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold px-2 py-0.5 rounded" style="background:rgba(180,190,254,0.15);color:var(--lavender);">${i + 1}</span>
+        <input type="text" value="${step.name}" onchange="state.chainSteps[${i}].name=this.value" class="input-field flex-1 rounded-lg px-2 py-1 text-xs" placeholder="Step name">
+        <button onclick="removeChainStep(${i})" class="btn-ghost p-1 rounded text-xs" style="color:var(--red);">&#10005;</button>
+      </div>
+      <div class="flex gap-2">
+        <select onchange="state.chainSteps[${i}].method=this.value" class="input-field rounded-lg px-2 py-1 text-xs font-bold mono" style="width:90px;">
+          ${['GET','POST','PUT','DELETE','PATCH'].map(m => `<option value="${m}" ${m === step.method ? 'selected' : ''}>${m}</option>`).join('')}
+        </select>
+        <input type="text" value="${step.url}" onchange="state.chainSteps[${i}].url=this.value" class="input-field flex-1 rounded-lg px-2 py-1 text-xs mono" placeholder="URL (use {{chain.var}} for extracted values)">
+      </div>
+      <details class="text-xs">
+        <summary style="color:var(--overlay0);cursor:pointer;">Headers & Body</summary>
+        <div class="mt-2 space-y-2">
+          <input type="text" value='${step.headers.replace(/'/g, "&#39;")}' onchange="state.chainSteps[${i}].headers=this.value" class="input-field w-full rounded-lg px-2 py-1 text-xs mono" placeholder='{"Content-Type":"application/json"}'>
+          <textarea onchange="state.chainSteps[${i}].body=this.value" class="input-field w-full rounded-lg px-2 py-1 text-xs mono" rows="2" placeholder="Request body">${step.body}</textarea>
+        </div>
+      </details>
+      <details class="text-xs">
+        <summary style="color:var(--overlay0);cursor:pointer;">Variable Extractors (JSONPath)</summary>
+        <div class="mt-2 space-y-1">
+          ${step.extractors.map((ext, j) => `
+            <div class="flex gap-2">
+              <input type="text" value="${ext.variable}" onchange="state.chainSteps[${i}].extractors[${j}].variable=this.value" class="input-field flex-1 rounded-lg px-2 py-1 text-xs mono" placeholder="Variable name">
+              <input type="text" value="${ext.jsonpath}" onchange="state.chainSteps[${i}].extractors[${j}].jsonpath=this.value" class="input-field flex-1 rounded-lg px-2 py-1 text-xs mono" placeholder="JSONPath (e.g., $.data.id)">
+              <button onclick="state.chainSteps[${i}].extractors.splice(${j},1);renderChainSteps();" class="btn-ghost p-1 rounded text-xs" style="color:var(--red);">&#10005;</button>
+            </div>
+          `).join('')}
+          <button onclick="state.chainSteps[${i}].extractors.push({variable:'',jsonpath:''});renderChainSteps();" class="btn-ghost text-xs px-2 py-1 rounded border" style="border-color:var(--surface0);">+ Extractor</button>
+        </div>
+      </details>
+      <details class="text-xs">
+        <summary style="color:var(--overlay0);cursor:pointer;">Conditional (optional)</summary>
+        <div class="mt-2 flex gap-2">
+          <select onchange="state.chainSteps[${i}].condition=this.value" class="input-field rounded-lg px-2 py-1 text-xs">
+            <option value="">Always run</option>
+            <option value="status_eq" ${step.condition==='status_eq'?'selected':''}>If status =</option>
+            <option value="status_neq" ${step.condition==='status_neq'?'selected':''}>If status !=</option>
+            <option value="body_contains" ${step.condition==='body_contains'?'selected':''}>If body contains</option>
+          </select>
+          <input type="text" value="${step.conditionValue || ''}" onchange="state.chainSteps[${i}].conditionValue=this.value" class="input-field flex-1 rounded-lg px-2 py-1 text-xs" placeholder="Value">
+        </div>
+      </details>
+    </div>
+  `).join('');
+}
+
+function removeChainStep(i) { state.chainSteps.splice(i, 1); renderChainSteps(); }
+
+function resolveJSONPath(obj, path) {
+  if (!path) return undefined;
+  const parts = path.replace(/^\$\.?/, '').split('.');
+  let current = obj;
+  for (const part of parts) {
+    const arrMatch = part.match(/^(\w+)\[(\d+)\]$/);
+    if (arrMatch) { current = current?.[arrMatch[1]]?.[parseInt(arrMatch[2])]; }
+    else { current = current?.[part]; }
+    if (current === undefined) return undefined;
+  }
+  return current;
+}
+
+async function runChain() {
+  const chainVars = {};
+  const results = [];
+  const container = $('chainResults');
+  container.classList.remove('hidden');
+  container.innerHTML = '<div class="flex items-center gap-2"><div class="spinner"></div><span class="text-xs" style="color:var(--overlay0)">Running chain...</span></div>';
+
+  for (let i = 0; i < state.chainSteps.length; i++) {
+    const step = state.chainSteps[i];
+
+    // Check condition
+    if (step.condition && i > 0) {
+      const prev = results[i - 1];
+      if (step.condition === 'status_eq' && prev?.status != step.conditionValue) { results.push({ skipped: true, name: step.name }); continue; }
+      if (step.condition === 'status_neq' && prev?.status == step.conditionValue) { results.push({ skipped: true, name: step.name }); continue; }
+      if (step.condition === 'body_contains' && !prev?.body?.includes(step.conditionValue)) { results.push({ skipped: true, name: step.name }); continue; }
+    }
+
+    // Replace chain variables
+    let url = step.url;
+    let body = step.body;
+    let headers = step.headers;
+    Object.entries(chainVars).forEach(([k, v]) => {
+      const re = new RegExp(`\\{\\{chain\\.${k}\\}\\}`, 'g');
+      url = url.replace(re, v);
+      body = body.replace(re, v);
+      headers = headers.replace(re, v);
+    });
+    url = replaceVariables(url);
+    body = replaceVariables(body);
+
+    try {
+      let parsedHeaders = {};
+      try { parsedHeaders = JSON.parse(headers); } catch {}
+      const opts = { method: step.method, headers: parsedHeaders };
+      if (body && !['GET', 'HEAD'].includes(step.method)) opts.body = body;
+
+      const start = performance.now();
+      const res = await fetch(url, opts);
+      const resBody = await res.text();
+      const elapsed = Math.round(performance.now() - start);
+
+      // Extract variables
+      let jsonBody = null;
+      try { jsonBody = JSON.parse(resBody); } catch {}
+      step.extractors.forEach(ext => {
+        if (ext.variable && ext.jsonpath && jsonBody) {
+          const val = resolveJSONPath(jsonBody, ext.jsonpath);
+          if (val !== undefined) chainVars[ext.variable] = String(val);
+        }
+      });
+
+      results.push({ name: step.name, status: res.status, time: elapsed, body: resBody, success: true });
+    } catch (e) {
+      results.push({ name: step.name, error: e.message, success: false });
+    }
+  }
+
+  container.innerHTML = `
+    <div class="text-xs font-semibold mb-2" style="color:var(--overlay0)">Chain Results</div>
+    ${results.map((r, i) => `
+      <div class="flex items-center gap-2 py-1.5 border-b" style="border-color:var(--surface0);">
+        <span class="text-xs font-bold px-1.5 py-0.5 rounded" style="background:rgba(180,190,254,0.15);color:var(--lavender);">${i + 1}</span>
+        <span class="text-xs flex-1">${r.name}</span>
+        ${r.skipped ? '<span class="text-xs px-2 py-0.5 rounded" style="background:rgba(108,112,134,0.15);color:var(--overlay0);">SKIPPED</span>' :
+          r.success ? `<span class="text-xs px-2 py-0.5 rounded" style="background:rgba(166,227,161,0.15);color:var(--green);">${r.status}</span><span class="text-xs mono" style="color:var(--overlay0)">${r.time}ms</span>` :
+          `<span class="text-xs px-2 py-0.5 rounded" style="background:rgba(243,139,168,0.15);color:var(--red);">ERROR</span>`}
+      </div>
+    `).join('')}
+    ${Object.keys(chainVars).length ? `
+      <div class="mt-2 text-xs" style="color:var(--overlay0)">Extracted Variables:</div>
+      ${Object.entries(chainVars).map(([k, v]) => `<div class="text-xs mono py-0.5"><span style="color:var(--lavender)">{{chain.${k}}}</span> = <span style="color:var(--green)">${v}</span></div>`).join('')}
+    ` : ''}
+  `;
+  showToast(`Chain completed: ${results.filter(r => r.success).length}/${results.length} steps succeeded`, 'success');
+}
+
+// ==================== API DOCS GENERATOR ====================
+function openDocsModal() {
+  $('docsModal').classList.remove('hidden');
+  const select = $('docsCollectionSelect');
+  select.innerHTML = state.collections.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  if (state.collections.length) generateDocs();
+}
+function closeDocsModal() { $('docsModal').classList.add('hidden'); }
+
+function generateDocs() {
+  const colId = parseInt($('docsCollectionSelect').value);
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+
+  // Endpoint list
+  $('docsEndpointList').innerHTML = col.items.map(item => `
+    <div class="sidebar-item flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer" onclick="scrollToDocEndpoint('${item.id}')">
+      <span class="method-badge ${getMethodClass(item.method)}" style="font-size:8px;padding:1px 4px;">${item.method}</span>
+      <span class="text-xs truncate">${item.name}</span>
+    </div>
+  `).join('');
+
+  // Generate documentation preview
+  let html = `<h1 style="font-size:20px;font-weight:600;color:var(--text);margin-bottom:8px;">${col.name}</h1>`;
+  html += `<p style="font-size:12px;color:var(--overlay0);margin-bottom:20px;">Auto-generated API documentation - ${new Date().toLocaleDateString()}</p>`;
+  html += `<div style="font-size:11px;color:var(--overlay0);margin-bottom:16px;">Endpoints: ${col.items.length}</div>`;
+
+  col.items.forEach(item => {
+    const methodColor = getMethodColor(item.method);
+    html += `
+      <div id="doc-${item.id}" style="margin-bottom:24px;padding:16px;background:rgba(17,17,27,0.4);border-radius:12px;border:1px solid var(--surface0);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(180,190,254,0.1);color:${methodColor};font-family:'JetBrains Mono',monospace;">${item.method}</span>
+          <span style="font-size:13px;font-weight:500;">${item.name}</span>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px;background:rgba(17,17,27,0.6);border-radius:6px;color:var(--lavender);margin-bottom:8px;word-break:break-all;">${item.url}</div>
+        ${item.headers?.length ? `
+          <div style="font-size:11px;font-weight:500;color:var(--overlay0);margin:8px 0 4px;">Headers</div>
+          <div style="font-size:11px;font-family:'JetBrains Mono',monospace;">
+            ${item.headers.map(h => `<div style="padding:2px 0;"><span style="color:var(--lavender)">${h.key}</span>: <span style="color:var(--green)">${h.value}</span></div>`).join('')}
+          </div>
+        ` : ''}
+        ${item.body ? `
+          <div style="font-size:11px;font-weight:500;color:var(--overlay0);margin:8px 0 4px;">Request Body</div>
+          <pre style="font-size:11px;font-family:'JetBrains Mono',monospace;padding:8px;background:rgba(17,17,27,0.6);border-radius:6px;overflow-x:auto;white-space:pre-wrap;">${syntaxHighlightJSON(item.body)}</pre>
+        ` : ''}
+      </div>
+    `;
+  });
+
+  $('docsPreview').innerHTML = html;
+}
+
+function scrollToDocEndpoint(id) {
+  const el = document.getElementById('doc-' + id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function exportDocsMarkdown() {
+  const colId = parseInt($('docsCollectionSelect').value);
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  let md = `# ${col.name}\n\nAuto-generated API documentation\n\n---\n\n`;
+  col.items.forEach(item => {
+    md += `## ${item.method} ${item.name}\n\n`;
+    md += `\`\`\`\n${item.method} ${item.url}\n\`\`\`\n\n`;
+    if (item.headers?.length) {
+      md += `### Headers\n\n| Key | Value |\n|-----|-------|\n`;
+      item.headers.forEach(h => { md += `| ${h.key} | ${h.value} |\n`; });
+      md += '\n';
+    }
+    if (item.body) md += `### Request Body\n\n\`\`\`json\n${item.body}\n\`\`\`\n\n`;
+    md += '---\n\n';
+  });
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = col.name + '-docs.md';
+  a.click();
+  showToast('Markdown exported', 'success');
+}
+
+function exportDocsHTML() {
+  const preview = $('docsPreview').innerHTML;
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <style>body{font-family:'Inter',sans-serif;background:#1e1e2e;color:#cdd6f4;padding:40px;max-width:800px;margin:0 auto;} pre{background:#11111b;padding:12px;border-radius:8px;overflow-x:auto;} code{font-family:'JetBrains Mono',monospace;}</style>
+  </head><body>${preview}</body></html>`;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'api-docs.html';
+  a.click();
+  showToast('HTML documentation exported', 'success');
+}
+
+// ==================== DATA GENERATOR ====================
+function openDataGenModal() { $('dataGenModal').classList.remove('hidden'); }
+function closeDataGenModal() { $('dataGenModal').classList.add('hidden'); }
+
+const fakeData = {
+  firstNames: ['James','Mary','John','Patricia','Robert','Jennifer','Michael','Linda','David','Elizabeth','William','Barbara','Richard','Susan','Joseph','Jessica','Thomas','Sarah','Charles','Karen','Emma','Oliver','Ava','Liam','Sophia','Noah','Isabella','Lucas','Mia','Ethan'],
+  lastNames: ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Rodriguez','Martinez','Hernandez','Lopez','Gonzalez','Wilson','Anderson','Thomas','Taylor','Moore','Jackson','Martin','Lee','Perez','Thompson','White','Harris','Sanchez','Clark','Lewis'],
+  domains: ['gmail.com','yahoo.com','outlook.com','protonmail.com','fastmail.com','example.com','test.io','company.org'],
+  streets: ['Main St','Oak Ave','Pine Rd','Maple Dr','Cedar Ln','Elm St','Washington Blvd','Park Ave','Broadway','Lake Dr'],
+  cities: ['New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','San Jose','Austin','Seattle','Denver','Boston'],
+  lorem: 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'.split(' ')
+};
+
+function generateFake(type) {
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  switch (type) {
+    case 'name': return pick(fakeData.firstNames) + ' ' + pick(fakeData.lastNames);
+    case 'email': return pick(fakeData.firstNames).toLowerCase() + '.' + pick(fakeData.lastNames).toLowerCase() + randInt(1,999) + '@' + pick(fakeData.domains);
+    case 'uuid': return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random()*16|0; return (c==='x'?r:(r&0x3|0x8)).toString(16); });
+    case 'phone': return `+1-${randInt(200,999)}-${randInt(200,999)}-${randInt(1000,9999)}`;
+    case 'address': return `${randInt(100,9999)} ${pick(fakeData.streets)}, ${pick(fakeData.cities)}`;
+    case 'date': { const d = new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000 * 3); return d.toISOString(); }
+    case 'number': return String(randInt(1, 100000));
+    case 'boolean': return Math.random() > 0.5 ? 'true' : 'false';
+    case 'lorem': { const words = []; for (let i = 0; i < randInt(15,40); i++) words.push(pick(fakeData.lorem)); return words.join(' ') + '.'; }
+    case 'color': return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+    case 'url': return 'https://' + pick(['api','www','app','dev']) + '.' + pick(fakeData.domains).split('.')[0] + '.com/' + pick(['users','posts','items','data','v1']);
+    case 'ip': return `${randInt(1,255)}.${randInt(0,255)}.${randInt(0,255)}.${randInt(1,254)}`;
+    default: return '';
+  }
+}
+
+function insertGenerated(type) {
+  const value = generateFake(type);
+  $('dataGenOutput').value = value;
+}
+
+function bulkGenerate() {
+  const count = parseInt($('bulkCount').value) || 5;
+  let template = $('bulkTemplate').value;
+  if (!template.trim()) {
+    template = '{\n  "name": "$name",\n  "email": "$email",\n  "id": "$uuid"\n}';
+  }
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    let item = template;
+    item = item.replace(/\$name/g, () => generateFake('name'));
+    item = item.replace(/\$email/g, () => generateFake('email'));
+    item = item.replace(/\$uuid/g, () => generateFake('uuid'));
+    item = item.replace(/\$phone/g, () => generateFake('phone'));
+    item = item.replace(/\$number/g, () => generateFake('number'));
+    item = item.replace(/\$date/g, () => generateFake('date'));
+    item = item.replace(/\$boolean/g, () => generateFake('boolean'));
+    item = item.replace(/\$address/g, () => generateFake('address'));
+    item = item.replace(/\$color/g, () => generateFake('color'));
+    item = item.replace(/\$ip/g, () => generateFake('ip'));
+    item = item.replace(/\$lorem/g, () => generateFake('lorem'));
+    item = item.replace(/\$url/g, () => generateFake('url'));
+    results.push(item);
+  }
+  try {
+    const parsed = results.map(r => JSON.parse(r));
+    $('dataGenOutput').value = JSON.stringify(parsed, null, 2);
+  } catch {
+    $('dataGenOutput').value = '[\n' + results.join(',\n') + '\n]';
+  }
+}
+
+function copyGenerated() {
+  navigator.clipboard.writeText($('dataGenOutput').value);
+  showToast('Copied to clipboard', 'success');
+}
+
+function insertGeneratedToBody() {
+  const val = $('dataGenOutput').value;
+  if (!val) return;
+  $('bodyEditor').value = val;
+  updateLineNumbers('bodyEditor', 'bodyLineNums');
+  closeDataGenModal();
+  setReqTab('body');
+  showToast('Data inserted into body', 'success');
+}
+
+// ==================== AUTO-RETRY LOGIC ====================
+const retryConfig = JSON.parse(localStorage.getItem('nebula_retry_config') || JSON.stringify({
+  enabled: false, maxRetries: 3, initialDelay: 1000, backoffMultiplier: 2, retryCodes: [502, 503, 504], circuitBreaker: false
+}));
+
+function openRetryModal() {
+  $('retryModal').classList.remove('hidden');
+  $('retryEnabled').checked = retryConfig.enabled;
+  $('retryMax').value = retryConfig.maxRetries;
+  $('retryDelay').value = retryConfig.initialDelay;
+  $('retryBackoff').value = retryConfig.backoffMultiplier;
+  $('retryCodes').value = retryConfig.retryCodes.join(',');
+  $('retryCircuitBreaker').checked = retryConfig.circuitBreaker;
+}
+function closeRetryModal() { $('retryModal').classList.add('hidden'); }
+
+function saveRetryConfig() {
+  retryConfig.enabled = $('retryEnabled').checked;
+  retryConfig.maxRetries = parseInt($('retryMax').value) || 3;
+  retryConfig.initialDelay = parseInt($('retryDelay').value) || 1000;
+  retryConfig.backoffMultiplier = parseFloat($('retryBackoff').value) || 2;
+  retryConfig.retryCodes = ($('retryCodes').value || '502,503,504').split(',').map(c => parseInt(c.trim())).filter(Boolean);
+  retryConfig.circuitBreaker = $('retryCircuitBreaker').checked;
+  localStorage.setItem('nebula_retry_config', JSON.stringify(retryConfig));
+}
+
+let consecutiveFailures = 0;
+
+async function fetchWithRetry(url, opts) {
+  if (!retryConfig.enabled) return fetch(url, opts);
+  
+  let lastError;
+  let delay = retryConfig.initialDelay;
+  const retryLog = $('retryLog');
+  
+  for (let attempt = 0; attempt <= retryConfig.maxRetries; attempt++) {
+    if (retryConfig.circuitBreaker && consecutiveFailures >= 5) {
+      showToast('Circuit breaker open - too many consecutive failures', 'error');
+      throw new Error('Circuit breaker open');
+    }
+    
+    try {
+      const response = await fetch(url, opts);
+      if (retryConfig.retryCodes.includes(response.status) && attempt < retryConfig.maxRetries) {
+        if (retryLog) {
+          const div = document.createElement('div');
+          div.innerHTML = `<span style="color:var(--yellow)">&#9888;</span> Attempt ${attempt + 1}: Status ${response.status}, retrying in ${delay}ms...`;
+          retryLog.appendChild(div);
+        }
+        showToast(`Retry ${attempt + 1}/${retryConfig.maxRetries}: Status ${response.status}`, 'warning');
+        await new Promise(r => setTimeout(r, delay));
+        delay *= retryConfig.backoffMultiplier;
+        continue;
+      }
+      consecutiveFailures = response.ok ? 0 : consecutiveFailures + 1;
+      return response;
+    } catch (e) {
+      lastError = e;
+      consecutiveFailures++;
+      if (attempt < retryConfig.maxRetries) {
+        if (retryLog) {
+          const div = document.createElement('div');
+          div.innerHTML = `<span style="color:var(--red)">&#10005;</span> Attempt ${attempt + 1}: ${e.message}, retrying in ${delay}ms...`;
+          retryLog.appendChild(div);
+        }
+        showToast(`Retry ${attempt + 1}/${retryConfig.maxRetries}: ${e.message}`, 'warning');
+        await new Promise(r => setTimeout(r, delay));
+        delay *= retryConfig.backoffMultiplier;
+      }
+    }
+  }
+  throw lastError;
+}
+
+// ==================== SHARE / COLLABORATION ====================
+function openShareModal() {
+  $('shareModal').classList.remove('hidden');
+  generateShareLink();
+}
+function closeShareModal() { $('shareModal').classList.add('hidden'); }
+
+function generateShareLink() {
+  const data = {
+    method: $('methodSelect').value,
+    url: $('urlInput').value,
+    headers: getKVPairs('headersTable'),
+    body: $('bodyEditor').value,
+    bodyType: $('bodyType').value,
+  };
+  const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
+  $('shareLink').value = window.location.origin + window.location.pathname + '#share=' + encoded;
+}
+
+function copyShareLink() {
+  navigator.clipboard.writeText($('shareLink').value);
+  showToast('Share link copied!', 'success');
+}
+
+function exportCurrentAsCurl() {
+  const method = $('methodSelect').value;
+  const url = $('urlInput').value;
+  const headers = getKVPairs('headersTable');
+  const body = $('bodyEditor').value;
+  let curl = `curl -X ${method} "${url}"`;
+  headers.forEach(h => { curl += ` \\\n  -H "${h.key}: ${h.value}"`; });
+  if (body && !['GET', 'HEAD'].includes(method)) curl += ` \\\n  -d '${body}'`;
+  navigator.clipboard.writeText(curl);
+  showToast('cURL command copied', 'success');
+}
+
+function exportCurrentAsHAR() {
+  const har = {
+    log: {
+      version: '1.2',
+      entries: [{
+        request: {
+          method: $('methodSelect').value,
+          url: $('urlInput').value,
+          headers: getKVPairs('headersTable').map(h => ({ name: h.key, value: h.value })),
+          postData: $('bodyEditor').value ? { mimeType: 'application/json', text: $('bodyEditor').value } : undefined,
+        },
+        response: state.lastResponse ? {
+          status: state.lastResponse.status,
+          statusText: state.lastResponse.statusText,
+          headers: Object.entries(state.lastResponse.headers).map(([k,v]) => ({ name: k, value: v })),
+          content: { text: state.lastResponse.body, mimeType: 'application/json' }
+        } : undefined,
+        time: state.lastResponse?.time || 0,
+      }]
+    }
+  };
+  const blob = new Blob([JSON.stringify(har, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'request.har';
+  a.click();
+  showToast('HAR file exported', 'success');
+}
+
+function exportAsOpenAPI() {
+  const method = $('methodSelect').value.toLowerCase();
+  const url = $('urlInput').value;
+  let path = '/';
+  try { path = new URL(url).pathname; } catch {}
+  
+  const spec = {
+    openapi: '3.0.0',
+    info: { title: 'Nebula API Export', version: '1.0.0' },
+    paths: {
+      [path]: {
+        [method]: {
+          summary: 'Exported from Nebula',
+          responses: { '200': { description: 'Success' } }
+        }
+      }
+    }
+  };
+  
+  if ($('bodyEditor').value && !['get', 'head'].includes(method)) {
+    spec.paths[path][method].requestBody = {
+      content: { 'application/json': { schema: { type: 'object' } } }
+    };
+  }
+  
+  const blob = new Blob([JSON.stringify(spec, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'openapi-spec.json';
+  a.click();
+  showToast('OpenAPI spec exported', 'success');
+}
+
+// Load shared request from URL hash
+function loadSharedRequest() {
+  const hash = window.location.hash;
+  if (hash.startsWith('#share=')) {
+    try {
+      const data = JSON.parse(decodeURIComponent(atob(hash.replace('#share=', ''))));
+      $('methodSelect').value = data.method || 'GET';
+      updateMethodColor();
+      $('urlInput').value = data.url || '';
+      $('bodyEditor').value = data.body || '';
+      $('bodyType').value = data.bodyType || 'json';
+      $('headersTable').innerHTML = '';
+      (data.headers || []).forEach(h => createKVRow($('headersTable'), h.key, h.value));
+      updateBadges();
+      updateLineNumbers('bodyEditor', 'bodyLineNums');
+      showToast('Shared request loaded!', 'success');
+      window.location.hash = '';
+    } catch (e) {
+      console.error('Failed to load shared request:', e);
+    }
+  }
+}
+
+// ==================== ENHANCED SEND WITH RETRY ====================
+// Patch the sendRequest to use fetchWithRetry
+const originalFetch = window.fetch;
+// We'll inject retry into the send flow via a wrapper
+
 // ==================== INITIALIZATION ====================
 function init() {
   // Init default params/headers rows
@@ -2957,6 +3708,9 @@ function init() {
   // Set initial request panel height
   $('requestPanel').style.height = '40%';
   $('requestPanel').style.flex = 'none';
+
+  // Load shared request from URL
+  loadSharedRequest();
 }
 
 init();
