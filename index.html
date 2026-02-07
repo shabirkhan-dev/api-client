@@ -1,0 +1,2965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nebula API Client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --crust: #11111b;
+  --base: #1e1e2e;
+  --mantle: #181825;
+  --surface0: #313244;
+  --surface1: #45475a;
+  --surface2: #585b70;
+  --overlay0: #6c7086;
+  --overlay1: #7f849c;
+  --overlay2: #9399b2;
+  --subtext0: #a6adc8;
+  --subtext1: #bac2de;
+  --text: #cdd6f4;
+  --lavender: #b4befe;
+  --blue: #89b4fa;
+  --sapphire: #74c7ec;
+  --sky: #89dceb;
+  --teal: #94e2d5;
+  --green: #a6e3a1;
+  --yellow: #f9e2af;
+  --peach: #fab387;
+  --maroon: #eba0ac;
+  --red: #f38ba8;
+  --mauve: #cba6f7;
+  --pink: #f5c2e7;
+  --flamingo: #f2cdcd;
+  --rosewater: #f5e0dc;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--crust), var(--base));
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+code, pre, .mono, textarea.code-input, input.mono-input {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--overlay0); }
+
+.glass {
+  background: rgba(30, 30, 46, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(180, 190, 254, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.glass:hover { border-color: rgba(180, 190, 254, 0.2); }
+
+.glass-solid {
+  background: rgba(24, 24, 37, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(180, 190, 254, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--lavender), var(--mauve));
+  color: var(--crust);
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(180, 190, 254, 0.4);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-primary:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 6px 28px rgba(180, 190, 254, 0.5); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--overlay0);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-ghost:hover { color: var(--text); background: rgba(180, 190, 254, 0.05); transform: translateY(-1px); }
+.btn-ghost:active { transform: translateY(0) scale(0.98); }
+
+.btn-danger { background: rgba(243,139,168,0.15); color: var(--red); border:1px solid rgba(243,139,168,0.2); }
+.btn-danger:hover { background: rgba(243,139,168,0.25); }
+
+.input-field {
+  background: rgba(17, 17, 27, 0.6);
+  border: 1px solid var(--surface0);
+  color: var(--text);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+.input-field:focus {
+  border-color: var(--lavender);
+  box-shadow: 0 0 0 3px rgba(180, 190, 254, 0.1);
+}
+.input-field::placeholder { color: var(--overlay0); }
+
+.tab-item {
+  color: var(--overlay0);
+  border-bottom: 2px solid transparent;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.tab-item:hover { color: var(--text); }
+.tab-item.active {
+  color: var(--lavender);
+  border-bottom-color: var(--lavender);
+  background: linear-gradient(0deg, rgba(180,190,254,0.1), transparent);
+}
+
+.tab-badge {
+  background: rgba(180, 190, 254, 0.15);
+  color: var(--lavender);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 4px;
+}
+
+.method-get { color: var(--green); }
+.method-post { color: var(--blue); }
+.method-put { color: var(--yellow); }
+.method-delete { color: var(--red); }
+.method-patch { color: var(--mauve); }
+.method-options { color: var(--teal); }
+.method-head { color: var(--peach); }
+
+.method-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.method-badge.get { background: rgba(166,227,161,0.15); color: var(--green); }
+.method-badge.post { background: rgba(137,180,250,0.15); color: var(--blue); }
+.method-badge.put { background: rgba(249,226,175,0.15); color: var(--yellow); }
+.method-badge.delete { background: rgba(243,139,168,0.15); color: var(--red); }
+.method-badge.patch { background: rgba(203,166,247,0.15); color: var(--mauve); }
+.method-badge.options { background: rgba(148,226,213,0.15); color: var(--teal); }
+.method-badge.ws { background: rgba(137,180,250,0.15); color: var(--sapphire); }
+
+.status-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-2xx { background: rgba(166,227,161,0.15); color: var(--green); text-shadow: 0 0 10px rgba(166,227,161,0.3); }
+.status-3xx { background: rgba(249,226,175,0.15); color: var(--yellow); }
+.status-4xx { background: rgba(250,179,135,0.15); color: var(--peach); text-shadow: 0 0 10px rgba(250,179,135,0.3); }
+.status-5xx { background: rgba(243,139,168,0.15); color: var(--red); text-shadow: 0 0 10px rgba(243,139,168,0.3); animation: pulse-red 2s infinite; }
+
+@keyframes pulse-red { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+@keyframes slideDown { from { transform: translateY(0); opacity:1; } to { transform: translateY(20px); opacity:0; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes pulseGlow { 0%,100% { box-shadow: 0 0 5px rgba(180,190,254,0.3); } 50% { box-shadow: 0 0 20px rgba(180,190,254,0.6); } }
+@keyframes bpGlow { 0%,100% { border-color: rgba(249,226,175,0.3); } 50% { border-color: rgba(249,226,175,0.8); } }
+@keyframes successBounce { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+@keyframes pulseDot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.8); } }
+@keyframes progressShimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid transparent;
+  border-top-color: var(--lavender);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.toast {
+  animation: slideUp 300ms ease forwards;
+  position: relative;
+}
+.toast.hiding { animation: slideDown 300ms ease forwards; }
+
+.modal-backdrop {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 200ms ease;
+}
+
+.modal-content {
+  animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-item {
+  transition: all 200ms ease;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+.sidebar-item:hover {
+  background: rgba(180, 190, 254, 0.05);
+  border-left-color: var(--lavender);
+}
+.sidebar-item.active {
+  background: rgba(180, 190, 254, 0.1);
+  border-left-color: var(--lavender);
+}
+
+.context-menu {
+  width: 200px;
+  animation: fadeIn 100ms ease;
+}
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 100ms ease;
+  font-size: 12px;
+}
+.context-menu-item:hover { background: rgba(180,190,254,0.1); }
+
+.line-numbers {
+  width: 40px;
+  text-align: right;
+  color: var(--overlay0);
+  font-size: 12px;
+  line-height: 1.6;
+  padding-right: 8px;
+  border-right: 1px solid var(--surface0);
+  user-select: none;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.code-editor {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  width: 100%;
+  tab-size: 2;
+}
+
+.json-key { color: var(--lavender); }
+.json-string { color: var(--green); }
+.json-number { color: var(--peach); }
+.json-boolean { color: var(--blue); }
+.json-null { color: var(--overlay0); }
+
+.chevron { transition: transform 200ms ease; display:inline-block; }
+.chevron.open { transform: rotate(90deg); }
+
+.resizer {
+  cursor: row-resize;
+  background: var(--surface0);
+  height: 3px;
+  transition: background 200ms;
+}
+.resizer:hover { background: var(--lavender); }
+
+.ws-msg-in { border-left: 2px solid var(--green); }
+.ws-msg-out { border-left: 2px solid var(--blue); }
+
+.diff-added { background: rgba(166,227,161,0.1); color: var(--green); }
+.diff-removed { background: rgba(243,139,168,0.1); color: var(--red); }
+
+.env-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+.env-dev { background: var(--green); }
+.env-staging { background: var(--yellow); }
+.env-prod { background: var(--red); }
+
+.drag-over { border: 2px dashed var(--lavender) !important; background: rgba(180,190,254,0.05) !important; }
+
+.progress-bar {
+  background: linear-gradient(90deg, var(--lavender), var(--mauve), var(--lavender));
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+}
+
+@media (max-width: 768px) {
+  #sidebar { display: none; position: fixed; z-index: 50; top: 56px; left: 0; bottom: 0; width: 300px; }
+  #sidebar.mobile-open { display: flex; }
+  #mobile-menu-btn { display: flex !important; }
+}
+
+.command-palette-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 100ms;
+}
+.command-palette-item:hover, .command-palette-item.selected {
+  background: rgba(180,190,254,0.1);
+}
+.command-palette-item .shortcut {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--overlay0);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.waterfall-bar {
+  height: 14px;
+  border-radius: 2px;
+  position: relative;
+  min-width: 2px;
+}
+</style>
+</head>
+<body>
+<!-- TOAST CONTAINER -->
+<div id="toasts" class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2" style="pointer-events:none;"></div>
+
+<!-- CONTEXT MENU -->
+<div id="contextMenu" class="context-menu glass-solid rounded-lg overflow-hidden hidden fixed z-[90]"></div>
+
+<!-- COMMAND PALETTE -->
+<div id="commandPalette" class="hidden fixed inset-0 z-[80] modal-backdrop flex items-start justify-center pt-[15vh]">
+  <div class="modal-content glass-solid rounded-xl w-[600px] max-h-[400px] overflow-hidden flex flex-col">
+    <div class="p-3 border-b" style="border-color:var(--surface0)">
+      <input id="cmdInput" class="input-field w-full px-4 py-2 rounded-lg text-sm" placeholder="Type a command... (Ctrl+P)" autocomplete="off">
+    </div>
+    <div id="cmdResults" class="overflow-y-auto flex-1"></div>
+  </div>
+</div>
+
+<!-- BREAKPOINT MODAL -->
+<div id="breakpointModal" class="hidden fixed inset-0 z-[70] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[800px] max-h-[90vh] overflow-hidden flex flex-col" style="animation-name:slideUp; border-color:rgba(249,226,175,0.3); animation: bpGlow 2s infinite;">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <div class="flex items-center gap-2">
+        <span style="color:var(--yellow)">⚠</span>
+        <span class="font-semibold" style="color:var(--yellow)">Breakpoint Hit — Edit Request</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="breakpointResume()" class="btn-primary px-4 py-1.5 rounded-lg text-xs">Resume</button>
+        <button onclick="breakpointAbort()" class="btn-danger px-4 py-1.5 rounded-lg text-xs">Abort</button>
+        <button onclick="breakpointDrop()" class="btn-ghost px-4 py-1.5 rounded-lg text-xs border" style="border-color:var(--surface0)">Drop</button>
+      </div>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3">
+      <div class="flex gap-2">
+        <select id="bpMethod" class="input-field rounded-lg px-3 py-2 font-bold mono text-sm" style="width:120px;"></select>
+        <input id="bpUrl" class="input-field flex-1 rounded-lg px-3 py-2 mono text-sm" placeholder="URL">
+      </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--overlay0)">Headers (JSON)</label>
+        <textarea id="bpHeaders" class="input-field w-full rounded-lg px-3 py-2 mono text-xs" rows="5" placeholder='{"Content-Type":"application/json"}'></textarea>
+      </div>
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--overlay0)">Body</label>
+        <textarea id="bpBody" class="input-field w-full rounded-lg px-3 py-2 mono text-xs" rows="8" placeholder="Request body..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENVIRONMENT EDITOR MODAL -->
+<div id="envModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[600px] max-h-[80vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <span class="font-semibold">Environment Variables</span>
+      <button onclick="closeEnvModal()" class="btn-ghost px-2 py-1 rounded">✕</button>
+    </div>
+    <div class="p-4 space-y-3 overflow-y-auto flex-1">
+      <div class="flex gap-2 mb-2">
+        <button onclick="setEnvScope('global')" id="envScopeGlobal" class="tab-item active rounded-lg text-xs px-3 py-1">Global</button>
+        <button onclick="setEnvScope('environment')" id="envScopeEnv" class="tab-item rounded-lg text-xs px-3 py-1">Environment</button>
+        <button onclick="setEnvScope('session')" id="envScopeSession" class="tab-item rounded-lg text-xs px-3 py-1">Session</button>
+      </div>
+      <div id="envVarsList" class="space-y-2"></div>
+      <button onclick="addEnvVar()" class="btn-ghost text-xs px-3 py-1.5 rounded-lg border" style="border-color:var(--surface0)">+ Add Variable</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div id="importModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[500px] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <span class="font-semibold">Import</span>
+      <button onclick="closeImportModal()" class="btn-ghost px-2 py-1 rounded">✕</button>
+    </div>
+    <div class="p-4 space-y-3">
+      <div>
+        <label class="text-xs mb-1 block" style="color:var(--overlay0)">Import from cURL</label>
+        <textarea id="curlInput" class="input-field w-full rounded-lg px-3 py-2 mono text-xs" rows="6" placeholder='curl -X GET "https://api.example.com/users" -H "Authorization: Bearer token"'></textarea>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="importCurl()" class="btn-primary px-4 py-2 rounded-lg text-xs">Import cURL</button>
+        <label class="btn-ghost px-4 py-2 rounded-lg text-xs border cursor-pointer" style="border-color:var(--surface0)">
+          Import Postman JSON
+          <input type="file" accept=".json" onchange="importPostman(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIFF VIEWER MODAL -->
+<div id="diffModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[900px] max-h-[80vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <span class="font-semibold">Response Diff Viewer</span>
+      <div class="flex gap-2">
+        <button onclick="computeDiff()" class="btn-primary px-3 py-1 rounded-lg text-xs">Compare</button>
+        <button onclick="closeDiffModal()" class="btn-ghost px-2 py-1 rounded">✕</button>
+      </div>
+    </div>
+    <div class="flex flex-1 overflow-hidden">
+      <div class="flex-1 p-3 border-r flex flex-col" style="border-color:var(--surface0)">
+        <span class="text-xs mb-1" style="color:var(--overlay0)">Response A</span>
+        <textarea id="diffA" class="input-field flex-1 rounded-lg px-3 py-2 mono text-xs resize-none" placeholder="Paste response A..."></textarea>
+      </div>
+      <div class="flex-1 p-3 flex flex-col">
+        <span class="text-xs mb-1" style="color:var(--overlay0)">Response B</span>
+        <textarea id="diffB" class="input-field flex-1 rounded-lg px-3 py-2 mono text-xs resize-none" placeholder="Paste response B..."></textarea>
+      </div>
+    </div>
+    <div id="diffResult" class="p-3 border-t overflow-y-auto max-h-[300px] mono text-xs" style="border-color:var(--surface0);"></div>
+  </div>
+</div>
+
+<!-- MOCK SERVER MODAL -->
+<div id="mockModal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center">
+  <div class="modal-content glass-solid rounded-xl w-[700px] max-h-[80vh] overflow-hidden flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b" style="border-color:var(--surface0)">
+      <div class="flex items-center gap-2">
+        <span class="font-semibold">Mock Server</span>
+        <span id="mockStatus" class="text-xs px-2 py-0.5 rounded" style="background:rgba(166,227,161,0.15);color:var(--green);">Stopped</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="toggleMockServer()" id="mockToggleBtn" class="btn-primary px-3 py-1 rounded-lg text-xs">Start Server</button>
+        <button onclick="closeMockModal()" class="btn-ghost px-2 py-1 rounded">✕</button>
+      </div>
+    </div>
+    <div class="p-4 space-y-3 overflow-y-auto flex-1">
+      <div id="mockRoutes" class="space-y-2"></div>
+      <button onclick="addMockRoute()" class="btn-ghost text-xs px-3 py-1.5 rounded-lg border" style="border-color:var(--surface0)">+ Add Route</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="flex flex-col h-screen">
+  <!-- HEADER -->
+  <header class="glass flex items-center px-4 gap-3" style="height:56px; min-height:56px; border-top:none; border-left:none; border-right:none;">
+    <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="btn-ghost p-2 rounded-lg hidden" style="display:none!important;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="flex items-center gap-2">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--lavender),var(--mauve));border-radius:8px;" class="flex items-center justify-center">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--crust)" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="font-semibold text-sm" style="color:var(--text)">Nebula</span>
+      <span class="text-xs px-1.5 py-0.5 rounded" style="background:rgba(180,190,254,0.15);color:var(--lavender);font-size:10px;">API Client</span>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="flex items-center gap-1 ml-4 p-1 rounded-lg" style="background:rgba(17,17,27,0.6);">
+      <button onclick="switchMode('http')" id="modeHttp" class="px-3 py-1 rounded-md text-xs font-medium transition-all" style="background:rgba(180,190,254,0.15);color:var(--lavender);">HTTP</button>
+      <button onclick="switchMode('ws')" id="modeWs" class="px-3 py-1 rounded-md text-xs font-medium transition-all" style="color:var(--overlay0);">WebSocket</button>
+      <button onclick="switchMode('graphql')" id="modeGql" class="px-3 py-1 rounded-md text-xs font-medium transition-all" style="color:var(--overlay0);">GraphQL</button>
+      <button onclick="switchMode('loadtest')" id="modeLoad" class="px-3 py-1 rounded-md text-xs font-medium transition-all" style="color:var(--overlay0);">Load Test</button>
+    </div>
+
+    <div class="flex-1"></div>
+
+    <!-- Interceptor Toggle -->
+    <button onclick="toggleInterceptor()" id="interceptorBtn" class="btn-ghost px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs border" style="border-color:var(--surface0);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>Interceptor</span>
+      <span id="interceptorDot" class="w-2 h-2 rounded-full" style="background:var(--overlay0);"></span>
+    </button>
+
+    <!-- Tools -->
+    <button onclick="openDiffModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Diff Viewer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5"/></svg>
+    </button>
+    <button onclick="openMockModal()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Mock Server">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1"/><circle cx="6" cy="18" r="1"/></svg>
+    </button>
+    <button onclick="openSecurityScanner()" class="btn-ghost px-2 py-1.5 rounded-lg text-xs" title="Security Scanner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </button>
+
+    <!-- Command Palette -->
+    <button onclick="openCommandPalette()" class="btn-ghost px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs border" style="border-color:var(--surface0);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <span style="color:var(--overlay0)">Commands</span>
+      <kbd class="text-[10px] px-1.5 py-0.5 rounded" style="background:var(--surface0);color:var(--overlay0);">⌘P</kbd>
+    </button>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="glass flex flex-col" style="width:320px; min-width:320px; border-top:none; border-bottom:none; border-left:none;">
+      <!-- Environment Selector -->
+      <div class="p-3 border-b" style="border-color:var(--surface0);">
+        <div class="flex items-center gap-2">
+          <span id="envDot" class="env-dot env-dev"></span>
+          <select id="envSelect" onchange="changeEnvironment()" class="input-field flex-1 rounded-lg px-2 py-1.5 text-xs" style="background:rgba(17,17,27,0.6);">
+            <option value="development">Development</option>
+            <option value="staging">Staging</option>
+            <option value="production">Production</option>
+          </select>
+          <button onclick="openEnvModal()" class="btn-ghost p-1.5 rounded-lg" title="Edit Variables">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="p-3 border-b" style="border-color:var(--surface0);">
+        <input id="sidebarSearch" oninput="filterSidebar()" class="input-field w-full rounded-lg px-3 py-1.5 text-xs" placeholder="Search collections...">
+      </div>
+
+      <!-- Sidebar Tabs -->
+      <div class="flex border-b" style="border-color:var(--surface0);">
+        <button onclick="setSidebarTab('collections')" id="sTabCollections" class="tab-item active flex-1 text-xs">Collections</button>
+        <button onclick="setSidebarTab('history')" id="sTabHistory" class="tab-item flex-1 text-xs">History</button>
+        <button onclick="setSidebarTab('interceptor')" id="sTabInterceptor" class="tab-item flex-1 text-xs">Interceptor</button>
+      </div>
+
+      <!-- Sidebar Content -->
+      <div class="flex-1 overflow-y-auto" id="sidebarContent">
+        <!-- Collections -->
+        <div id="sidebarCollections" class="p-2">
+          <div class="flex items-center justify-between px-2 py-1 mb-1">
+            <span class="text-xs font-semibold" style="color:var(--overlay0);">COLLECTIONS</span>
+            <div class="flex gap-1">
+              <button onclick="openImportModal()" class="btn-ghost p-1 rounded text-xs" title="Import">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              </button>
+              <button onclick="createCollection()" class="btn-ghost p-1 rounded text-xs" title="New Collection">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="collectionTree"></div>
+        </div>
+
+        <!-- History -->
+        <div id="sidebarHistory" class="p-2 hidden">
+          <div class="flex items-center justify-between px-2 py-1 mb-1">
+            <span class="text-xs font-semibold" style="color:var(--overlay0);">HISTORY</span>
+            <button onclick="clearHistory()" class="btn-ghost p-1 rounded text-xs" title="Clear History">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+          <div id="historyList"></div>
+        </div>
+
+        <!-- Interceptor Log -->
+        <div id="sidebarInterceptor" class="p-2 hidden">
+          <div class="flex gap-2 px-2 py-2">
+            <div class="flex-1 rounded-lg p-2 text-center" style="background:rgba(166,227,161,0.1);">
+              <div class="text-lg font-bold" style="color:var(--green);" id="intStatIntercepted">0</div>
+              <div class="text-[10px]" style="color:var(--overlay0);">Intercepted</div>
+            </div>
+            <div class="flex-1 rounded-lg p-2 text-center" style="background:rgba(249,226,175,0.1);">
+              <div class="text-lg font-bold" style="color:var(--yellow);" id="intStatModified">0</div>
+              <div class="text-[10px]" style="color:var(--overlay0);">Modified</div>
+            </div>
+            <div class="flex-1 rounded-lg p-2 text-center" style="background:rgba(243,139,168,0.1);">
+              <div class="text-lg font-bold" style="color:var(--red);" id="intStatBlocked">0</div>
+              <div class="text-[10px]" style="color:var(--overlay0);">Blocked</div>
+            </div>
+          </div>
+          <div id="interceptorLog" class="space-y-1"></div>
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="p-3 border-t flex items-center justify-between" style="border-color:var(--surface0);">
+        <button onclick="toggleSidebar()" class="btn-ghost p-1.5 rounded-lg" title="Toggle Sidebar (⌘B)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+        </button>
+        <div class="flex gap-1">
+          <button onclick="exportCollection()" class="btn-ghost p-1.5 rounded-lg text-xs" title="Export">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </button>
+          <span class="text-[10px] self-center" style="color:var(--overlay0);">v1.0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <!-- HTTP MODE -->
+      <div id="httpMode" class="flex-1 flex flex-col overflow-hidden">
+        <!-- REQUEST BUILDER -->
+        <div id="requestPanel" class="flex flex-col overflow-hidden" style="min-height:200px;">
+          <!-- URL BAR -->
+          <div class="flex items-center gap-2 p-3">
+            <select id="methodSelect" onchange="updateMethodColor()" class="input-field rounded-xl px-3 py-2.5 font-bold mono text-sm cursor-pointer" style="width:120px; color:var(--green);">
+              <option value="GET" style="color:var(--green)">GET</option>
+              <option value="POST" style="color:var(--blue)">POST</option>
+              <option value="PUT" style="color:var(--yellow)">PUT</option>
+              <option value="DELETE" style="color:var(--red)">DELETE</option>
+              <option value="PATCH" style="color:var(--mauve)">PATCH</option>
+              <option value="OPTIONS" style="color:var(--teal)">OPTIONS</option>
+              <option value="HEAD" style="color:var(--peach)">HEAD</option>
+            </select>
+            <div class="flex-1 relative">
+              <input id="urlInput" class="input-field mono-input w-full rounded-xl px-4 py-2.5 pr-20 text-sm" placeholder="https://api.example.com/v1/resource" style="font-family:'JetBrains Mono',monospace;">
+              <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                <button onclick="document.getElementById('urlInput').value='';document.getElementById('urlInput').focus();" class="btn-ghost p-1 rounded text-xs" title="Clear">✕</button>
+                <button onclick="saveCurrentRequest()" class="btn-ghost p-1 rounded text-xs" title="Save">💾</button>
+              </div>
+            </div>
+            <button onclick="sendRequest()" id="sendBtn" class="btn-primary px-6 py-2.5 rounded-xl text-sm flex items-center gap-2">
+              Send <kbd class="text-[10px] opacity-60">⌘↵</kbd>
+            </button>
+          </div>
+
+          <!-- REQUEST TABS -->
+          <div class="flex items-center border-b px-3 gap-1" style="border-color:var(--surface0);">
+            <button onclick="setReqTab('params')" class="tab-item active" data-req-tab="params">Params</button>
+            <button onclick="setReqTab('headers')" class="tab-item" data-req-tab="headers">Headers <span id="headersBadge" class="tab-badge hidden">0</span></button>
+            <button onclick="setReqTab('body')" class="tab-item" data-req-tab="body">Body</button>
+            <button onclick="setReqTab('auth')" class="tab-item" data-req-tab="auth">Auth</button>
+            <button onclick="setReqTab('prescript')" class="tab-item" data-req-tab="prescript">Pre-request</button>
+            <button onclick="setReqTab('tests')" class="tab-item" data-req-tab="tests">Tests</button>
+          </div>
+
+          <!-- REQUEST TAB CONTENT -->
+          <div class="flex-1 overflow-y-auto" id="reqTabContent">
+            <!-- PARAMS -->
+            <div id="reqParams" class="p-3">
+              <div id="paramsTable" class="space-y-2"></div>
+              <button onclick="addParam()" class="btn-ghost text-xs px-3 py-1.5 rounded-lg mt-2 border" style="border-color:var(--surface0);">+ Add Parameter</button>
+            </div>
+
+            <!-- HEADERS -->
+            <div id="reqHeaders" class="p-3 hidden">
+              <div id="headersTable" class="space-y-2"></div>
+              <button onclick="addHeader()" class="btn-ghost text-xs px-3 py-1.5 rounded-lg mt-2 border" style="border-color:var(--surface0);">+ Add Header</button>
+            </div>
+
+            <!-- BODY -->
+            <div id="reqBody" class="p-3 hidden flex flex-col" style="height:100%;">
+              <div class="flex items-center gap-2 mb-2">
+                <select id="bodyType" onchange="updateBodyType()" class="input-field rounded-lg px-2 py-1 text-xs">
+                  <option value="none">None</option>
+                  <option value="json" selected>JSON</option>
+                  <option value="form">Form Data</option>
+                  <option value="urlencoded">URL Encoded</option>
+                  <option value="raw">Raw</option>
+                  <option value="binary">Binary</option>
+                  <option value="graphql">GraphQL</option>
+                </select>
+                <button onclick="formatBody()" class="btn-ghost text-xs px-2 py-1 rounded" title="Format JSON (⌘⇧F)">Format</button>
+              </div>
+              <div class="flex flex-1 rounded-lg overflow-hidden border" style="border-color:var(--surface0); min-height:120px;">
+                <div id="bodyLineNums" class="line-numbers py-2 overflow-hidden" style="background:rgba(17,17,27,0.4);">1</div>
+                <textarea id="bodyEditor" class="code-editor flex-1 p-2" placeholder='{\n  "key": "value"\n}' oninput="updateLineNumbers('bodyEditor','bodyLineNums')" onscroll="syncScroll('bodyEditor','bodyLineNums')"></textarea>
+              </div>
+              <!-- File upload zone -->
+              <div id="fileUploadZone" class="hidden mt-2 border-2 border-dashed rounded-lg p-8 text-center transition-all" style="border-color:var(--surface0);color:var(--overlay0);">
+                <p class="text-sm">Drag & drop a file here or click to browse</p>
+                <input type="file" id="fileInput" class="hidden" onchange="handleFileUpload(event)">
+                <button onclick="document.getElementById('fileInput').click()" class="btn-ghost mt-2 px-3 py-1 rounded-lg text-xs border" style="border-color:var(--surface0);">Browse Files</button>
+                <div id="fileInfo" class="mt-2 text-xs hidden"></div>
+              </div>
+            </div>
+
+            <!-- AUTH -->
+            <div id="reqAuth" class="p-3 hidden">
+              <div class="space-y-3">
+                <select id="authType" onchange="updateAuthType()" class="input-field rounded-lg px-3 py-2 text-xs w-full">
+                  <option value="none">No Auth</option>
+                  <option value="bearer">Bearer Token</option>
+                  <option value="basic">Basic Auth</option>
+                  <option value="apikey">API Key</option>
+                  <option value="oauth2">OAuth 2.0</option>
+                </select>
+                <div id="authFields"></div>
+              </div>
+            </div>
+
+            <!-- PRE-REQUEST SCRIPT -->
+            <div id="reqPreScript" class="p-3 hidden flex flex-col" style="height:100%;">
+              <div class="text-xs mb-2" style="color:var(--overlay0);">JavaScript executed before each request. Use pm.environment.set/get, pm.globals, crypto helpers.</div>
+              <div class="flex flex-1 rounded-lg overflow-hidden border" style="border-color:var(--surface0); min-height:120px;">
+                <div id="prescriptLineNums" class="line-numbers py-2 overflow-hidden" style="background:rgba(17,17,27,0.4);">1</div>
+                <textarea id="prescriptEditor" class="code-editor flex-1 p-2" placeholder="// Pre-request script\npm.environment.set('timestamp', Date.now());" oninput="updateLineNumbers('prescriptEditor','prescriptLineNums')" onscroll="syncScroll('prescriptEditor','prescriptLineNums')"></textarea>
+              </div>
+              <div id="prescriptConsole" class="mt-2 rounded-lg p-2 text-xs mono overflow-y-auto" style="background:rgba(17,17,27,0.6);max-height:100px;min-height:40px;color:var(--overlay0);">Console output will appear here...</div>
+            </div>
+
+            <!-- TESTS -->
+            <div id="reqTests" class="p-3 hidden flex flex-col" style="height:100%;">
+              <div class="text-xs mb-2" style="color:var(--overlay0);">JavaScript tests run after response. Use pm.test(), pm.expect(), pm.response.</div>
+              <div class="flex flex-1 rounded-lg overflow-hidden border" style="border-color:var(--surface0); min-height:120px;">
+                <div id="testsLineNums" class="line-numbers py-2 overflow-hidden" style="background:rgba(17,17,27,0.4);">1</div>
+                <textarea id="testsEditor" class="code-editor flex-1 p-2" placeholder='// Test script\npm.test("Status is 200", () => {\n  pm.expect(pm.response.code).to.equal(200);\n});' oninput="updateLineNumbers('testsEditor','testsLineNums')" onscroll="syncScroll('testsEditor','testsLineNums')"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESIZER -->
+        <div class="resizer" id="mainResizer"></div>
+
+        <!-- RESPONSE VIEWER -->
+        <div id="responsePanel" class="flex-1 flex flex-col overflow-hidden" style="min-height:150px;">
+          <!-- Response Status Bar -->
+          <div class="flex items-center gap-3 px-3 py-2 border-b" style="border-color:var(--surface0);">
+            <span id="resStatus" class="status-pill text-xs" style="color:var(--overlay0);">No Response</span>
+            <span id="resTime" class="text-xs mono" style="color:var(--overlay0);"></span>
+            <span id="resSize" class="text-xs mono" style="color:var(--overlay0);"></span>
+            <div class="flex-1"></div>
+            <button onclick="copyResponse()" class="btn-ghost px-2 py-1 rounded text-xs" title="Copy Response">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button onclick="clearResponse()" class="btn-ghost px-2 py-1 rounded text-xs" title="Clear (⌘⇧C)">Clear</button>
+          </div>
+
+          <!-- Response Tabs -->
+          <div class="flex items-center border-b px-3 gap-1" style="border-color:var(--surface0);">
+            <button onclick="setResTab('body')" class="tab-item active" data-res-tab="body">Body</button>
+            <button onclick="setResTab('headers')" class="tab-item" data-res-tab="headers">Headers</button>
+            <button onclick="setResTab('cookies')" class="tab-item" data-res-tab="cookies">Cookies</button>
+            <button onclick="setResTab('timeline')" class="tab-item" data-res-tab="timeline">Timeline</button>
+            <button onclick="setResTab('testresults')" class="tab-item" data-res-tab="testresults">Tests</button>
+            <button onclick="setResTab('security')" class="tab-item" data-res-tab="security">Security</button>
+          </div>
+
+          <!-- Response Content -->
+          <div class="flex-1 overflow-y-auto" id="resTabContent">
+            <div id="resBody" class="p-3">
+              <div id="responseLoading" class="hidden flex items-center justify-center py-8">
+                <div class="spinner"></div>
+                <span class="ml-3 text-sm" style="color:var(--overlay0);">Sending request...</span>
+              </div>
+              <div id="responseEmpty" class="flex flex-col items-center justify-center py-12" style="color:var(--overlay0);">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-3 opacity-30"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <p class="text-sm">Send a request to see the response</p>
+                <p class="text-xs mt-1">Press ⌘Enter or click Send</p>
+              </div>
+              <pre id="responseBody" class="mono text-xs hidden" style="white-space:pre-wrap;word-break:break-all;line-height:1.6;"></pre>
+            </div>
+            <div id="resHeaders" class="p-3 hidden">
+              <div id="responseHeaders" class="mono text-xs space-y-1"></div>
+            </div>
+            <div id="resCookies" class="p-3 hidden">
+              <div id="responseCookies" class="mono text-xs" style="color:var(--overlay0);">No cookies</div>
+            </div>
+            <div id="resTimeline" class="p-3 hidden">
+              <div id="responseTimeline" class="space-y-2"></div>
+            </div>
+            <div id="resTestResults" class="p-3 hidden">
+              <div id="testResults" class="space-y-2"></div>
+            </div>
+            <div id="resSecurity" class="p-3 hidden">
+              <div id="securityResults"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEBSOCKET MODE -->
+      <div id="wsMode" class="flex-1 flex flex-col overflow-hidden hidden">
+        <div class="flex items-center gap-2 p-3">
+          <input id="wsUrl" class="input-field mono-input flex-1 rounded-xl px-4 py-2.5 text-sm" placeholder="wss://echo.websocket.org" style="font-family:'JetBrains Mono',monospace;">
+          <button onclick="toggleWsConnection()" id="wsConnBtn" class="btn-primary px-6 py-2.5 rounded-xl text-sm">Connect</button>
+          <div class="flex items-center gap-2">
+            <span id="wsDot" class="w-2.5 h-2.5 rounded-full" style="background:var(--overlay0);"></span>
+            <span id="wsState" class="text-xs" style="color:var(--overlay0);">Disconnected</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 px-3 pb-2">
+          <span class="text-xs" style="color:var(--overlay0);">Messages: <span id="wsMsgCount">0</span></span>
+          <span class="text-xs" style="color:var(--overlay0);">Sent: <span id="wsSentCount">0</span></span>
+          <span class="text-xs" style="color:var(--overlay0);">Received: <span id="wsRecvCount">0</span></span>
+          <div class="flex-1"></div>
+          <label class="flex items-center gap-1 text-xs" style="color:var(--overlay0);">
+            <input type="checkbox" id="wsAutoReconnect"> Auto-reconnect
+          </label>
+        </div>
+        <div class="flex flex-1 overflow-hidden border-t" style="border-color:var(--surface0);">
+          <!-- Messages -->
+          <div class="flex-1 flex flex-col" style="width:70%;">
+            <div class="flex items-center justify-between px-3 py-2 border-b" style="border-color:var(--surface0);">
+              <span class="text-xs font-semibold" style="color:var(--overlay0);">Messages</span>
+              <button onclick="clearWsMessages()" class="btn-ghost text-xs px-2 py-1 rounded">Clear</button>
+            </div>
+            <div id="wsMessages" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
+          </div>
+          <!-- Composer -->
+          <div class="flex flex-col border-l" style="width:30%;border-color:var(--surface0);">
+            <div class="flex items-center gap-2 px-3 py-2 border-b" style="border-color:var(--surface0);">
+              <select id="wsMsgFormat" class="input-field rounded px-2 py-1 text-xs">
+                <option value="json">JSON</option>
+                <option value="text">Text</option>
+                <option value="binary">Binary</option>
+              </select>
+            </div>
+            <textarea id="wsComposer" class="code-editor flex-1 p-3 resize-none" placeholder='{"type":"ping"}'></textarea>
+            <div class="p-2 flex gap-2">
+              <button onclick="sendWsMessage()" class="btn-primary flex-1 py-2 rounded-lg text-xs">Send <kbd class="text-[10px] opacity-60 ml-1">Ctrl+↵</kbd></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRAPHQL MODE -->
+      <div id="graphqlMode" class="flex-1 flex flex-col overflow-hidden hidden">
+        <div class="flex items-center gap-2 p-3">
+          <input id="gqlUrl" class="input-field mono-input flex-1 rounded-xl px-4 py-2.5 text-sm" placeholder="https://api.example.com/graphql" style="font-family:'JetBrains Mono',monospace;">
+          <button onclick="sendGraphQL()" class="btn-primary px-6 py-2.5 rounded-xl text-sm">Execute</button>
+        </div>
+        <div class="flex items-center border-b px-3 gap-1" style="border-color:var(--surface0);">
+          <button onclick="setGqlTab('query')" class="tab-item active" data-gql-tab="query">Query</button>
+          <button onclick="setGqlTab('variables')" class="tab-item" data-gql-tab="variables">Variables</button>
+          <button onclick="setGqlTab('headers')" class="tab-item" data-gql-tab="headers">Headers</button>
+        </div>
+        <div class="flex flex-1 overflow-hidden">
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <div id="gqlQuery" class="flex-1 flex flex-col p-3">
+              <div class="flex flex-1 rounded-lg overflow-hidden border" style="border-color:var(--surface0);">
+                <div id="gqlQueryLineNums" class="line-numbers py-2 overflow-hidden" style="background:rgba(17,17,27,0.4);">1</div>
+                <textarea id="gqlQueryEditor" class="code-editor flex-1 p-2" placeholder="query {\n  users {\n    id\n    name\n    email\n  }\n}" oninput="updateLineNumbers('gqlQueryEditor','gqlQueryLineNums')" onscroll="syncScroll('gqlQueryEditor','gqlQueryLineNums')"></textarea>
+              </div>
+            </div>
+            <div id="gqlVariables" class="flex-1 flex-col p-3 hidden">
+              <textarea id="gqlVarsEditor" class="code-editor input-field flex-1 w-full rounded-lg p-2" placeholder='{\n  "id": 1\n}'></textarea>
+            </div>
+            <div id="gqlHeaders" class="flex-1 p-3 hidden">
+              <textarea id="gqlHeadersEditor" class="code-editor input-field flex-1 w-full rounded-lg p-2" placeholder='{\n  "Authorization": "Bearer token"\n}'></textarea>
+            </div>
+          </div>
+          <div class="flex-1 border-l overflow-y-auto" style="border-color:var(--surface0);">
+            <div class="flex items-center justify-between px-3 py-2 border-b" style="border-color:var(--surface0);">
+              <span class="text-xs font-semibold" style="color:var(--overlay0);">Response</span>
+            </div>
+            <pre id="gqlResponse" class="mono text-xs p-3" style="white-space:pre-wrap;line-height:1.6;color:var(--overlay0);">Execute a query to see results...</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOAD TEST MODE -->
+      <div id="loadtestMode" class="flex-1 flex flex-col overflow-hidden hidden">
+        <div class="flex items-center gap-2 p-3 border-b" style="border-color:var(--surface0);">
+          <select id="ltMethod" class="input-field rounded-lg px-3 py-2 font-bold mono text-xs" style="width:100px;color:var(--green);">
+            <option value="GET">GET</option><option value="POST">POST</option><option value="PUT">PUT</option><option value="DELETE">DELETE</option>
+          </select>
+          <input id="ltUrl" class="input-field mono-input flex-1 rounded-lg px-3 py-2 text-xs" placeholder="https://api.example.com/endpoint" style="font-family:'JetBrains Mono',monospace;">
+          <button onclick="startLoadTest()" id="ltStartBtn" class="btn-primary px-5 py-2 rounded-lg text-xs">Start Test</button>
+          <button onclick="cancelLoadTest()" id="ltCancelBtn" class="btn-danger px-4 py-2 rounded-lg text-xs hidden">Cancel</button>
+        </div>
+
+        <div class="flex flex-1 overflow-hidden">
+          <!-- Config -->
+          <div class="p-3 border-r overflow-y-auto" style="width:280px;border-color:var(--surface0);">
+            <div class="space-y-3">
+              <div>
+                <label class="text-[10px] mb-1 block font-semibold" style="color:var(--overlay0);">PROFILE</label>
+                <select id="ltProfile" class="input-field w-full rounded-lg px-2 py-1.5 text-xs">
+                  <option value="spike">Spike</option><option value="ramp">Ramp-up</option><option value="soak">Soak</option><option value="stress">Stress</option><option value="custom" selected>Custom</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[10px] mb-1 block" style="color:var(--overlay0);">Total Requests</label>
+                <input id="ltTotal" type="number" value="100" class="input-field w-full rounded-lg px-2 py-1.5 text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] mb-1 block" style="color:var(--overlay0);">Concurrency</label>
+                <input id="ltConcurrency" type="number" value="10" class="input-field w-full rounded-lg px-2 py-1.5 text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] mb-1 block" style="color:var(--overlay0);">Ramp-up (ms)</label>
+                <input id="ltRampup" type="number" value="1000" class="input-field w-full rounded-lg px-2 py-1.5 text-xs">
+              </div>
+              <div>
+                <label class="text-[10px] mb-1 block" style="color:var(--overlay0);">Timeout (ms)</label>
+                <input id="ltTimeout" type="number" value="5000" class="input-field w-full rounded-lg px-2 py-1.5 text-xs">
+              </div>
+              <div class="space-y-1.5">
+                <label class="flex items-center gap-2 text-xs" style="color:var(--text);">
+                  <input type="checkbox" id="ltKeepAlive" checked> Keep-alive
+                </label>
+                <label class="flex items-center gap-2 text-xs" style="color:var(--text);">
+                  <input type="checkbox" id="ltRandomize"> Randomize payload
+                </label>
+                <label class="flex items-center gap-2 text-xs" style="color:var(--text);">
+                  <input type="checkbox" id="ltRedirects" checked> Follow redirects
+                </label>
+              </div>
+              <div>
+                <label class="text-[10px] mb-1 block" style="color:var(--overlay0);">Request Body (JSON)</label>
+                <textarea id="ltBody" class="input-field w-full rounded-lg px-2 py-1.5 text-xs mono" rows="4" placeholder='{"key":"value"}'></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Progress -->
+            <div id="ltProgress" class="hidden px-3 pt-3">
+              <div class="relative rounded-full overflow-hidden h-4" style="background:var(--surface0);">
+                <div id="ltProgressBar" class="progress-bar h-full rounded-full transition-all" style="width:0%;"></div>
+                <span id="ltProgressText" class="absolute inset-0 flex items-center justify-center text-[10px] font-bold" style="color:var(--text);">0%</span>
+              </div>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-5 gap-2 p-3">
+              <div class="rounded-lg p-3 text-center" style="background:rgba(180,190,254,0.08);">
+                <div class="text-xl font-bold" style="color:var(--lavender);" id="ltRps">0</div>
+                <div class="text-[10px]" style="color:var(--overlay0);">RPS</div>
+              </div>
+              <div class="rounded-lg p-3 text-center" style="background:rgba(137,180,250,0.08);">
+                <div class="text-xl font-bold" style="color:var(--blue);" id="ltAvgLatency">0ms</div>
+                <div class="text-[10px]" style="color:var(--overlay0);">Avg Latency</div>
+                <div class="text-[9px] mt-0.5" style="color:var(--surface2);" id="ltMinMax"></div>
+              </div>
+              <div class="rounded-lg p-3 text-center" style="background:rgba(250,179,135,0.08);">
+                <div class="text-xl font-bold" style="color:var(--peach);" id="ltP95">0ms</div>
+                <div class="text-[10px]" style="color:var(--overlay0);">P95 Latency</div>
+              </div>
+              <div class="rounded-lg p-3 text-center" style="background:rgba(243,139,168,0.08);">
+                <div class="text-xl font-bold" style="color:var(--red);" id="ltErrorRate">0%</div>
+                <div class="text-[10px]" style="color:var(--overlay0);">Error Rate</div>
+                <div class="text-[9px] mt-0.5" style="color:var(--surface2);" id="ltErrorCount"></div>
+              </div>
+              <div class="rounded-lg p-3 text-center" style="background:rgba(148,226,213,0.08);">
+                <div class="text-xl font-bold" style="color:var(--teal);" id="ltThroughput">0</div>
+                <div class="text-[10px]" style="color:var(--overlay0);">KB/s</div>
+              </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="flex gap-3 px-3 pb-3" style="height:200px;">
+              <div class="flex-1 rounded-lg p-2" style="background:rgba(17,17,27,0.4);">
+                <canvas id="ltHistogram"></canvas>
+              </div>
+              <div class="flex-1 rounded-lg p-2" style="background:rgba(17,17,27,0.4);">
+                <canvas id="ltTimeline"></canvas>
+              </div>
+            </div>
+
+            <!-- Results Table -->
+            <div class="flex-1 overflow-hidden flex flex-col px-3 pb-3">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold" style="color:var(--overlay0);">Results</span>
+                <button onclick="exportLoadTestCSV()" class="btn-ghost text-xs px-2 py-1 rounded border" style="border-color:var(--surface0);">Export CSV</button>
+              </div>
+              <div class="flex-1 overflow-y-auto rounded-lg border" style="border-color:var(--surface0);">
+                <table class="w-full text-xs">
+                  <thead>
+                    <tr style="background:rgba(17,17,27,0.4);">
+                      <th class="text-left px-3 py-2 font-medium" style="color:var(--overlay0);">#</th>
+                      <th class="text-left px-3 py-2 font-medium" style="color:var(--overlay0);">Status</th>
+                      <th class="text-left px-3 py-2 font-medium" style="color:var(--overlay0);">Time (ms)</th>
+                      <th class="text-left px-3 py-2 font-medium" style="color:var(--overlay0);">Size</th>
+                      <th class="text-left px-3 py-2 font-medium" style="color:var(--overlay0);">Timestamp</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ltResults" class="mono"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+// ==================== STATE ====================
+const state = {
+  mode: 'http',
+  interceptorActive: false,
+  interceptorStats: { intercepted: 0, modified: 0, blocked: 0 },
+  interceptorLog: [],
+  breakpointResolve: null,
+  collections: JSON.parse(localStorage.getItem('nebula_collections') || '[]'),
+  history: JSON.parse(localStorage.getItem('nebula_history') || '[]'),
+  environments: JSON.parse(localStorage.getItem('nebula_environments') || JSON.stringify({
+    global: {},
+    development: { base_url: 'http://localhost:3000', api_key: 'dev-key-123' },
+    staging: { base_url: 'https://staging.api.example.com', api_key: 'staging-key' },
+    production: { base_url: 'https://api.example.com', api_key: 'prod-key' }
+  })),
+  sessionVars: {},
+  currentEnv: 'development',
+  currentEnvScope: 'global',
+  wsConnection: null,
+  wsMessages: [],
+  wsSentCount: 0,
+  wsRecvCount: 0,
+  loadTestRunning: false,
+  loadTestResults: [],
+  loadTestCancelled: false,
+  mockServerRunning: false,
+  mockRoutes: JSON.parse(localStorage.getItem('nebula_mock_routes') || '[]'),
+  sidebarTab: 'collections',
+  currentRequest: null,
+  lastResponse: null,
+  activeReqTab: 'params',
+  activeResTab: 'body',
+  uploadedFile: null,
+  ltChartHist: null,
+  ltChartTimeline: null,
+};
+
+// ==================== UTILITY FUNCTIONS ====================
+function $(id) { return document.getElementById(id); }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+function showToast(message, type = 'info') {
+  const colors = { info: 'var(--lavender)', success: 'var(--green)', error: 'var(--red)', warning: 'var(--yellow)' };
+  const toast = document.createElement('div');
+  toast.className = 'toast glass-solid rounded-lg px-4 py-3 flex items-center gap-2 text-xs';
+  toast.style.pointerEvents = 'auto';
+  toast.style.borderLeft = `3px solid ${colors[type]}`;
+  toast.innerHTML = `<span style="color:${colors[type]}">${type === 'success' ? '✓' : type === 'error' ? '✕' : type === 'warning' ? '⚠' : 'ℹ'}</span><span>${message}</span>`;
+  $('toasts').appendChild(toast);
+  setTimeout(() => { toast.classList.add('hiding'); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function formatTime(ms) { return ms < 1000 ? ms + 'ms' : (ms / 1000).toFixed(2) + 's'; }
+
+function syntaxHighlightJSON(json) {
+  if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+  return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+      let cls = 'json-number';
+      if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-string'; }
+      else if (/true|false/.test(match)) cls = 'json-boolean';
+      else if (/null/.test(match)) cls = 'json-null';
+      return `<span class="${cls}">${match}</span>`;
+    });
+}
+
+function replaceVariables(str) {
+  if (!str) return str;
+  return str.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    if (state.sessionVars[key] !== undefined) return state.sessionVars[key];
+    const envVars = state.environments[state.currentEnv] || {};
+    if (envVars[key] !== undefined) return envVars[key];
+    const globals = state.environments.global || {};
+    if (globals[key] !== undefined) return globals[key];
+    return match;
+  });
+}
+
+function updateLineNumbers(editorId, lineNumId) {
+  const editor = $(editorId);
+  const lineNums = $(lineNumId);
+  const lines = editor.value.split('\n').length;
+  lineNums.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+}
+
+function syncScroll(editorId, lineNumId) {
+  $(lineNumId).scrollTop = $(editorId).scrollTop;
+}
+
+function getMethodColor(method) {
+  const colors = { GET: 'var(--green)', POST: 'var(--blue)', PUT: 'var(--yellow)', DELETE: 'var(--red)', PATCH: 'var(--mauve)', OPTIONS: 'var(--teal)', HEAD: 'var(--peach)' };
+  return colors[method] || 'var(--text)';
+}
+
+function getMethodClass(method) {
+  return (method || 'get').toLowerCase();
+}
+
+function saveState() {
+  localStorage.setItem('nebula_collections', JSON.stringify(state.collections));
+  localStorage.setItem('nebula_history', JSON.stringify(state.history));
+  localStorage.setItem('nebula_environments', JSON.stringify(state.environments));
+  localStorage.setItem('nebula_mock_routes', JSON.stringify(state.mockRoutes));
+}
+
+// ==================== MODE SWITCHING ====================
+function switchMode(mode) {
+  state.mode = mode;
+  ['http', 'ws', 'graphql', 'loadtest'].forEach(m => {
+    $(m + 'Mode').classList.toggle('hidden', m !== mode);
+  });
+  ['Http', 'Ws', 'Gql', 'Load'].forEach((m, i) => {
+    const btn = $('mode' + m);
+    const modes = ['http', 'ws', 'graphql', 'loadtest'];
+    if (modes[i] === mode) {
+      btn.style.background = 'rgba(180,190,254,0.15)';
+      btn.style.color = 'var(--lavender)';
+    } else {
+      btn.style.background = 'transparent';
+      btn.style.color = 'var(--overlay0)';
+    }
+  });
+}
+
+// ==================== METHOD SELECTOR ====================
+function updateMethodColor() {
+  const sel = $('methodSelect');
+  sel.style.color = getMethodColor(sel.value);
+}
+
+// ==================== REQUEST TABS ====================
+function setReqTab(tab) {
+  state.activeReqTab = tab;
+  document.querySelectorAll('[data-req-tab]').forEach(el => el.classList.toggle('active', el.dataset.reqTab === tab));
+  ['params', 'headers', 'body', 'auth', 'prescript', 'tests'].forEach(t => {
+    const el = $('req' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) el.classList.toggle('hidden', t !== tab);
+  });
+  // Fix id mapping
+  $('reqParams').classList.toggle('hidden', tab !== 'params');
+  $('reqHeaders').classList.toggle('hidden', tab !== 'headers');
+  $('reqBody').classList.toggle('hidden', tab !== 'body');
+  $('reqAuth').classList.toggle('hidden', tab !== 'auth');
+  $('reqPreScript').classList.toggle('hidden', tab !== 'prescript');
+  $('reqTests').classList.toggle('hidden', tab !== 'tests');
+}
+
+// ==================== RESPONSE TABS ====================
+function setResTab(tab) {
+  state.activeResTab = tab;
+  document.querySelectorAll('[data-res-tab]').forEach(el => el.classList.toggle('active', el.dataset.resTab === tab));
+  ['body', 'headers', 'cookies', 'timeline', 'testresults', 'security'].forEach(t => {
+    const id = 'res' + t.charAt(0).toUpperCase() + t.slice(1);
+    const el = $(id);
+    if (el) el.classList.toggle('hidden', t !== tab);
+  });
+  $('resBody').classList.toggle('hidden', tab !== 'body');
+  $('resHeaders').classList.toggle('hidden', tab !== 'headers');
+  $('resCookies').classList.toggle('hidden', tab !== 'cookies');
+  $('resTimeline').classList.toggle('hidden', tab !== 'timeline');
+  $('resTestResults').classList.toggle('hidden', tab !== 'testresults');
+  $('resSecurity').classList.toggle('hidden', tab !== 'security');
+}
+
+// ==================== PARAMS & HEADERS KV ====================
+function createKVRow(container, key = '', value = '', enabled = true) {
+  const row = document.createElement('div');
+  row.className = 'flex items-center gap-2';
+  row.innerHTML = `
+    <input type="checkbox" ${enabled ? 'checked' : ''} class="kv-enabled">
+    <input type="text" class="input-field flex-1 rounded-lg px-2 py-1.5 text-xs kv-key" placeholder="Key" value="${key.replace(/"/g, '&quot;')}">
+    <input type="text" class="input-field flex-1 rounded-lg px-2 py-1.5 text-xs kv-value" placeholder="Value" value="${value.replace(/"/g, '&quot;')}">
+    <button onclick="this.parentElement.remove();updateBadges();" class="btn-ghost p-1 rounded text-xs" style="color:var(--red);">✕</button>
+  `;
+  row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updateBadges));
+  container.appendChild(row);
+}
+
+function addParam() { createKVRow($('paramsTable')); }
+function addHeader() { createKVRow($('headersTable')); updateBadges(); }
+
+function getKVPairs(containerId) {
+  const rows = $(containerId).querySelectorAll('.flex');
+  const pairs = [];
+  rows.forEach(row => {
+    const enabled = row.querySelector('.kv-enabled')?.checked;
+    const key = row.querySelector('.kv-key')?.value;
+    const value = row.querySelector('.kv-value')?.value;
+    if (key && enabled) pairs.push({ key, value, enabled });
+  });
+  return pairs;
+}
+
+function updateBadges() {
+  const hCount = getKVPairs('headersTable').length;
+  const badge = $('headersBadge');
+  if (hCount > 0) { badge.classList.remove('hidden'); badge.textContent = hCount; }
+  else badge.classList.add('hidden');
+}
+
+// ==================== AUTH ====================
+function updateAuthType() {
+  const type = $('authType').value;
+  const fields = $('authFields');
+  fields.innerHTML = '';
+  if (type === 'bearer') {
+    fields.innerHTML = `<input id="authToken" class="input-field w-full rounded-lg px-3 py-2 text-xs mono" placeholder="Enter bearer token...">`;
+  } else if (type === 'basic') {
+    fields.innerHTML = `
+      <input id="authUser" class="input-field w-full rounded-lg px-3 py-2 text-xs mb-2" placeholder="Username">
+      <input id="authPass" type="password" class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="Password">
+    `;
+  } else if (type === 'apikey') {
+    fields.innerHTML = `
+      <input id="authApiKey" class="input-field w-full rounded-lg px-3 py-2 text-xs mb-2" placeholder="Key name (e.g., X-API-Key)">
+      <input id="authApiValue" class="input-field w-full rounded-lg px-3 py-2 text-xs mb-2" placeholder="Key value">
+      <select id="authApiIn" class="input-field rounded-lg px-2 py-1.5 text-xs">
+        <option value="header">Header</option>
+        <option value="query">Query Param</option>
+      </select>
+    `;
+  } else if (type === 'oauth2') {
+    fields.innerHTML = `
+      <input id="authOAuthToken" class="input-field w-full rounded-lg px-3 py-2 text-xs mb-2 mono" placeholder="Access Token">
+      <input id="authOAuthPrefix" class="input-field w-full rounded-lg px-3 py-2 text-xs" placeholder="Token Prefix (default: Bearer)" value="Bearer">
+    `;
+  }
+}
+
+function getAuthHeaders() {
+  const type = $('authType').value;
+  const headers = {};
+  if (type === 'bearer') {
+    const token = $('authToken')?.value;
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+  } else if (type === 'basic') {
+    const user = $('authUser')?.value || '';
+    const pass = $('authPass')?.value || '';
+    if (user) headers['Authorization'] = 'Basic ' + btoa(user + ':' + pass);
+  } else if (type === 'apikey') {
+    const key = $('authApiKey')?.value;
+    const val = $('authApiValue')?.value;
+    const loc = $('authApiIn')?.value;
+    if (key && val && loc === 'header') headers[key] = val;
+  } else if (type === 'oauth2') {
+    const token = $('authOAuthToken')?.value;
+    const prefix = $('authOAuthPrefix')?.value || 'Bearer';
+    if (token) headers['Authorization'] = prefix + ' ' + token;
+  }
+  return headers;
+}
+
+// ==================== BODY TYPE ====================
+function updateBodyType() {
+  const type = $('bodyType').value;
+  const fileZone = $('fileUploadZone');
+  const editorArea = $('bodyEditor').parentElement;
+  if (type === 'binary') {
+    fileZone.classList.remove('hidden');
+    editorArea.classList.add('hidden');
+  } else {
+    fileZone.classList.add('hidden');
+    editorArea.classList.remove('hidden');
+  }
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    state.uploadedFile = file;
+    $('fileInfo').classList.remove('hidden');
+    $('fileInfo').innerHTML = `<span style="color:var(--green)">✓</span> ${file.name} (${formatBytes(file.size)})`;
+    showToast('File attached: ' + file.name, 'success');
+  }
+}
+
+// Drag and drop
+document.addEventListener('DOMContentLoaded', () => {
+  const zone = $('fileUploadZone');
+  if (zone) {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) {
+        state.uploadedFile = e.dataTransfer.files[0];
+        $('fileInfo').classList.remove('hidden');
+        $('fileInfo').innerHTML = `<span style="color:var(--green)">✓</span> ${state.uploadedFile.name} (${formatBytes(state.uploadedFile.size)})`;
+        showToast('File attached: ' + state.uploadedFile.name, 'success');
+      }
+    });
+  }
+});
+
+function formatBody() {
+  try {
+    const editor = $('bodyEditor');
+    const parsed = JSON.parse(editor.value);
+    editor.value = JSON.stringify(parsed, null, 2);
+    updateLineNumbers('bodyEditor', 'bodyLineNums');
+    showToast('JSON formatted', 'success');
+  } catch (e) {
+    showToast('Invalid JSON: ' + e.message, 'error');
+    $('bodyEditor').parentElement.parentElement.style.animation = 'shake 0.3s';
+    setTimeout(() => $('bodyEditor').parentElement.parentElement.style.animation = '', 300);
+  }
+}
+
+// ==================== PRE-REQUEST & TEST SCRIPTS ====================
+function createScriptContext(response) {
+  const pm = {
+    environment: {
+      get: (key) => state.environments[state.currentEnv]?.[key],
+      set: (key, val) => {
+        if (!state.environments[state.currentEnv]) state.environments[state.currentEnv] = {};
+        state.environments[state.currentEnv][key] = val;
+        saveState();
+      }
+    },
+    globals: {
+      get: (key) => state.environments.global?.[key],
+      set: (key, val) => { state.environments.global[key] = val; saveState(); }
+    },
+    variables: {
+      replaceIn: (str) => replaceVariables(str)
+    },
+    response: response ? {
+      code: response.status,
+      status: response.statusText,
+      body: response.body,
+      headers: response.headers,
+      json: () => { try { return JSON.parse(response.body); } catch { return null; } },
+      to: {
+        have: {
+          status: (code) => { if (response.status !== code) throw new Error(`Expected status ${code}, got ${response.status}`); },
+          jsonBody: (key) => { const j = JSON.parse(response.body); if (key && !(key in j)) throw new Error(`JSON body missing key: ${key}`); },
+          header: (name) => { if (!response.headers[name.toLowerCase()]) throw new Error(`Missing header: ${name}`); }
+        }
+      }
+    } : null,
+    testResults: [],
+    test: (name, fn) => {
+      try { fn(); pm.testResults.push({ name, passed: true }); }
+      catch (e) { pm.testResults.push({ name, passed: false, error: e.message }); }
+    },
+    expect: (val) => ({
+      to: {
+        equal: (expected) => { if (val !== expected) throw new Error(`Expected ${expected}, got ${val}`); },
+        be: {
+          above: (n) => { if (!(val > n)) throw new Error(`Expected ${val} to be above ${n}`); },
+          below: (n) => { if (!(val < n)) throw new Error(`Expected ${val} to be below ${n}`); },
+          true: () => { if (val !== true) throw new Error(`Expected true, got ${val}`); },
+        },
+        include: (s) => { if (!String(val).includes(s)) throw new Error(`Expected "${val}" to include "${s}"`); },
+        have: {
+          length: (n) => { if (val.length !== n) throw new Error(`Expected length ${n}, got ${val.length}`); },
+          property: (p) => { if (!(p in val)) throw new Error(`Missing property: ${p}`); }
+        },
+        not: {
+          equal: (expected) => { if (val === expected) throw new Error(`Expected not equal to ${expected}`); },
+        }
+      }
+    })
+  };
+  return pm;
+}
+
+function runPreRequestScript() {
+  const script = $('prescriptEditor').value;
+  if (!script.trim()) return;
+  const consoleEl = $('prescriptConsole');
+  consoleEl.innerHTML = '';
+  const pm = createScriptContext(null);
+  const consoleLogs = [];
+  const fakeConsole = { log: (...args) => consoleLogs.push(args.join(' ')), error: (...args) => consoleLogs.push('ERROR: ' + args.join(' ')) };
+  try {
+    const fn = new Function('pm', 'console', 'crypto', script);
+    fn(pm, fakeConsole, {
+      md5: (s) => s, // simplified
+      sha256: (s) => s,
+      base64: (s) => btoa(s)
+    });
+    consoleEl.innerHTML = consoleLogs.length ? consoleLogs.map(l => `<div>${l}</div>`).join('') : '<span style="color:var(--green)">✓ Script executed</span>';
+  } catch (e) {
+    consoleEl.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
+  }
+}
+
+function runTestScript(response) {
+  const script = $('testsEditor').value;
+  if (!script.trim()) return;
+  const pm = createScriptContext(response);
+  try {
+    const fn = new Function('pm', script);
+    fn(pm);
+  } catch (e) {
+    pm.testResults.push({ name: 'Script Error', passed: false, error: e.message });
+  }
+  renderTestResults(pm.testResults);
+}
+
+function renderTestResults(results) {
+  const container = $('testResults');
+  container.innerHTML = results.map(r => `
+    <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background:${r.passed ? 'rgba(166,227,161,0.08)' : 'rgba(243,139,168,0.08)'};">
+      <span style="color:${r.passed ? 'var(--green)' : 'var(--red)'}; animation: successBounce 0.3s ease;">${r.passed ? '✓' : '✕'}</span>
+      <span class="text-xs">${r.name}</span>
+      ${r.error ? `<span class="text-xs ml-auto" style="color:var(--red)">${r.error}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+// ==================== SEND REQUEST ====================
+async function sendRequest() {
+  const method = $('methodSelect').value;
+  let url = replaceVariables($('urlInput').value.trim());
+  if (!url) { showToast('Please enter a URL', 'warning'); $('urlInput').focus(); return; }
+  if (!url.match(/^https?:\/\//)) url = 'https://' + url;
+
+  // Run pre-request script
+  runPreRequestScript();
+
+  // Build query params
+  const params = getKVPairs('paramsTable');
+  if (params.length) {
+    const urlObj = new URL(url);
+    params.forEach(p => urlObj.searchParams.set(replaceVariables(p.key), replaceVariables(p.value)));
+    url = urlObj.toString();
+  }
+
+  // Build headers
+  const headerPairs = getKVPairs('headersTable');
+  const headers = {};
+  headerPairs.forEach(h => { headers[replaceVariables(h.key)] = replaceVariables(h.value); });
+  Object.assign(headers, getAuthHeaders());
+
+  // API Key in query
+  if ($('authType').value === 'apikey' && $('authApiIn')?.value === 'query') {
+    const key = $('authApiKey')?.value;
+    const val = $('authApiValue')?.value;
+    if (key && val) {
+      const urlObj = new URL(url);
+      urlObj.searchParams.set(key, val);
+      url = urlObj.toString();
+    }
+  }
+
+  // Build body
+  let body = null;
+  const bodyType = $('bodyType').value;
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    if (bodyType === 'json') {
+      body = replaceVariables($('bodyEditor').value);
+      if (!headers['Content-Type']) headers['Content-Type'] = 'application/json';
+    } else if (bodyType === 'raw') {
+      body = replaceVariables($('bodyEditor').value);
+    } else if (bodyType === 'form') {
+      const formData = new FormData();
+      body = formData;
+    } else if (bodyType === 'urlencoded') {
+      body = replaceVariables($('bodyEditor').value);
+      if (!headers['Content-Type']) headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    } else if (bodyType === 'binary' && state.uploadedFile) {
+      body = state.uploadedFile;
+    }
+  }
+
+  // Interceptor
+  if (state.interceptorActive) {
+    state.interceptorStats.intercepted++;
+    $('intStatIntercepted').textContent = state.interceptorStats.intercepted;
+
+    const intercepted = await showBreakpoint(method, url, headers, body);
+    if (intercepted === 'abort') {
+      showToast('Request aborted by interceptor', 'warning');
+      return;
+    }
+    if (intercepted === 'drop') {
+      state.interceptorStats.blocked++;
+      $('intStatBlocked').textContent = state.interceptorStats.blocked;
+      showToast('Request dropped', 'warning');
+      addInterceptorLog(method, url, 'blocked');
+      return;
+    }
+    if (intercepted) {
+      url = intercepted.url || url;
+      Object.assign(headers, intercepted.headers || {});
+      body = intercepted.body || body;
+      state.interceptorStats.modified++;
+      $('intStatModified').textContent = state.interceptorStats.modified;
+    }
+    addInterceptorLog(method, url, 'success');
+  }
+
+  // Show loading
+  $('responseLoading').classList.remove('hidden');
+  $('responseEmpty').classList.add('hidden');
+  $('responseBody').classList.add('hidden');
+  $('sendBtn').disabled = true;
+  $('sendBtn').innerHTML = '<div class="spinner" style="width:14px;height:14px;border-width:2px;"></div>';
+
+  const startTime = performance.now();
+  const timingData = { dnsStart: 0, dnsEnd: 0, connectStart: 0, connectEnd: 0, tlsStart: 0, tlsEnd: 0, ttfb: 0, downloadStart: 0, downloadEnd: 0 };
+  timingData.dnsStart = performance.now() - startTime;
+
+  try {
+    const fetchOpts = { method, headers };
+    if (body && !['GET', 'HEAD', 'OPTIONS'].includes(method)) fetchOpts.body = body;
+
+    timingData.connectStart = performance.now() - startTime;
+    const response = await fetch(url, fetchOpts);
+    timingData.ttfb = performance.now() - startTime;
+
+    const responseBody = await response.text();
+    timingData.downloadEnd = performance.now() - startTime;
+    const elapsed = Math.round(performance.now() - startTime);
+
+    // Parse response headers
+    const resHeaders = {};
+    response.headers.forEach((val, key) => { resHeaders[key] = val; });
+
+    const responseData = {
+      status: response.status,
+      statusText: response.statusText,
+      body: responseBody,
+      headers: resHeaders,
+      time: elapsed,
+      size: new Blob([responseBody]).size,
+      timing: timingData
+    };
+    state.lastResponse = responseData;
+
+    // Render response
+    renderResponse(responseData);
+
+    // Run test script
+    runTestScript(responseData);
+
+    // Add to history
+    addToHistory(method, url, response.status, elapsed);
+
+  } catch (error) {
+    $('responseLoading').classList.add('hidden');
+    $('responseEmpty').classList.add('hidden');
+    $('responseBody').classList.remove('hidden');
+
+    const elapsed = Math.round(performance.now() - startTime);
+    $('resStatus').className = 'status-pill text-xs status-5xx';
+    $('resStatus').textContent = 'Error';
+    $('resTime').textContent = formatTime(elapsed);
+    $('resSize').textContent = '';
+    $('responseBody').innerHTML = `<span style="color:var(--red)">${error.message}</span>\n\n<span style="color:var(--overlay0)">This might be caused by:\n• CORS policy blocking the request\n• Network connectivity issues\n• Invalid URL\n• Server is down</span>`;
+
+    state.lastResponse = { status: 0, statusText: 'Error', body: error.message, headers: {}, time: elapsed, size: 0, timing: timingData };
+    addToHistory(method, url, 0, elapsed);
+    showToast('Request failed: ' + error.message, 'error');
+  }
+
+  $('sendBtn').disabled = false;
+  $('sendBtn').innerHTML = 'Send <kbd class="text-[10px] opacity-60">⌘↵</kbd>';
+}
+
+function renderResponse(data) {
+  $('responseLoading').classList.add('hidden');
+  $('responseEmpty').classList.add('hidden');
+  $('responseBody').classList.remove('hidden');
+
+  // Status
+  const statusClass = data.status >= 500 ? 'status-5xx' : data.status >= 400 ? 'status-4xx' : data.status >= 300 ? 'status-3xx' : 'status-2xx';
+  $('resStatus').className = `status-pill text-xs ${statusClass}`;
+  $('resStatus').textContent = `${data.status} ${data.statusText}`;
+  $('resTime').textContent = formatTime(data.time);
+  $('resTime').style.color = data.time > 1000 ? 'var(--yellow)' : 'var(--green)';
+  $('resSize').textContent = formatBytes(data.size);
+
+  if (data.size > 10 * 1024 * 1024) {
+    showToast('Response size exceeds 10MB. Display may be slow.', 'warning');
+  }
+
+  // Body
+  let bodyContent = data.body;
+  try {
+    const parsed = JSON.parse(bodyContent);
+    bodyContent = syntaxHighlightJSON(JSON.stringify(parsed, null, 2));
+  } catch {
+    bodyContent = bodyContent.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  $('responseBody').innerHTML = bodyContent;
+
+  // Headers
+  $('responseHeaders').innerHTML = Object.entries(data.headers).map(([k, v]) =>
+    `<div class="flex gap-2 py-1 border-b" style="border-color:var(--surface0);">
+      <span style="color:var(--lavender);min-width:200px;">${k}</span>
+      <span style="color:var(--text)">${v}</span>
+    </div>`
+  ).join('') || '<span style="color:var(--overlay0)">No headers</span>';
+
+  // Cookies
+  const cookies = data.headers['set-cookie'] || '';
+  $('responseCookies').innerHTML = cookies ? cookies.split(';').map(c =>
+    `<div class="py-1 border-b" style="border-color:var(--surface0);">${c.trim()}</div>`
+  ).join('') : '<span style="color:var(--overlay0)">No cookies</span>';
+
+  // Timeline / Waterfall
+  const timing = data.timing;
+  const total = timing.downloadEnd || data.time;
+  renderWaterfall(timing, total);
+}
+
+function renderWaterfall(timing, total) {
+  const phases = [
+    { name: 'DNS Lookup', start: 0, end: timing.dnsEnd || 2, color: 'var(--teal)' },
+    { name: 'TCP Connect', start: timing.connectStart || 2, end: timing.connectStart + 5 || 7, color: 'var(--green)' },
+    { name: 'TLS Handshake', start: timing.tlsStart || 7, end: timing.tlsStart + 8 || 15, color: 'var(--mauve)' },
+    { name: 'TTFB', start: 15, end: timing.ttfb || total * 0.6, color: 'var(--blue)' },
+    { name: 'Content Download', start: timing.ttfb || total * 0.6, end: total, color: 'var(--lavender)' },
+  ];
+
+  $('responseTimeline').innerHTML = `
+    <div class="text-xs mb-3" style="color:var(--overlay0)">Performance Waterfall</div>
+    ${phases.map(p => {
+      const left = (p.start / total * 100).toFixed(1);
+      const width = Math.max(((p.end - p.start) / total * 100), 1).toFixed(1);
+      const dur = Math.round(p.end - p.start);
+      return `
+        <div class="flex items-center gap-3 py-1.5">
+          <span class="text-xs" style="width:130px;color:var(--overlay0)">${p.name}</span>
+          <div class="flex-1 relative" style="height:14px;background:rgba(17,17,27,0.4);border-radius:3px;">
+            <div class="waterfall-bar" style="position:absolute;left:${left}%;width:${width}%;background:${p.color};opacity:0.7;top:0;bottom:0;"></div>
+          </div>
+          <span class="text-xs mono" style="width:60px;text-align:right;color:var(--overlay0)">${dur}ms</span>
+        </div>`;
+    }).join('')}
+    <div class="flex items-center gap-3 py-1.5 mt-2 border-t" style="border-color:var(--surface0)">
+      <span class="text-xs font-semibold" style="width:130px;color:var(--text)">Total</span>
+      <div class="flex-1"></div>
+      <span class="text-xs mono font-bold" style="width:60px;text-align:right;color:var(--lavender)">${Math.round(total)}ms</span>
+    </div>
+  `;
+}
+
+function copyResponse() {
+  if (state.lastResponse) {
+    navigator.clipboard.writeText(state.lastResponse.body).then(() => showToast('Response copied!', 'success'));
+  }
+}
+
+function clearResponse() {
+  $('responseBody').classList.add('hidden');
+  $('responseEmpty').classList.remove('hidden');
+  $('resStatus').className = 'status-pill text-xs';
+  $('resStatus').textContent = 'No Response';
+  $('resStatus').style.color = 'var(--overlay0)';
+  $('resTime').textContent = '';
+  $('resSize').textContent = '';
+  state.lastResponse = null;
+}
+
+// ==================== HISTORY ====================
+function addToHistory(method, url, status, time) {
+  const entry = { id: Date.now(), method, url, status, time, timestamp: new Date().toISOString() };
+  state.history.unshift(entry);
+  if (state.history.length > 50) state.history = state.history.slice(0, 50);
+  saveState();
+  renderHistory();
+}
+
+function renderHistory() {
+  const container = $('historyList');
+  const search = $('sidebarSearch').value.toLowerCase();
+  const filtered = state.history.filter(h => !search || h.url.toLowerCase().includes(search) || h.method.toLowerCase().includes(search));
+  container.innerHTML = filtered.map(h => `
+    <div class="sidebar-item flex items-center gap-2 px-3 py-2 rounded-lg" onclick="loadHistoryItem('${h.id}')" oncontextmenu="showContextMenu(event, 'history', '${h.id}')">
+      <span class="method-badge ${getMethodClass(h.method)}">${h.method}</span>
+      <span class="text-xs flex-1 truncate mono">${new URL(h.url).pathname}</span>
+      <span class="text-[10px]" style="color:${h.status >= 400 ? 'var(--red)' : h.status >= 300 ? 'var(--yellow)' : 'var(--green)'};">${h.status || 'ERR'}</span>
+    </div>
+  `).join('') || '<div class="text-xs text-center py-4" style="color:var(--overlay0)">No history</div>';
+}
+
+function loadHistoryItem(id) {
+  const item = state.history.find(h => h.id == id);
+  if (item) {
+    switchMode('http');
+    $('methodSelect').value = item.method;
+    updateMethodColor();
+    $('urlInput').value = item.url;
+  }
+}
+
+function clearHistory() {
+  state.history = [];
+  saveState();
+  renderHistory();
+  showToast('History cleared', 'info');
+}
+
+// ==================== COLLECTIONS ====================
+function createCollection() {
+  const name = prompt('Collection name:');
+  if (!name) return;
+  state.collections.push({ id: Date.now(), name, items: [], expanded: true });
+  saveState();
+  renderCollections();
+  showToast('Collection created: ' + name, 'success');
+}
+
+function renderCollections() {
+  const tree = $('collectionTree');
+  const search = $('sidebarSearch').value.toLowerCase();
+  tree.innerHTML = state.collections.map(col => {
+    const filteredItems = col.items.filter(item => !search || item.name.toLowerCase().includes(search) || item.url.toLowerCase().includes(search));
+    if (search && filteredItems.length === 0 && !col.name.toLowerCase().includes(search)) return '';
+    return `
+      <div class="mb-1">
+        <div class="sidebar-item flex items-center gap-2 px-3 py-1.5 rounded-lg" onclick="toggleCollection(${col.id})" oncontextmenu="showContextMenu(event, 'collection', '${col.id}')">
+          <span class="chevron ${col.expanded ? 'open' : ''}">›</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--overlay0)" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span class="text-xs flex-1 truncate">${col.name}</span>
+          <span class="text-[10px]" style="color:var(--overlay0)">${col.items.length}</span>
+          <button onclick="event.stopPropagation();addRequestToCollection(${col.id})" class="btn-ghost p-0.5 rounded text-xs opacity-0 group-hover:opacity-100" title="Add request">+</button>
+        </div>
+        ${col.expanded ? `<div class="ml-4">
+          ${(search ? filteredItems : col.items).map(item => `
+            <div class="sidebar-item flex items-center gap-2 px-3 py-1.5 rounded-lg ${state.currentRequest === item.id ? 'active' : ''}" onclick="loadRequest(${col.id}, '${item.id}')" oncontextmenu="showContextMenu(event, 'request', '${col.id}_${item.id}')">
+              <span class="method-badge ${getMethodClass(item.method)}" style="font-size:8px;padding:1px 4px;">${item.method}</span>
+              <span class="text-xs flex-1 truncate">${item.name}</span>
+            </div>
+          `).join('')}
+        </div>` : ''}
+      </div>`;
+  }).join('') || '<div class="text-xs text-center py-4" style="color:var(--overlay0)">No collections yet</div>';
+}
+
+function toggleCollection(id) {
+  const col = state.collections.find(c => c.id === id);
+  if (col) { col.expanded = !col.expanded; saveState(); renderCollections(); }
+}
+
+function addRequestToCollection(colId) {
+  const name = prompt('Request name:');
+  if (!name) return;
+  const col = state.collections.find(c => c.id === colId);
+  if (col) {
+    col.items.push({
+      id: String(Date.now()),
+      name,
+      method: $('methodSelect').value,
+      url: $('urlInput').value,
+      headers: getKVPairs('headersTable'),
+      body: $('bodyEditor').value,
+      bodyType: $('bodyType').value,
+      authType: $('authType').value,
+      preScript: $('prescriptEditor').value,
+      testScript: $('testsEditor').value
+    });
+    saveState();
+    renderCollections();
+    showToast('Request saved to ' + col.name, 'success');
+  }
+}
+
+function loadRequest(colId, itemId) {
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  const item = col.items.find(i => i.id == itemId);
+  if (!item) return;
+  state.currentRequest = item.id;
+  switchMode('http');
+  $('methodSelect').value = item.method || 'GET';
+  updateMethodColor();
+  $('urlInput').value = item.url || '';
+  $('bodyEditor').value = item.body || '';
+  $('bodyType').value = item.bodyType || 'json';
+  $('prescriptEditor').value = item.preScript || '';
+  $('testsEditor').value = item.testScript || '';
+  updateLineNumbers('bodyEditor', 'bodyLineNums');
+  updateLineNumbers('prescriptEditor', 'prescriptLineNums');
+  updateLineNumbers('testsEditor', 'testsLineNums');
+
+  // Load headers
+  $('headersTable').innerHTML = '';
+  (item.headers || []).forEach(h => createKVRow($('headersTable'), h.key, h.value, h.enabled));
+  updateBadges();
+  renderCollections();
+}
+
+function saveCurrentRequest() {
+  if (state.collections.length === 0) {
+    createCollection();
+    if (state.collections.length === 0) return;
+  }
+  // Save to first collection or current
+  const colId = state.collections[0].id;
+  addRequestToCollection(colId);
+}
+
+// ==================== SIDEBAR ====================
+function setSidebarTab(tab) {
+  state.sidebarTab = tab;
+  ['collections', 'history', 'interceptor'].forEach(t => {
+    $('sTab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+    $('sidebar' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('hidden', t !== tab);
+  });
+  $('sTabCollections').classList.toggle('active', tab === 'collections');
+  $('sTabHistory').classList.toggle('active', tab === 'history');
+  $('sTabInterceptor').classList.toggle('active', tab === 'interceptor');
+  $('sidebarCollections').classList.toggle('hidden', tab !== 'collections');
+  $('sidebarHistory').classList.toggle('hidden', tab !== 'history');
+  $('sidebarInterceptor').classList.toggle('hidden', tab !== 'interceptor');
+}
+
+function filterSidebar() {
+  renderCollections();
+  renderHistory();
+}
+
+function toggleSidebar() {
+  const sidebar = $('sidebar');
+  if (sidebar.style.display === 'none') {
+    sidebar.style.display = 'flex';
+    sidebar.style.width = '320px';
+    sidebar.style.minWidth = '320px';
+  } else {
+    sidebar.style.display = 'none';
+  }
+}
+
+function toggleMobileSidebar() {
+  $('sidebar').classList.toggle('mobile-open');
+}
+
+// ==================== CONTEXT MENU ====================
+function showContextMenu(event, type, id) {
+  event.preventDefault();
+  const menu = $('contextMenu');
+  menu.classList.remove('hidden');
+  menu.style.left = event.clientX + 'px';
+  menu.style.top = event.clientY + 'px';
+
+  let items = [];
+  if (type === 'collection') {
+    items = [
+      { label: 'Add Request', action: () => addRequestToCollection(parseInt(id)) },
+      { label: 'Rename', action: () => renameCollection(parseInt(id)) },
+      { label: 'Export as JSON', action: () => exportCollectionJSON(parseInt(id)) },
+      { label: 'Export as cURL', action: () => {} },
+      { label: 'Delete', action: () => deleteCollection(parseInt(id)), danger: true },
+    ];
+  } else if (type === 'request') {
+    const [colId, itemId] = id.split('_');
+    items = [
+      { label: 'Rename', action: () => renameRequest(parseInt(colId), itemId) },
+      { label: 'Duplicate', action: () => duplicateRequest(parseInt(colId), itemId) },
+      { label: 'Export as cURL', action: () => exportAsCurl(parseInt(colId), itemId) },
+      { label: 'Move to...', action: () => {} },
+      { label: 'Delete', action: () => deleteRequest(parseInt(colId), itemId), danger: true },
+    ];
+  } else if (type === 'history') {
+    items = [
+      { label: 'Load Request', action: () => loadHistoryItem(id) },
+      { label: 'Save to Collection', action: () => {} },
+      { label: 'Copy URL', action: () => { const h = state.history.find(x => x.id == id); if (h) navigator.clipboard.writeText(h.url); } },
+    ];
+  }
+
+  menu.innerHTML = items.map(item =>
+    `<div class="context-menu-item ${item.danger ? 'hover:bg-red-500/10' : ''}" style="${item.danger ? 'color:var(--red)' : ''}" onclick="(${item.action.toString()})();hideContextMenu();">${item.label}</div>`
+  ).join('');
+}
+
+function hideContextMenu() { $('contextMenu').classList.add('hidden'); }
+document.addEventListener('click', hideContextMenu);
+
+function renameCollection(id) {
+  const col = state.collections.find(c => c.id === id);
+  if (!col) return;
+  const name = prompt('New name:', col.name);
+  if (name) { col.name = name; saveState(); renderCollections(); }
+}
+
+function deleteCollection(id) {
+  if (!confirm('Delete this collection?')) return;
+  state.collections = state.collections.filter(c => c.id !== id);
+  saveState();
+  renderCollections();
+  showToast('Collection deleted', 'info');
+}
+
+function renameRequest(colId, itemId) {
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  const item = col.items.find(i => i.id == itemId);
+  if (!item) return;
+  const name = prompt('New name:', item.name);
+  if (name) { item.name = name; saveState(); renderCollections(); }
+}
+
+function duplicateRequest(colId, itemId) {
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  const item = col.items.find(i => i.id == itemId);
+  if (!item) return;
+  const dup = { ...JSON.parse(JSON.stringify(item)), id: String(Date.now()), name: item.name + ' (copy)' };
+  col.items.push(dup);
+  saveState();
+  renderCollections();
+  showToast('Request duplicated', 'success');
+}
+
+function deleteRequest(colId, itemId) {
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  col.items = col.items.filter(i => i.id != itemId);
+  saveState();
+  renderCollections();
+}
+
+function exportAsCurl(colId, itemId) {
+  const col = state.collections.find(c => c.id === colId);
+  if (!col) return;
+  const item = col.items.find(i => i.id == itemId);
+  if (!item) return;
+  let curl = `curl -X ${item.method} "${item.url}"`;
+  (item.headers || []).forEach(h => { if (h.enabled) curl += ` -H "${h.key}: ${h.value}"`; });
+  if (item.body && !['GET', 'HEAD'].includes(item.method)) curl += ` -d '${item.body}'`;
+  navigator.clipboard.writeText(curl);
+  showToast('cURL copied to clipboard', 'success');
+}
+
+function exportCollectionJSON(id) {
+  const col = state.collections.find(c => c.id === id);
+  if (!col) return;
+  const blob = new Blob([JSON.stringify(col, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = col.name + '.json';
+  a.click();
+  showToast('Collection exported', 'success');
+}
+
+function exportCollection() {
+  const data = JSON.stringify(state.collections, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'nebula-collections.json';
+  a.click();
+  showToast('All collections exported', 'success');
+}
+
+// ==================== IMPORT ====================
+function openImportModal() { $('importModal').classList.remove('hidden'); }
+function closeImportModal() { $('importModal').classList.add('hidden'); }
+
+function importCurl() {
+  const curl = $('curlInput').value.trim();
+  if (!curl) { showToast('Please paste a cURL command', 'warning'); return; }
+  try {
+    const parsed = parseCurl(curl);
+    $('methodSelect').value = parsed.method;
+    updateMethodColor();
+    $('urlInput').value = parsed.url;
+    $('headersTable').innerHTML = '';
+    Object.entries(parsed.headers).forEach(([k, v]) => createKVRow($('headersTable'), k, v));
+    if (parsed.body) {
+      $('bodyEditor').value = parsed.body;
+      $('bodyType').value = 'raw';
+      updateLineNumbers('bodyEditor', 'bodyLineNums');
+    }
+    updateBadges();
+    closeImportModal();
+    showToast('cURL imported successfully', 'success');
+  } catch (e) {
+    showToast('Failed to parse cURL: ' + e.message, 'error');
+  }
+}
+
+function parseCurl(curl) {
+  const result = { method: 'GET', url: '', headers: {}, body: '' };
+  // Simple parser
+  const parts = curl.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i].replace(/^['"]|['"]$/g, '');
+    if (part === 'curl') continue;
+    if (part === '-X' || part === '--request') { result.method = parts[++i].replace(/['"]/g, ''); continue; }
+    if (part === '-H' || part === '--header') {
+      const header = parts[++i].replace(/^['"]|['"]$/g, '');
+      const [key, ...val] = header.split(':');
+      result.headers[key.trim()] = val.join(':').trim();
+      continue;
+    }
+    if (part === '-d' || part === '--data' || part === '--data-raw') {
+      result.body = parts[++i].replace(/^['"]|['"]$/g, '');
+      if (result.method === 'GET') result.method = 'POST';
+      continue;
+    }
+    if (part.startsWith('http')) result.url = part;
+  }
+  return result;
+}
+
+function importPostman(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const collection = { id: Date.now(), name: data.info?.name || 'Imported', items: [], expanded: true };
+      function parseItems(items) {
+        (items || []).forEach(item => {
+          if (item.item) { parseItems(item.item); return; }
+          const req = item.request;
+          if (!req) return;
+          collection.items.push({
+            id: String(Date.now() + Math.random()),
+            name: item.name,
+            method: typeof req.method === 'string' ? req.method : 'GET',
+            url: typeof req.url === 'string' ? req.url : req.url?.raw || '',
+            headers: (req.header || []).map(h => ({ key: h.key, value: h.value, enabled: !h.disabled })),
+            body: req.body?.raw || '',
+            bodyType: req.body?.mode === 'raw' ? 'json' : 'none'
+          });
+        });
+      }
+      parseItems(data.item);
+      state.collections.push(collection);
+      saveState();
+      renderCollections();
+      closeImportModal();
+      showToast(`Imported ${collection.items.length} requests from ${collection.name}`, 'success');
+    } catch (err) {
+      showToast('Failed to import: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ==================== INTERCEPTOR ====================
+function toggleInterceptor() {
+  state.interceptorActive = !state.interceptorActive;
+  $('interceptorDot').style.background = state.interceptorActive ? 'var(--red)' : 'var(--overlay0)';
+  $('interceptorDot').style.animation = state.interceptorActive ? 'pulseDot 1.5s infinite' : 'none';
+  $('interceptorBtn').style.borderColor = state.interceptorActive ? 'rgba(243,139,168,0.3)' : 'var(--surface0)';
+  showToast(state.interceptorActive ? 'Interceptor enabled' : 'Interceptor disabled', state.interceptorActive ? 'warning' : 'info');
+}
+
+function showBreakpoint(method, url, headers, body) {
+  return new Promise((resolve) => {
+    state.breakpointResolve = resolve;
+    const modal = $('breakpointModal');
+    modal.classList.remove('hidden');
+    $('bpMethod').innerHTML = ['GET','POST','PUT','DELETE','PATCH','OPTIONS','HEAD'].map(m => `<option value="${m}" ${m === method ? 'selected' : ''}>${m}</option>`).join('');
+    $('bpUrl').value = url;
+    $('bpHeaders').value = JSON.stringify(headers, null, 2);
+    $('bpBody').value = typeof body === 'string' ? body : '';
+  });
+}
+
+function breakpointResume() {
+  if (state.breakpointResolve) {
+    let headers = {};
+    try { headers = JSON.parse($('bpHeaders').value); } catch {}
+    state.breakpointResolve({
+      method: $('bpMethod').value,
+      url: $('bpUrl').value,
+      headers,
+      body: $('bpBody').value
+    });
+    state.breakpointResolve = null;
+  }
+  $('breakpointModal').classList.add('hidden');
+}
+
+function breakpointAbort() {
+  if (state.breakpointResolve) { state.breakpointResolve('abort'); state.breakpointResolve = null; }
+  $('breakpointModal').classList.add('hidden');
+}
+
+function breakpointDrop() {
+  if (state.breakpointResolve) { state.breakpointResolve('drop'); state.breakpointResolve = null; }
+  $('breakpointModal').classList.add('hidden');
+}
+
+function addInterceptorLog(method, url, status) {
+  state.interceptorLog.unshift({ method, url, status, time: new Date().toLocaleTimeString() });
+  renderInterceptorLog();
+}
+
+function renderInterceptorLog() {
+  $('interceptorLog').innerHTML = state.interceptorLog.map(log => `
+    <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg" style="background:rgba(17,17,27,0.3);">
+      <span class="w-2 h-2 rounded-full" style="background:${log.status === 'success' ? 'var(--green)' : 'var(--red)'}"></span>
+      <span class="method-badge ${getMethodClass(log.method)}" style="font-size:8px;">${log.method}</span>
+      <span class="text-xs flex-1 truncate mono">${log.url}</span>
+      <span class="text-[10px]" style="color:var(--overlay0)">${log.time}</span>
+    </div>
+  `).join('');
+}
+
+// ==================== WEBSOCKET ====================
+function toggleWsConnection() {
+  if (state.wsConnection && state.wsConnection.readyState === WebSocket.OPEN) {
+    state.wsConnection.close();
+    return;
+  }
+  const url = $('wsUrl').value.trim();
+  if (!url) { showToast('Please enter a WebSocket URL', 'warning'); return; }
+
+  $('wsDot').style.background = 'var(--yellow)';
+  $('wsDot').style.animation = 'pulseDot 1s infinite';
+  $('wsState').textContent = 'Connecting...';
+  $('wsConnBtn').textContent = 'Connecting...';
+
+  try {
+    state.wsConnection = new WebSocket(url);
+
+    state.wsConnection.onopen = () => {
+      $('wsDot').style.background = 'var(--green)';
+      $('wsDot').style.animation = 'pulseDot 2s infinite';
+      $('wsState').textContent = 'Connected';
+      $('wsState').style.color = 'var(--green)';
+      $('wsConnBtn').textContent = 'Disconnect';
+      $('wsConnBtn').style.background = 'rgba(243,139,168,0.3)';
+      addWsMessage('system', 'Connected to ' + url);
+    };
+
+    state.wsConnection.onmessage = (event) => {
+      state.wsRecvCount++;
+      $('wsRecvCount').textContent = state.wsRecvCount;
+      $('wsMsgCount').textContent = state.wsSentCount + state.wsRecvCount;
+      const isJson = (() => { try { JSON.parse(event.data); return true; } catch { return false; } })();
+      addWsMessage('in', event.data, isJson ? 'JSON' : 'Text');
+    };
+
+    state.wsConnection.onerror = () => {
+      addWsMessage('system', 'Connection error', 'Error');
+      showToast('WebSocket error', 'error');
+    };
+
+    state.wsConnection.onclose = (event) => {
+      $('wsDot').style.background = 'var(--overlay0)';
+      $('wsDot').style.animation = 'none';
+      $('wsState').textContent = 'Disconnected';
+      $('wsState').style.color = 'var(--overlay0)';
+      $('wsConnBtn').textContent = 'Connect';
+      $('wsConnBtn').style.background = '';
+      addWsMessage('system', `Disconnected (${event.code})`, 'Info');
+
+      if ($('wsAutoReconnect').checked && !event.wasClean) {
+        setTimeout(() => toggleWsConnection(), 3000);
+      }
+    };
+  } catch (e) {
+    showToast('Failed to connect: ' + e.message, 'error');
+    $('wsDot').style.background = 'var(--overlay0)';
+    $('wsDot').style.animation = 'none';
+    $('wsState').textContent = 'Disconnected';
+    $('wsConnBtn').textContent = 'Connect';
+  }
+}
+
+function sendWsMessage() {
+  if (!state.wsConnection || state.wsConnection.readyState !== WebSocket.OPEN) {
+    showToast('Not connected', 'warning');
+    return;
+  }
+  const msg = $('wsComposer').value.trim();
+  if (!msg) return;
+
+  state.wsConnection.send(msg);
+  state.wsSentCount++;
+  $('wsSentCount').textContent = state.wsSentCount;
+  $('wsMsgCount').textContent = state.wsSentCount + state.wsRecvCount;
+
+  const isJson = (() => { try { JSON.parse(msg); return true; } catch { return false; } })();
+  addWsMessage('out', msg, isJson ? 'JSON' : 'Text');
+  $('wsComposer').value = '';
+}
+
+function addWsMessage(direction, content, type = '') {
+  const msg = { direction, content, type, time: new Date().toLocaleTimeString() };
+  state.wsMessages.push(msg);
+
+  const container = $('wsMessages');
+  const div = document.createElement('div');
+  const dirClass = direction === 'in' ? 'ws-msg-in' : direction === 'out' ? 'ws-msg-out' : '';
+  const arrow = direction === 'in' ? '←' : direction === 'out' ? '→' : '•';
+  const arrowColor = direction === 'in' ? 'var(--green)' : direction === 'out' ? 'var(--blue)' : 'var(--overlay0)';
+
+  let displayContent = content;
+  if (type === 'JSON') {
+    try { displayContent = syntaxHighlightJSON(JSON.parse(content)); } catch {}
+  } else {
+    displayContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  div.className = `${dirClass} px-3 py-2 rounded-lg text-xs`;
+  div.style.background = 'rgba(17,17,27,0.3)';
+  div.innerHTML = `
+    <div class="flex items-center gap-2 mb-1">
+      <span style="color:${arrowColor}">${arrow}</span>
+      <span class="text-[10px]" style="color:var(--overlay0)">[${msg.time}]</span>
+      ${type ? `<span class="text-[10px] px-1.5 py-0.5 rounded" style="background:rgba(180,190,254,0.1);color:var(--lavender)">${type}</span>` : ''}
+    </div>
+    <pre class="mono" style="white-space:pre-wrap;word-break:break-all;">${displayContent}</pre>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function clearWsMessages() {
+  state.wsMessages = [];
+  state.wsSentCount = 0;
+  state.wsRecvCount = 0;
+  $('wsMessages').innerHTML = '';
+  $('wsMsgCount').textContent = '0';
+  $('wsSentCount').textContent = '0';
+  $('wsRecvCount').textContent = '0';
+}
+
+// ==================== GRAPHQL ====================
+async function sendGraphQL() {
+  const url = $('gqlUrl').value.trim();
+  if (!url) { showToast('Please enter a GraphQL endpoint', 'warning'); return; }
+
+  const query = $('gqlQueryEditor').value;
+  let variables = {};
+  try { variables = JSON.parse($('gqlVarsEditor').value || '{}'); } catch {}
+  let headers = { 'Content-Type': 'application/json' };
+  try { Object.assign(headers, JSON.parse($('gqlHeadersEditor').value || '{}')); } catch {}
+
+  $('gqlResponse').innerHTML = '<div class="spinner"></div>';
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ query, variables })
+    });
+    const data = await res.json();
+    $('gqlResponse').innerHTML = syntaxHighlightJSON(JSON.stringify(data, null, 2));
+  } catch (e) {
+    $('gqlResponse').innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
+  }
+}
+
+function setGqlTab(tab) {
+  document.querySelectorAll('[data-gql-tab]').forEach(el => el.classList.toggle('active', el.dataset.gqlTab === tab));
+  ['query', 'variables', 'headers'].forEach(t => {
+    const el = $('gql' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (el) { el.classList.toggle('hidden', t !== tab); el.style.display = t === tab ? 'flex' : 'none'; }
+  });
+}
+
+// ==================== LOAD TESTING ====================
+async function startLoadTest() {
+  if (state.loadTestRunning) return;
+  const url = $('ltUrl').value.trim();
+  if (!url) { showToast('Please enter a URL', 'warning'); return; }
+
+  state.loadTestRunning = true;
+  state.loadTestCancelled = false;
+  state.loadTestResults = [];
+  $('ltStartBtn').classList.add('hidden');
+  $('ltCancelBtn').classList.remove('hidden');
+  $('ltProgress').classList.remove('hidden');
+  $('ltResults').innerHTML = '';
+
+  const total = parseInt($('ltTotal').value) || 100;
+  const concurrency = parseInt($('ltConcurrency').value) || 10;
+  const timeout = parseInt($('ltTimeout').value) || 5000;
+  const method = $('ltMethod').value;
+  const body = $('ltBody').value;
+
+  let completed = 0;
+  let errors = 0;
+  let totalLatency = 0;
+  const latencies = [];
+  let totalBytes = 0;
+  const startTime = performance.now();
+  const rpsData = [];
+
+  // Init charts
+  initLoadTestCharts();
+
+  async function makeRequest() {
+    if (state.loadTestCancelled) return;
+    const reqStart = performance.now();
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      const opts = { method, signal: controller.signal };
+      if (body && !['GET', 'HEAD'].includes(method)) {
+        opts.body = body;
+        opts.headers = { 'Content-Type': 'application/json' };
+      }
+      const res = await fetch(url, opts);
+      clearTimeout(timeoutId);
+      const text = await res.text();
+      const elapsed = Math.round(performance.now() - reqStart);
+      const size = new Blob([text]).size;
+      totalBytes += size;
+      latencies.push(elapsed);
+      totalLatency += elapsed;
+      if (res.status >= 400) errors++;
+
+      state.loadTestResults.push({
+        num: completed + 1,
+        status: res.status,
+        time: elapsed,
+        size,
+        timestamp: new Date().toLocaleTimeString()
+      });
+
+      // Add result row
+      const row = document.createElement('tr');
+      row.style.borderBottom = '1px solid var(--surface0)';
+      const statusColor = res.status >= 500 ? 'var(--red)' : res.status >= 400 ? 'var(--peach)' : 'var(--green)';
+      row.innerHTML = `<td class="px-3 py-1.5">${completed + 1}</td><td class="px-3 py-1.5" style="color:${statusColor}">${res.status}</td><td class="px-3 py-1.5">${elapsed}</td><td class="px-3 py-1.5">${formatBytes(size)}</td><td class="px-3 py-1.5">${new Date().toLocaleTimeString()}</td>`;
+      $('ltResults').appendChild(row);
+
+    } catch (e) {
+      errors++;
+      const elapsed = Math.round(performance.now() - reqStart);
+      latencies.push(elapsed);
+      state.loadTestResults.push({ num: completed + 1, status: 0, time: elapsed, size: 0, timestamp: new Date().toLocaleTimeString() });
+      const row = document.createElement('tr');
+      row.style.borderBottom = '1px solid var(--surface0)';
+      row.innerHTML = `<td class="px-3 py-1.5">${completed + 1}</td><td class="px-3 py-1.5" style="color:var(--red)">ERR</td><td class="px-3 py-1.5">${elapsed}</td><td class="px-3 py-1.5">0</td><td class="px-3 py-1.5">${new Date().toLocaleTimeString()}</td>`;
+      $('ltResults').appendChild(row);
+    }
+
+    completed++;
+    const pct = Math.round(completed / total * 100);
+    $('ltProgressBar').style.width = pct + '%';
+    $('ltProgressText').textContent = pct + '%';
+
+    // Update metrics
+    const elapsedTotal = (performance.now() - startTime) / 1000;
+    const rps = (completed / elapsedTotal).toFixed(1);
+    const avgLat = latencies.length ? Math.round(totalLatency / latencies.length) : 0;
+    const sorted = [...latencies].sort((a, b) => a - b);
+    const p95 = sorted.length ? sorted[Math.floor(sorted.length * 0.95)] : 0;
+    const minLat = sorted.length ? sorted[0] : 0;
+    const maxLat = sorted.length ? sorted[sorted.length - 1] : 0;
+    const throughput = (totalBytes / 1024 / elapsedTotal).toFixed(1);
+
+    $('ltRps').textContent = rps;
+    $('ltAvgLatency').textContent = avgLat + 'ms';
+    $('ltMinMax').textContent = `min: ${minLat}ms / max: ${maxLat}ms`;
+    $('ltP95').textContent = p95 + 'ms';
+    $('ltErrorRate').textContent = (errors / completed * 100).toFixed(1) + '%';
+    $('ltErrorCount').textContent = `${errors} / ${completed}`;
+    $('ltThroughput').textContent = throughput;
+
+    rpsData.push({ time: elapsedTotal.toFixed(1), rps: parseFloat(rps) });
+    updateLoadTestCharts(latencies, rpsData);
+  }
+
+  // Execute with concurrency
+  const queue = [];
+  for (let i = 0; i < total; i++) {
+    if (state.loadTestCancelled) break;
+    queue.push(makeRequest());
+    if (queue.length >= concurrency) {
+      await Promise.race(queue);
+      // Remove completed
+      for (let j = queue.length - 1; j >= 0; j--) {
+        // Simple approach: wait for batch
+      }
+      if (queue.length >= concurrency) await Promise.all(queue.splice(0, 1));
+    }
+  }
+  await Promise.all(queue);
+
+  state.loadTestRunning = false;
+  $('ltStartBtn').classList.remove('hidden');
+  $('ltCancelBtn').classList.add('hidden');
+  showToast(`Load test complete: ${completed} requests`, 'success');
+}
+
+function cancelLoadTest() {
+  state.loadTestCancelled = true;
+  state.loadTestRunning = false;
+  $('ltStartBtn').classList.remove('hidden');
+  $('ltCancelBtn').classList.add('hidden');
+  showToast('Load test cancelled', 'warning');
+}
+
+function initLoadTestCharts() {
+  if (state.ltChartHist) state.ltChartHist.destroy();
+  if (state.ltChartTimeline) state.ltChartTimeline.destroy();
+
+  const histCtx = $('ltHistogram').getContext('2d');
+  state.ltChartHist = new Chart(histCtx, {
+    type: 'bar',
+    data: {
+      labels: ['0-50ms', '50-100ms', '100-200ms', '200-500ms', '500ms+'],
+      datasets: [{
+        data: [0, 0, 0, 0, 0],
+        backgroundColor: ['#a6e3a1', '#89b4fa', '#f9e2af', '#fab387', '#f38ba8'],
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, title: { display: true, text: 'Latency Distribution', color: '#6c7086', font: { size: 10 } } },
+      scales: {
+        x: { grid: { color: 'rgba(49,50,68,0.5)' }, ticks: { color: '#6c7086', font: { size: 9 } } },
+        y: { grid: { color: 'rgba(49,50,68,0.5)' }, ticks: { color: '#6c7086', font: { size: 9 } } }
+      }
+    }
+  });
+
+  const timeCtx = $('ltTimeline').getContext('2d');
+  state.ltChartTimeline = new Chart(timeCtx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'RPS',
+        data: [],
+        borderColor: '#b4befe',
+        backgroundColor: 'rgba(180,190,254,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, title: { display: true, text: 'RPS Timeline', color: '#6c7086', font: { size: 10 } } },
+      scales: {
+        x: { grid: { color: 'rgba(49,50,68,0.5)' }, ticks: { color: '#6c7086', font: { size: 9 } } },
+        y: { grid: { color: 'rgba(49,50,68,0.5)' }, ticks: { color: '#6c7086', font: { size: 9 } }, beginAtZero: true }
+      },
+      animation: { duration: 300 }
+    }
+  });
+}
+
+function updateLoadTestCharts(latencies, rpsData) {
+  if (!state.ltChartHist || !state.ltChartTimeline) return;
+
+  // Histogram
+  const buckets = [0, 0, 0, 0, 0];
+  latencies.forEach(l => {
+    if (l <= 50) buckets[0]++;
+    else if (l <= 100) buckets[1]++;
+    else if (l <= 200) buckets[2]++;
+    else if (l <= 500) buckets[3]++;
+    else buckets[4]++;
+  });
+  state.ltChartHist.data.datasets[0].data = buckets;
+  state.ltChartHist.update('none');
+
+  // Timeline
+  const last30 = rpsData.slice(-30);
+  state.ltChartTimeline.data.labels = last30.map(d => d.time + 's');
+  state.ltChartTimeline.data.datasets[0].data = last30.map(d => d.rps);
+  state.ltChartTimeline.update('none');
+}
+
+function exportLoadTestCSV() {
+  if (!state.loadTestResults.length) { showToast('No results to export', 'warning'); return; }
+  let csv = '#,Status,Time (ms),Size,Timestamp\n';
+  state.loadTestResults.forEach(r => { csv += `${r.num},${r.status},${r.time},${r.size},${r.timestamp}\n`; });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'load-test-results.csv';
+  a.click();
+  showToast('CSV exported', 'success');
+}
+
+// ==================== ENVIRONMENTS ====================
+function changeEnvironment() {
+  state.currentEnv = $('envSelect').value;
+  const dot = $('envDot');
+  dot.className = 'env-dot';
+  if (state.currentEnv === 'development') dot.classList.add('env-dev');
+  else if (state.currentEnv === 'staging') dot.classList.add('env-staging');
+  else if (state.currentEnv === 'production') dot.classList.add('env-prod');
+}
+
+function openEnvModal() { $('envModal').classList.remove('hidden'); renderEnvVars(); }
+function closeEnvModal() { $('envModal').classList.add('hidden'); }
+
+function setEnvScope(scope) {
+  state.currentEnvScope = scope;
+  ['global', 'environment', 'session'].forEach(s => {
+    $('envScope' + s.charAt(0).toUpperCase() + s.slice(1)).classList.toggle('active', s === scope);
+  });
+  renderEnvVars();
+}
+
+function renderEnvVars() {
+  const container = $('envVarsList');
+  let vars = {};
+  if (state.currentEnvScope === 'global') vars = state.environments.global || {};
+  else if (state.currentEnvScope === 'environment') vars = state.environments[state.currentEnv] || {};
+  else vars = state.sessionVars;
+
+  container.innerHTML = Object.entries(vars).map(([key, value]) => `
+    <div class="flex items-center gap-2">
+      <input type="text" class="input-field flex-1 rounded-lg px-2 py-1.5 text-xs mono env-key" value="${key}">
+      <input type="text" class="input-field flex-1 rounded-lg px-2 py-1.5 text-xs mono env-value" value="${value}">
+      <button onclick="removeEnvVar(this, '${key}')" class="btn-ghost p-1 rounded text-xs" style="color:var(--red);">✕</button>
+    </div>
+  `).join('');
+
+  // Add save listeners
+  container.querySelectorAll('input').forEach(inp => inp.addEventListener('change', saveEnvVars));
+}
+
+function addEnvVar() {
+  const scope = state.currentEnvScope;
+  if (scope === 'global') { state.environments.global['new_var'] = ''; }
+  else if (scope === 'environment') {
+    if (!state.environments[state.currentEnv]) state.environments[state.currentEnv] = {};
+    state.environments[state.currentEnv]['new_var'] = '';
+  } else { state.sessionVars['new_var'] = ''; }
+  saveState();
+  renderEnvVars();
+}
+
+function removeEnvVar(btn, key) {
+  const scope = state.currentEnvScope;
+  if (scope === 'global') delete state.environments.global[key];
+  else if (scope === 'environment') delete state.environments[state.currentEnv]?.[key];
+  else delete state.sessionVars[key];
+  saveState();
+  renderEnvVars();
+}
+
+function saveEnvVars() {
+  const container = $('envVarsList');
+  const rows = container.querySelectorAll('.flex');
+  const vars = {};
+  rows.forEach(row => {
+    const key = row.querySelector('.env-key')?.value;
+    const value = row.querySelector('.env-value')?.value;
+    if (key) vars[key] = value || '';
+  });
+  if (state.currentEnvScope === 'global') state.environments.global = vars;
+  else if (state.currentEnvScope === 'environment') state.environments[state.currentEnv] = vars;
+  else state.sessionVars = vars;
+  saveState();
+}
+
+// ==================== COMMAND PALETTE ====================
+function openCommandPalette() {
+  $('commandPalette').classList.remove('hidden');
+  $('cmdInput').value = '';
+  $('cmdInput').focus();
+  renderCommands('');
+}
+
+function closeCommandPalette() { $('commandPalette').classList.add('hidden'); }
+
+const commands = [
+  { name: 'Send Request', shortcut: '⌘Enter', action: sendRequest, icon: '▶' },
+  { name: 'Toggle Sidebar', shortcut: '⌘B', action: toggleSidebar, icon: '◧' },
+  { name: 'Clear Response', shortcut: '⌘⇧C', action: clearResponse, icon: '✕' },
+  { name: 'Format JSON', shortcut: '⌘⇧F', action: formatBody, icon: '{}' },
+  { name: 'Focus URL Bar', shortcut: '⌘L', action: () => $('urlInput').focus(), icon: '🔗' },
+  { name: 'Toggle Interceptor', shortcut: '⌘I', action: toggleInterceptor, icon: '🔒' },
+  { name: 'New Collection', shortcut: '', action: createCollection, icon: '📁' },
+  { name: 'Import cURL', shortcut: '', action: openImportModal, icon: '📥' },
+  { name: 'Export Collections', shortcut: '', action: exportCollection, icon: '📤' },
+  { name: 'Switch to HTTP', shortcut: '', action: () => switchMode('http'), icon: '🌐' },
+  { name: 'Switch to WebSocket', shortcut: '', action: () => switchMode('ws'), icon: '🔌' },
+  { name: 'Switch to GraphQL', shortcut: '', action: () => switchMode('graphql'), icon: '◇' },
+  { name: 'Switch to Load Test', shortcut: '', action: () => switchMode('loadtest'), icon: '⚡' },
+  { name: 'Diff Viewer', shortcut: '', action: openDiffModal, icon: '⇄' },
+  { name: 'Mock Server', shortcut: '', action: openMockModal, icon: '🖥' },
+  { name: 'Security Scanner', shortcut: '', action: openSecurityScanner, icon: '🛡' },
+  { name: 'Environment Variables', shortcut: '', action: openEnvModal, icon: '⚙' },
+  { name: 'Clear History', shortcut: '', action: clearHistory, icon: '🗑' },
+  { name: 'Save Request', shortcut: '⌘S', action: saveCurrentRequest, icon: '💾' },
+];
+
+let cmdSelectedIndex = 0;
+
+function renderCommands(query) {
+  const filtered = commands.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
+  cmdSelectedIndex = 0;
+  $('cmdResults').innerHTML = filtered.map((c, i) => `
+    <div class="command-palette-item ${i === 0 ? 'selected' : ''}" onclick="${c.action.name ? c.action.name + '()' : ''};closeCommandPalette();">
+      <span style="width:20px;text-align:center;">${c.icon}</span>
+      <span class="text-sm">${c.name}</span>
+      ${c.shortcut ? `<span class="shortcut">${c.shortcut}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+$('cmdInput').addEventListener('input', (e) => renderCommands(e.target.value));
+$('cmdInput').addEventListener('keydown', (e) => {
+  const items = $('cmdResults').querySelectorAll('.command-palette-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); cmdSelectedIndex = Math.min(cmdSelectedIndex + 1, items.length - 1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); cmdSelectedIndex = Math.max(cmdSelectedIndex - 1, 0); }
+  items.forEach((item, i) => item.classList.toggle('selected', i === cmdSelectedIndex));
+  if (e.key === 'Enter' && items[cmdSelectedIndex]) { items[cmdSelectedIndex].click(); }
+  if (e.key === 'Escape') closeCommandPalette();
+});
+
+$('commandPalette').addEventListener('click', (e) => { if (e.target === $('commandPalette')) closeCommandPalette(); });
+
+// ==================== DIFF VIEWER ====================
+function openDiffModal() { $('diffModal').classList.remove('hidden'); }
+function closeDiffModal() { $('diffModal').classList.add('hidden'); }
+
+function computeDiff() {
+  const a = $('diffA').value;
+  const b = $('diffB').value;
+  if (!a && !b) { showToast('Paste content to compare', 'warning'); return; }
+
+  const linesA = a.split('\n');
+  const linesB = b.split('\n');
+  const maxLen = Math.max(linesA.length, linesB.length);
+  let html = '';
+
+  for (let i = 0; i < maxLen; i++) {
+    const lineA = linesA[i] !== undefined ? linesA[i] : '';
+    const lineB = linesB[i] !== undefined ? linesB[i] : '';
+    if (lineA === lineB) {
+      html += `<div class="px-3 py-0.5" style="color:var(--overlay0)">&nbsp; ${lineA.replace(/</g, '&lt;')}</div>`;
+    } else {
+      if (linesA[i] !== undefined) html += `<div class="diff-removed px-3 py-0.5">- ${lineA.replace(/</g, '&lt;')}</div>`;
+      if (linesB[i] !== undefined) html += `<div class="diff-added px-3 py-0.5">+ ${lineB.replace(/</g, '&lt;')}</div>`;
+    }
+  }
+  $('diffResult').innerHTML = html || '<div class="text-center py-4" style="color:var(--overlay0)">No differences found</div>';
+}
+
+// ==================== SECURITY SCANNER ====================
+function openSecurityScanner() {
+  if (!state.lastResponse) {
+    showToast('Send a request first to scan the response', 'warning');
+    return;
+  }
+  setResTab('security');
+  runSecurityScan(state.lastResponse);
+}
+
+function runSecurityScan(response) {
+  const results = [];
+
+  // Check security headers
+  const secHeaders = {
+    'strict-transport-security': { name: 'HSTS', severity: 'warning' },
+    'x-content-type-options': { name: 'X-Content-Type-Options', severity: 'warning' },
+    'x-frame-options': { name: 'X-Frame-Options', severity: 'warning' },
+    'content-security-policy': { name: 'CSP', severity: 'warning' },
+    'x-xss-protection': { name: 'X-XSS-Protection', severity: 'info' },
+  };
+
+  Object.entries(secHeaders).forEach(([header, info]) => {
+    if (!response.headers[header]) {
+      results.push({ type: 'header', name: `Missing ${info.name}`, severity: info.severity, detail: `The ${header} header is not set` });
+    } else {
+      results.push({ type: 'header', name: `${info.name} Present`, severity: 'pass', detail: response.headers[header] });
+    }
+  });
+
+  // Check for sensitive data exposure
+  const body = response.body || '';
+  if (body.match(/password|secret|api_key|private_key|access_token/i)) {
+    results.push({ type: 'data', name: 'Sensitive Data Exposure', severity: 'error', detail: 'Response may contain sensitive data (passwords, keys, tokens)' });
+  }
+
+  // JWT Analysis
+  const jwtMatch = body.match(/eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/);
+  if (jwtMatch) {
+    try {
+      const parts = jwtMatch[0].split('.');
+      const header = JSON.parse(atob(parts[0]));
+      const payload = JSON.parse(atob(parts[1]));
+      results.push({
+        type: 'jwt',
+        name: 'JWT Token Found',
+        severity: 'info',
+        detail: `Algorithm: ${header.alg}, Expires: ${payload.exp ? new Date(payload.exp * 1000).toISOString() : 'N/A'}`
+      });
+      if (header.alg === 'none') {
+        results.push({ type: 'jwt', name: 'JWT: No Algorithm', severity: 'error', detail: 'JWT uses "none" algorithm - tokens can be forged' });
+      }
+    } catch {}
+  }
+
+  // SQL Injection indicators
+  if (body.match(/sql|syntax.*error|mysql|postgresql|sqlite|ora-\d/i)) {
+    results.push({ type: 'sqli', name: 'Possible SQL Error Exposure', severity: 'error', detail: 'Response contains SQL-related error messages' });
+  }
+
+  // Server info disclosure
+  if (response.headers['server']) {
+    results.push({ type: 'info', name: 'Server Header Disclosure', severity: 'info', detail: `Server: ${response.headers['server']}` });
+  }
+
+  renderSecurityResults(results);
+}
+
+function renderSecurityResults(results) {
+  const sevColors = { pass: 'var(--green)', error: 'var(--red)', warning: 'var(--yellow)', info: 'var(--blue)' };
+  const sevIcons = { pass: '✓', error: '✕', warning: '⚠', info: 'ℹ' };
+
+  $('securityResults').innerHTML = `
+    <div class="text-xs mb-3" style="color:var(--overlay0)">Security Scan Results</div>
+    <div class="space-y-2">
+      ${results.map(r => `
+        <div class="flex items-start gap-3 px-3 py-2 rounded-lg" style="background:rgba(17,17,27,0.3);">
+          <span style="color:${sevColors[r.severity]};font-size:14px;">${sevIcons[r.severity]}</span>
+          <div class="flex-1">
+            <div class="text-xs font-medium">${r.name}</div>
+            <div class="text-[10px] mt-0.5" style="color:var(--overlay0)">${r.detail}</div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded" style="background:rgba(${r.severity === 'error' ? '243,139,168' : r.severity === 'warning' ? '249,226,175' : r.severity === 'pass' ? '166,227,161' : '137,180,250'},0.15);color:${sevColors[r.severity]}">${r.severity.toUpperCase()}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ==================== MOCK SERVER ====================
+function openMockModal() { $('mockModal').classList.remove('hidden'); renderMockRoutes(); }
+function closeMockModal() { $('mockModal').classList.add('hidden'); }
+
+function toggleMockServer() {
+  state.mockServerRunning = !state.mockServerRunning;
+  $('mockToggleBtn').textContent = state.mockServerRunning ? 'Stop Server' : 'Start Server';
+  $('mockStatus').textContent = state.mockServerRunning ? 'Running' : 'Stopped';
+  $('mockStatus').style.background = state.mockServerRunning ? 'rgba(166,227,161,0.15)' : 'rgba(243,139,168,0.15)';
+  $('mockStatus').style.color = state.mockServerRunning ? 'var(--green)' : 'var(--red)';
+  showToast(state.mockServerRunning ? 'Mock server started (simulation mode)' : 'Mock server stopped', state.mockServerRunning ? 'success' : 'info');
+}
+
+function addMockRoute() {
+  state.mockRoutes.push({ id: Date.now(), method: 'GET', path: '/api/example', status: 200, body: '{"message":"Hello"}', delay: 0 });
+  saveState();
+  renderMockRoutes();
+}
+
+function renderMockRoutes() {
+  $('mockRoutes').innerHTML = state.mockRoutes.map(route => `
+    <div class="rounded-lg p-3 space-y-2" style="background:rgba(17,17,27,0.3);border:1px solid var(--surface0);">
+      <div class="flex items-center gap-2">
+        <select onchange="updateMockRoute(${route.id}, 'method', this.value)" class="input-field rounded-lg px-2 py-1 text-xs font-bold mono" style="width:90px;color:${getMethodColor(route.method)}">
+          ${['GET','POST','PUT','DELETE','PATCH'].map(m => `<option value="${m}" ${m === route.method ? 'selected' : ''} style="color:${getMethodColor(m)}">${m}</option>`).join('')}
+        </select>
+        <input type="text" value="${route.path}" onchange="updateMockRoute(${route.id}, 'path', this.value)" class="input-field flex-1 rounded-lg px-2 py-1 text-xs mono" placeholder="/api/endpoint">
+        <input type="number" value="${route.status}" onchange="updateMockRoute(${route.id}, 'status', this.value)" class="input-field rounded-lg px-2 py-1 text-xs mono" style="width:70px;" placeholder="200">
+        <input type="number" value="${route.delay}" onchange="updateMockRoute(${route.id}, 'delay', this.value)" class="input-field rounded-lg px-2 py-1 text-xs" style="width:70px;" placeholder="Delay (ms)">
+        <button onclick="deleteMockRoute(${route.id})" class="btn-ghost p-1 rounded" style="color:var(--red);">✕</button>
+      </div>
+      <textarea onchange="updateMockRoute(${route.id}, 'body', this.value)" class="input-field w-full rounded-lg px-2 py-1 text-xs mono" rows="2" placeholder="Response body">${route.body}</textarea>
+    </div>
+  `).join('') || '<div class="text-xs text-center py-4" style="color:var(--overlay0)">No routes configured</div>';
+}
+
+function updateMockRoute(id, field, value) {
+  const route = state.mockRoutes.find(r => r.id === id);
+  if (route) { route[field] = field === 'status' || field === 'delay' ? parseInt(value) : value; saveState(); }
+}
+
+function deleteMockRoute(id) {
+  state.mockRoutes = state.mockRoutes.filter(r => r.id !== id);
+  saveState();
+  renderMockRoutes();
+}
+
+// ==================== RESIZER ====================
+(function initResizer() {
+  const resizer = $('mainResizer');
+  if (!resizer) return;
+  let isResizing = false;
+  let startY, startHeight;
+
+  resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startY = e.clientY;
+    startHeight = $('requestPanel').offsetHeight;
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const diff = e.clientY - startY;
+    const newHeight = Math.max(150, Math.min(startHeight + diff, window.innerHeight - 250));
+    $('requestPanel').style.height = newHeight + 'px';
+    $('requestPanel').style.flex = 'none';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isResizing = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+})();
+
+// ==================== KEYBOARD SHORTCUTS ====================
+document.addEventListener('keydown', (e) => {
+  const isMac = navigator.platform.includes('Mac');
+  const mod = isMac ? e.metaKey : e.ctrlKey;
+
+  // ⌘P: Command Palette
+  if (mod && e.key === 'p') { e.preventDefault(); openCommandPalette(); return; }
+  // ⌘B: Toggle Sidebar
+  if (mod && e.key === 'b') { e.preventDefault(); toggleSidebar(); return; }
+  // ⌘Enter: Send
+  if (mod && e.key === 'Enter') {
+    e.preventDefault();
+    if (state.mode === 'http') sendRequest();
+    else if (state.mode === 'graphql') sendGraphQL();
+    return;
+  }
+  // ⌘⇧C: Clear Response
+  if (mod && e.shiftKey && e.key === 'C') { e.preventDefault(); clearResponse(); return; }
+  // ⌘S: Save
+  if (mod && e.key === 's') { e.preventDefault(); saveCurrentRequest(); return; }
+  // ⌘L: Focus URL
+  if (mod && e.key === 'l') { e.preventDefault(); $('urlInput').focus(); return; }
+  // ⌘⇧F: Format JSON
+  if (mod && e.shiftKey && e.key === 'F') { e.preventDefault(); formatBody(); return; }
+  // ⌘I: Toggle Interceptor
+  if (mod && e.key === 'i') { e.preventDefault(); toggleInterceptor(); return; }
+  // ⌘K: Quick Search
+  if (mod && e.key === 'k') { e.preventDefault(); $('sidebarSearch').focus(); return; }
+  // Esc: Close modals
+  if (e.key === 'Escape') {
+    closeCommandPalette();
+    closeEnvModal();
+    closeImportModal();
+    closeDiffModal();
+    closeMockModal();
+  }
+  // F10: Step breakpoint
+  if (e.key === 'F10' && state.breakpointResolve) { e.preventDefault(); breakpointResume(); }
+  // Space: Start/Pause load test
+  if (e.key === ' ' && state.mode === 'loadtest' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+    if (state.loadTestRunning) cancelLoadTest();
+    else startLoadTest();
+  }
+  // Ctrl+Enter in WS composer
+  if (e.ctrlKey && e.key === 'Enter' && state.mode === 'ws') { sendWsMessage(); }
+});
+
+// ==================== AUTO-COMPLETE FOR VARIABLES ====================
+const urlInput = $('urlInput');
+let acDropdown = null;
+
+function showAutocomplete(input) {
+  const val = input.value;
+  const cursorPos = input.selectionStart;
+  const before = val.substring(0, cursorPos);
+  const match = before.match(/\{\{(\w*)$/);
+  if (!match) { hideAutocomplete(); return; }
+
+  const prefix = match[1].toLowerCase();
+  const allVars = { ...state.environments.global, ...(state.environments[state.currentEnv] || {}), ...state.sessionVars };
+  const suggestions = Object.keys(allVars).filter(k => k.toLowerCase().startsWith(prefix));
+
+  if (!suggestions.length) { hideAutocomplete(); return; }
+
+  if (!acDropdown) {
+    acDropdown = document.createElement('div');
+    acDropdown.className = 'glass-solid rounded-lg overflow-hidden absolute z-50';
+    acDropdown.style.width = '200px';
+    document.body.appendChild(acDropdown);
+  }
+
+  const rect = input.getBoundingClientRect();
+  acDropdown.style.left = rect.left + 'px';
+  acDropdown.style.top = (rect.bottom + 4) + 'px';
+  acDropdown.style.display = 'block';
+
+  acDropdown.innerHTML = suggestions.map(s => `
+    <div class="px-3 py-1.5 text-xs cursor-pointer hover:bg-white/5 mono" onclick="insertVariable('${s}')"
+      title="${allVars[s]}">
+      <span style="color:var(--lavender)">{{${s}}}</span>
+      <span style="color:var(--overlay0);margin-left:8px;">${String(allVars[s]).substring(0, 20)}</span>
+    </div>
+  `).join('');
+}
+
+function hideAutocomplete() {
+  if (acDropdown) acDropdown.style.display = 'none';
+}
+
+function insertVariable(name) {
+  const input = $('urlInput');
+  const val = input.value;
+  const cursorPos = input.selectionStart;
+  const before = val.substring(0, cursorPos);
+  const after = val.substring(cursorPos);
+  const match = before.match(/\{\{(\w*)$/);
+  if (match) {
+    const newBefore = before.substring(0, before.length - match[0].length) + '{{' + name + '}}';
+    input.value = newBefore + after;
+    input.selectionStart = input.selectionEnd = newBefore.length;
+  }
+  hideAutocomplete();
+  input.focus();
+}
+
+urlInput.addEventListener('input', () => showAutocomplete(urlInput));
+urlInput.addEventListener('blur', () => setTimeout(hideAutocomplete, 200));
+
+// ==================== INITIALIZATION ====================
+function init() {
+  // Init default params/headers rows
+  addParam();
+  addHeader();
+  createKVRow($('headersTable'), 'Content-Type', 'application/json');
+  updateBadges();
+
+  // Init auth
+  updateAuthType();
+
+  // Render sidebar
+  renderCollections();
+  renderHistory();
+
+  // Init demo collection if empty
+  if (state.collections.length === 0) {
+    state.collections.push({
+      id: 1,
+      name: 'Sample Collection',
+      expanded: true,
+      items: [
+        { id: '101', name: 'Get Users', method: 'GET', url: 'https://jsonplaceholder.typicode.com/users', headers: [], body: '', bodyType: 'none' },
+        { id: '102', name: 'Get Posts', method: 'GET', url: 'https://jsonplaceholder.typicode.com/posts', headers: [], body: '', bodyType: 'none' },
+        { id: '103', name: 'Create Post', method: 'POST', url: 'https://jsonplaceholder.typicode.com/posts', headers: [{ key: 'Content-Type', value: 'application/json', enabled: true }], body: '{\n  "title": "foo",\n  "body": "bar",\n  "userId": 1\n}', bodyType: 'json' },
+        { id: '104', name: 'Update Post', method: 'PUT', url: 'https://jsonplaceholder.typicode.com/posts/1', headers: [], body: '{\n  "id": 1,\n  "title": "updated",\n  "body": "content",\n  "userId": 1\n}', bodyType: 'json' },
+        { id: '105', name: 'Delete Post', method: 'DELETE', url: 'https://jsonplaceholder.typicode.com/posts/1', headers: [], body: '', bodyType: 'none' },
+      ]
+    });
+    saveState();
+    renderCollections();
+  }
+
+  // Init mock routes
+  if (state.mockRoutes.length === 0) {
+    state.mockRoutes = [
+      { id: 1, method: 'GET', path: '/api/users', status: 200, body: '[{"id":1,"name":"John"},{"id":2,"name":"Jane"}]', delay: 100 },
+      { id: 2, method: 'POST', path: '/api/users', status: 201, body: '{"id":3,"name":"New User"}', delay: 200 },
+    ];
+    saveState();
+  }
+
+  // Set initial request panel height
+  $('requestPanel').style.height = '40%';
+  $('requestPanel').style.flex = 'none';
+}
+
+init();
+</script>
+</body>
+</html>
