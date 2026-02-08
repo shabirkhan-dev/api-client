@@ -48,16 +48,11 @@ export function RequestBar() {
 				onChange={(e) => setMethod(e.target.value as HttpMethod)}
 				className={cn(
 					"h-10 w-28 px-3.5 rounded-lg font-bold font-mono text-[13px] tracking-wide border outline-none cursor-pointer transition-colors duration-150",
-					methodColor[method] ??
-						"text-ctp-text border-ctp-surface1/30 bg-ctp-mantle/40",
+					methodColor[method] ?? "text-ctp-text border-ctp-surface1/30 bg-ctp-mantle/40",
 				)}
 			>
 				{methods.map((m) => (
-					<option
-						key={m}
-						value={m}
-						className="bg-ctp-base text-ctp-text font-mono"
-					>
+					<option key={m} value={m} className="bg-ctp-base text-ctp-text font-mono">
 						{m}
 					</option>
 				))}
@@ -94,10 +89,7 @@ export function RequestBar() {
 				className="px-6 min-w-24 shrink-0"
 			>
 				{requestInFlight ? (
-					<Spinner
-						size="sm"
-						className="border-ctp-crust/30 border-t-ctp-crust"
-					/>
+					<Spinner size="sm" className="border-ctp-crust/30 border-t-ctp-crust" />
 				) : (
 					<>
 						<HugeiconsIcon icon={SentIcon} size={ICON} />

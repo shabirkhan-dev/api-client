@@ -1,0 +1,15 @@
+# Bun configuration — https://bun.sh/docs/runtime/bunfig
+
+[install]
+# Use exact versions when adding deps (no ^ or ~)
+exact = true
+
+[install.lockfile]
+# Always generate a lockfile
+save = true
+
+[test]
+# Coverage thresholds (enforced by bun test --coverage)
+coverage = true
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage"

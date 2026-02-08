@@ -81,9 +81,7 @@ function SidebarSection({
 			<div
 				className={cn(
 					"overflow-hidden transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)]",
-					open
-						? "max-h-[800px] opacity-100"
-						: "max-h-0 opacity-0 py-0",
+					open ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0 py-0",
 				)}
 			>
 				<div className="px-5 pb-4">{children}</div>
@@ -169,11 +167,7 @@ export function Sidebar() {
 
 					{/* Interceptor Stats */}
 					{interceptorEnabled && (
-						<SidebarSection
-							title="Interceptor"
-							icon={Settings02Icon}
-							defaultOpen
-						>
+						<SidebarSection title="Interceptor" icon={Settings02Icon} defaultOpen>
 							<div className="grid grid-cols-3 gap-3">
 								{(
 									[
@@ -198,11 +192,7 @@ export function Sidebar() {
 										key={s.label}
 										className="bg-ctp-mantle/45 rounded-[var(--radius-lg)] p-3 text-center border border-ctp-surface0/15 transition-all duration-[180ms] hover:bg-ctp-mantle/60 hover:border-ctp-surface0/30"
 									>
-										<div
-											className={`text-[16px] font-bold tabular-nums ${s.color}`}
-										>
-											{s.value}
-										</div>
+										<div className={`text-[16px] font-bold tabular-nums ${s.color}`}>{s.value}</div>
 										<div className="text-[10px] text-ctp-overlay0 uppercase tracking-wider font-medium mt-1.5">
 											{s.label}
 										</div>

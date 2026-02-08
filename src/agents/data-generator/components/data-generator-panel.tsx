@@ -65,9 +65,7 @@ export function DataGeneratorPanel() {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<label className="text-[10px] text-ctp-overlay0">
-						Count:
-					</label>
+					<label className="text-[10px] text-ctp-overlay0">Count:</label>
 					<Input
 						type="number"
 						value={count}

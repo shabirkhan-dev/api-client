@@ -75,9 +75,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 							A
 						</span>
 					</div>
-					<span className="text-[14px] font-semibold text-ctp-text tracking-tight">
-						API Client
-					</span>
+					<span className="text-[14px] font-semibold text-ctp-text tracking-tight">API Client</span>
 					<Badge variant="accent">v0.1</Badge>
 				</div>
 			</div>
@@ -85,11 +83,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 			{/* Right: Actions */}
 			<div className="flex items-center gap-2.5">
 				<Button variant="outline" size="md" onClick={onOpenCommandPalette}>
-					<HugeiconsIcon
-						icon={CommandIcon}
-						size={ICON_SIZE}
-						strokeWidth={1.5}
-					/>
+					<HugeiconsIcon icon={CommandIcon} size={ICON_SIZE} strokeWidth={1.5} />
 					<span className="hidden sm:inline">Commands</span>
 					<Kbd>⌘K</Kbd>
 				</Button>
@@ -100,25 +94,14 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 					onClick={handleToggleInterceptor}
 					className={interceptorEnabled ? "border-ctp-red/30 text-ctp-red" : ""}
 				>
-					<HugeiconsIcon
-						icon={Shield01Icon}
-						size={ICON_SIZE}
-						strokeWidth={1.5}
-					/>
-					<StatusDot
-						color={interceptorEnabled ? "red" : "muted"}
-						pulse={interceptorEnabled}
-					/>
+					<HugeiconsIcon icon={Shield01Icon} size={ICON_SIZE} strokeWidth={1.5} />
+					<StatusDot color={interceptorEnabled ? "red" : "muted"} pulse={interceptorEnabled} />
 				</Button>
 
 				{interceptorEnabled && (
 					<select
 						value={interceptorMode}
-						onChange={(e) =>
-							setInterceptorMode(
-								e.target.value as "request" | "response" | "both",
-							)
-						}
+						onChange={(e) => setInterceptorMode(e.target.value as "request" | "response" | "both")}
 						className="h-9 px-3 text-[13px] font-medium rounded-lg border border-ctp-surface0/50 bg-ctp-mantle/40 text-ctp-subtext0 outline-none cursor-pointer transition-all duration-[180ms] focus-visible:border-ctp-lavender/45 focus-visible:shadow-[0_0_0_1px_inset,0_0_0_3px] focus-visible:shadow-ctp-lavender/15"
 					>
 						<option value="request" className="bg-ctp-base">
@@ -140,11 +123,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 						onClick={() => setThemePicker(!themePicker)}
 						className={themePicker ? "bg-ctp-surface0/30" : ""}
 					>
-						<HugeiconsIcon
-							icon={PaintBoardIcon}
-							size={ICON_SIZE}
-							strokeWidth={1.5}
-						/>
+						<HugeiconsIcon icon={PaintBoardIcon} size={ICON_SIZE} strokeWidth={1.5} />
 					</Button>
 
 					{themePicker && (

@@ -26,9 +26,7 @@ const timelinePhases = [
 	{ label: "Content Download", pct: 20, color: "bg-ctp-mauve" },
 ] as const;
 
-function getStatusVariant(
-	status: number,
-): "success" | "warning" | "peach" | "danger" {
+function getStatusVariant(status: number): "success" | "warning" | "peach" | "danger" {
 	if (status < 300) return "success";
 	if (status < 400) return "warning";
 	if (status < 500) return "peach";
@@ -46,9 +44,7 @@ function formatBody(body: string): string {
 function EmptyState({ message }: { message: string }) {
 	return (
 		<div className="flex flex-col items-center justify-center h-full min-h-32 gap-2">
-			<p className="text-[12px] text-ctp-overlay0/50 text-center select-none">
-				{message}
-			</p>
+			<p className="text-[12px] text-ctp-overlay0/50 text-center select-none">{message}</p>
 		</div>
 	);
 }
@@ -63,10 +59,7 @@ export function ResponsePanel() {
 		toast.success("Copied to clipboard");
 	}, [lastResponse]);
 
-	const handleClear = useCallback(
-		() => setLastResponse(null),
-		[setLastResponse],
-	);
+	const handleClear = useCallback(() => setLastResponse(null), [setLastResponse]);
 
 	const timeline = lastResponse
 		? timelinePhases.map((phase) => ({
@@ -75,15 +68,10 @@ export function ResponsePanel() {
 			}))
 		: [];
 
-	const headerEntries = lastResponse
-		? Object.entries(lastResponse.headers)
-		: [];
+	const headerEntries = lastResponse ? Object.entries(lastResponse.headers) : [];
 
 	return (
-		<GlassPanel
-			noPadding
-			className="flex flex-col flex-1 min-h-0 overflow-hidden"
-		>
+		<GlassPanel noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Status Bar */}
 			<div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0">
 				<div className="flex items-center gap-2.5 min-w-0">
@@ -95,18 +83,12 @@ export function ResponsePanel() {
 							>
 								{lastResponse.status} {lastResponse.statusText}
 							</Badge>
-							<Badge className="font-mono tabular-nums">
-								{lastResponse.time}ms
-							</Badge>
-							<Badge className="font-mono tabular-nums">
-								{formatBytes(lastResponse.size)}
-							</Badge>
+							<Badge className="font-mono tabular-nums">{lastResponse.time}ms</Badge>
+							<Badge className="font-mono tabular-nums">{formatBytes(lastResponse.size)}</Badge>
 							{lastResponse.isMock && <Badge variant="mauve">MOCK</Badge>}
 						</>
 					) : (
-						<span className="text-[13px] text-ctp-overlay0/60 select-none">
-							No response yet
-						</span>
+						<span className="text-[13px] text-ctp-overlay0/60 select-none">No response yet</span>
 					)}
 				</div>
 
@@ -203,9 +185,7 @@ export function ResponsePanel() {
 						) : (
 							<EmptyState
 								message={
-									lastResponse
-										? "No headers in response"
-										: "Send a request to see response headers"
+									lastResponse ? "No headers in response" : "Send a request to see response headers"
 								}
 							/>
 						)}
@@ -221,11 +201,7 @@ export function ResponsePanel() {
 							</pre>
 						) : (
 							<EmptyState
-								message={
-									lastResponse
-										? "No cookies in response"
-										: "Send a request to see cookies"
-								}
+								message={lastResponse ? "No cookies in response" : "Send a request to see cookies"}
 							/>
 						)}
 					</div>
@@ -249,10 +225,7 @@ export function ResponsePanel() {
 								{/* Phase Breakdown */}
 								<div className="space-y-5">
 									{timeline.map((phase) => {
-										const widthPct = Math.min(
-											100,
-											(phase.ms / lastResponse.time) * 100,
-										);
+										const widthPct = Math.min(100, (phase.ms / lastResponse.time) * 100);
 
 										return (
 											<div key={phase.label} className="space-y-2">
@@ -283,15 +256,8 @@ export function ResponsePanel() {
 								<div className="flex flex-wrap gap-x-5 gap-y-2.5 pt-4 border-t border-ctp-surface0/15">
 									{timeline.map((phase) => (
 										<div key={phase.label} className="flex items-center gap-2">
-											<div
-												className={cn(
-													"w-3 h-3 rounded-full opacity-70",
-													phase.color,
-												)}
-											/>
-											<span className="text-[12px] text-ctp-overlay0">
-												{phase.label}
-											</span>
+											<div className={cn("w-3 h-3 rounded-full opacity-70", phase.color)} />
+											<span className="text-[12px] text-ctp-overlay0">{phase.label}</span>
 										</div>
 									))}
 								</div>

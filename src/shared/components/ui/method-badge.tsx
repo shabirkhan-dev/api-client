@@ -13,16 +13,9 @@ const methodStyles: Record<HttpMethod, string> = {
 	HEAD: "bg-ctp-peach/10 text-ctp-peach border-ctp-peach/18",
 };
 
-const fallbackStyle =
-	"bg-ctp-overlay0/10 text-ctp-overlay0 border-ctp-overlay0/18";
+const fallbackStyle = "bg-ctp-overlay0/10 text-ctp-overlay0 border-ctp-overlay0/18";
 
-export function MethodBadge({
-	method,
-	className,
-}: {
-	method: HttpMethod;
-	className?: string;
-}) {
+export function MethodBadge({ method, className }: { method: HttpMethod; className?: string }) {
 	return (
 		<span
 			className={cn(

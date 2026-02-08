@@ -13,8 +13,7 @@ const buttonVariants = cva(
 					"bg-gradient-to-br from-ctp-lavender to-ctp-mauve text-ctp-crust font-semibold shadow-[0_4px_16px] shadow-ctp-lavender/25 border border-transparent hover:translate-y-[-0.5px] hover:shadow-[0_6px_22px] hover:shadow-ctp-lavender/35 hover:brightness-[1.04] active:translate-y-0 active:scale-[0.98] active:shadow-[0_2px_8px] active:shadow-ctp-lavender/20 disabled:opacity-45 disabled:cursor-not-allowed disabled:pointer-events-none disabled:saturate-[0.6]",
 				secondary:
 					"bg-ctp-surface0/40 text-ctp-text border border-ctp-surface1/35 hover:bg-ctp-surface0/60 hover:border-ctp-surface1/55 active:scale-[0.98]",
-				ghost:
-					"text-ctp-subtext0 hover:text-ctp-text hover:bg-ctp-surface0/30 active:scale-[0.98]",
+				ghost: "text-ctp-subtext0 hover:text-ctp-text hover:bg-ctp-surface0/30 active:scale-[0.98]",
 				outline:
 					"border border-ctp-surface0/40 text-ctp-subtext1 hover:border-ctp-surface1/55 hover:bg-ctp-surface0/25 hover:text-ctp-text active:scale-[0.98]",
 				danger:
@@ -37,8 +36,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-	extends
-		ButtonHTMLAttributes<HTMLButtonElement>,
+	extends ButtonHTMLAttributes<HTMLButtonElement>,
 		VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

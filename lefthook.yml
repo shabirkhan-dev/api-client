@@ -1,14 +1,36 @@
+# ─── Pre-commit: fast checks on staged files ─────────────
 pre-commit:
   parallel: true
   commands:
     biome-check:
       glob: "*.{js,ts,tsx,jsx,json}"
-      run: npx @biomejs/biome check --write --staged
+      run: bunx @biomejs/biome check --write --staged
+      stage_fixed: true
     type-check:
-      run: npx tsc --noEmit
+      run: bun run type-check
 
+# ─── Pre-push: full validation before sharing ────────────
 pre-push:
   parallel: true
   commands:
     test:
-      run: npx vitest run
+      run: bun run test
+    lint:
+      run: bun run lint
+
+# ─── Commit-msg: enforce conventional commits ────────────
+commit-msg:
+  commands:
+    conventional:
+      run: |
+        MSG=$(cat "$1" 2>/dev/null || echo "")
+        if ! echo "$MSG" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,}$"; then
+          echo ""
+          echo "  ✖ Commit message must follow Conventional Commits:"
+          echo "    <type>(<scope>): <description>"
+          echo ""
+          echo "  Types: feat | fix | docs | style | refactor | perf | test | build | ci | chore | revert"
+          echo "  Example: feat(sidebar): add collection drag-and-drop"
+          echo ""
+          exit 1
+        fi

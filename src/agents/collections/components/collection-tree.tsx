@@ -16,13 +16,7 @@ import type { CollectionNode } from "@/shared/types";
 const ICON = 14;
 const ICON_SM = 12;
 
-function TreeNode({
-	node,
-	depth = 0,
-}: {
-	node: CollectionNode;
-	depth?: number;
-}) {
+function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number }) {
 	const { setCollections, collections, loadRequestFromNode } = useAppStore();
 
 	const toggleCollapse = useCallback(() => {
@@ -105,9 +99,7 @@ export function CollectionTree() {
 					size={24}
 					className="opacity-30 mb-1.5 text-ctp-overlay0"
 				/>
-				<span className="text-[12px] text-ctp-overlay0">
-					No collections yet
-				</span>
+				<span className="text-[12px] text-ctp-overlay0">No collections yet</span>
 			</div>
 		);
 	}

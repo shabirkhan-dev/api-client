@@ -10,15 +10,11 @@ const ICON = 14;
 const ICON_EMPTY = 24;
 
 export function HistoryList() {
-	const { history, setMethod, setUrl, toggleFavorite, isFavorite } =
-		useAppStore();
+	const { history, setMethod, setUrl, toggleFavorite, isFavorite } = useAppStore();
 	const [search, setSearch] = useState("");
 
 	const filtered = useMemo(
-		() =>
-			history.filter((item) =>
-				item.url.toLowerCase().includes(search.toLowerCase()),
-			),
+		() => history.filter((item) => item.url.toLowerCase().includes(search.toLowerCase())),
 		[history, search],
 	);
 
@@ -65,11 +61,7 @@ export function HistoryList() {
 								<HugeiconsIcon
 									icon={StarIcon}
 									size={ICON}
-									className={
-										fav
-											? "text-ctp-yellow"
-											: "text-ctp-overlay0 hover:text-ctp-yellow/70"
-									}
+									className={fav ? "text-ctp-yellow" : "text-ctp-overlay0 hover:text-ctp-yellow/70"}
 									fill={fav ? "currentColor" : "none"}
 								/>
 							</button>

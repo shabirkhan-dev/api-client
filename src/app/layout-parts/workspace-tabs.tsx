@@ -76,7 +76,10 @@ export function WorkspaceTabs() {
 	return (
 		<div className="flex items-center gap-1 p-1.5 bg-ctp-mantle/50 rounded-[var(--radius-xl)] border border-ctp-surface0/20 overflow-x-auto overflow-y-hidden relative shrink-0 scrollbar-none">
 			{tabGroups.map((group) => (
-				<div key={group.label} className="flex items-center gap-0.5 relative [&+&]:before:content-[''] [&+&]:before:w-px [&+&]:before:h-5 [&+&]:before:bg-ctp-surface1/30 [&+&]:before:mx-1.5 [&+&]:before:rounded-full [&+&]:before:shrink-0">
+				<div
+					key={group.label}
+					className="flex items-center gap-0.5 relative [&+&]:before:content-[''] [&+&]:before:w-px [&+&]:before:h-5 [&+&]:before:bg-ctp-surface1/30 [&+&]:before:mx-1.5 [&+&]:before:rounded-full [&+&]:before:shrink-0"
+				>
 					{group.tabs.map((tab) => {
 						const isActive = activeTab === tab.id;
 						return (

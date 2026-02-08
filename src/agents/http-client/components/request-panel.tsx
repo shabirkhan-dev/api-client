@@ -19,10 +19,7 @@ export function RequestPanel() {
 	const store = useAppStore();
 
 	return (
-		<GlassPanel
-			noPadding
-			className="flex flex-col flex-1 min-h-0 overflow-hidden"
-		>
+		<GlassPanel noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Tab Bar */}
 			<div className="shrink-0 px-5 pt-5 pb-4">
 				<div className="flex items-center gap-1 p-1.5 rounded-xl bg-ctp-mantle/35 border border-ctp-surface0/15">
@@ -56,9 +53,7 @@ export function RequestPanel() {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<LabelText>Query Parameters</LabelText>
-							<span className="text-[10px] text-ctp-overlay0/60 font-mono">
-								key=value per line
-							</span>
+							<span className="text-[10px] text-ctp-overlay0/60 font-mono">key=value per line</span>
 						</div>
 						<Textarea
 							value={store.paramsText}
@@ -74,9 +69,7 @@ export function RequestPanel() {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<LabelText>Request Headers</LabelText>
-							<span className="text-[10px] text-ctp-overlay0/60 font-mono">
-								JSON format
-							</span>
+							<span className="text-[10px] text-ctp-overlay0/60 font-mono">JSON format</span>
 						</div>
 						<Textarea
 							value={store.headersText}
@@ -96,9 +89,7 @@ export function RequestPanel() {
 						<Textarea
 							value={store.bodyText}
 							onChange={(e) => store.setBodyText(e.target.value)}
-							placeholder={
-								'{\n  "name": "Example",\n  "version": 1,\n  "active": true\n}'
-							}
+							placeholder={'{\n  "name": "Example",\n  "version": 1,\n  "active": true\n}'}
 							className="min-h-55"
 							spellCheck={false}
 						/>
@@ -111,9 +102,7 @@ export function RequestPanel() {
 
 						<div className="space-y-4">
 							<label className="block space-y-2">
-								<span className="text-[12px] text-ctp-overlay1 font-medium">
-									Type
-								</span>
+								<span className="text-[12px] text-ctp-overlay1 font-medium">Type</span>
 								<Input
 									value={store.authType}
 									onChange={(e) => store.setAuthType(e.target.value)}
@@ -124,9 +113,7 @@ export function RequestPanel() {
 							</label>
 
 							<label className="block space-y-2">
-								<span className="text-[12px] text-ctp-overlay1 font-medium">
-									Credentials
-								</span>
+								<span className="text-[12px] text-ctp-overlay1 font-medium">Credentials</span>
 								<Input
 									value={store.authValue}
 									onChange={(e) => store.setAuthValue(e.target.value)}

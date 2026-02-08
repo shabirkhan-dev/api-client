@@ -61,10 +61,7 @@ export default function Home() {
 	const { sendRequest } = useHttpRequest();
 
 	const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), []);
-	const closeCommandPalette = useCallback(
-		() => setCommandPaletteOpen(false),
-		[],
-	);
+	const closeCommandPalette = useCallback(() => setCommandPaletteOpen(false), []);
 
 	useEffect(() => {
 		const handler = (e: KeyboardEvent) => {

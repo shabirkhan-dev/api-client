@@ -16,10 +16,7 @@ export function EnvironmentSelector() {
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
 				<LabelText>Environment</LabelText>
-				<StatusDot
-					color={envColors[activeEnv] || "green"}
-					pulse={activeEnv === "production"}
-				/>
+				<StatusDot color={envColors[activeEnv] || "green"} pulse={activeEnv === "production"} />
 			</div>
 
 			<select
@@ -39,10 +36,7 @@ export function EnvironmentSelector() {
 			</select>
 
 			<p className="text-[11px] text-ctp-overlay0/70 leading-relaxed">
-				Use{" "}
-				<code className="text-ctp-lavender/60 font-mono text-[11px]">
-					{"{{variable}}"}
-				</code>{" "}
+				Use <code className="text-ctp-lavender/60 font-mono text-[11px]">{"{{variable}}"}</code>{" "}
 				syntax in request fields
 			</p>
 		</div>

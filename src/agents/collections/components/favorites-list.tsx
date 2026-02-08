@@ -11,11 +11,7 @@ export function FavoritesList() {
 	if (favorites.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-10 px-4 text-center text-ctp-overlay0 text-[12px] gap-2">
-				<HugeiconsIcon
-					icon={StarIcon}
-					size={24}
-					className="opacity-30 mb-1.5 text-ctp-overlay0"
-				/>
+				<HugeiconsIcon icon={StarIcon} size={24} className="opacity-30 mb-1.5 text-ctp-overlay0" />
 				<span className="text-[12px] text-ctp-overlay0">No favorites yet</span>
 			</div>
 		);
