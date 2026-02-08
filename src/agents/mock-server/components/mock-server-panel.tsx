@@ -24,7 +24,7 @@ export function MockServerPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">Mock Server</div>
 					<div className="text-[11px] text-ctp-overlay0">Define mock endpoints</div>
@@ -33,9 +33,9 @@ export function MockServerPanel() {
 					<HugeiconsIcon icon={Add01Icon} size={13} /> Add Route
 				</Button>
 			</GlassPanel>
-			<GlassPanel className="p-3 space-y-3">
+			<GlassPanel className="p-4 space-y-3">
 				{mockRoutes.map((route) => (
-					<div key={route.id} className="bg-ctp-crust/30 rounded-lg p-3 space-y-2">
+					<div key={route.id} className="bg-ctp-mantle/40 rounded-lg p-3 space-y-2">
 						<div className="flex items-center gap-2">
 							<Input
 								value={route.path}

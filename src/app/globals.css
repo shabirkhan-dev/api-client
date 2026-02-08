@@ -1,174 +1,268 @@
 @import "tailwindcss";
 
 @theme {
-  /* Dynamic theme colors via CSS custom properties */
-  --color-ctp-crust: var(--ctp-crust, #11111b);
-  --color-ctp-base: var(--ctp-base, #1e1e2e);
-  --color-ctp-mantle: var(--ctp-mantle, #181825);
-  --color-ctp-surface0: var(--ctp-surface0, #313244);
-  --color-ctp-surface1: var(--ctp-surface1, #45475a);
-  --color-ctp-surface2: var(--ctp-surface2, #585b70);
-  --color-ctp-overlay0: var(--ctp-overlay0, #6c7086);
-  --color-ctp-overlay1: var(--ctp-overlay1, #7f849c);
-  --color-ctp-subtext0: var(--ctp-subtext0, #a6adc8);
-  --color-ctp-subtext1: var(--ctp-subtext1, #bac2de);
-  --color-ctp-text: var(--ctp-text, #cdd6f4);
-  --color-ctp-lavender: var(--ctp-lavender, #b4befe);
-  --color-ctp-blue: var(--ctp-blue, #89b4fa);
-  --color-ctp-sapphire: var(--ctp-sapphire, #74c7ec);
-  --color-ctp-teal: var(--ctp-teal, #94e2d5);
-  --color-ctp-green: var(--ctp-green, #a6e3a1);
-  --color-ctp-yellow: var(--ctp-yellow, #f9e2af);
-  --color-ctp-peach: var(--ctp-peach, #fab387);
-  --color-ctp-red: var(--ctp-red, #f38ba8);
-  --color-ctp-mauve: var(--ctp-mauve, #cba6f7);
-  --color-ctp-pink: var(--ctp-pink, #f5c2e7);
+	/* Dynamic theme colors via CSS custom properties */
+	--color-ctp-crust: var(--ctp-crust, #11111b);
+	--color-ctp-base: var(--ctp-base, #1e1e2e);
+	--color-ctp-mantle: var(--ctp-mantle, #181825);
+	--color-ctp-surface0: var(--ctp-surface0, #313244);
+	--color-ctp-surface1: var(--ctp-surface1, #45475a);
+	--color-ctp-surface2: var(--ctp-surface2, #585b70);
+	--color-ctp-overlay0: var(--ctp-overlay0, #6c7086);
+	--color-ctp-overlay1: var(--ctp-overlay1, #7f849c);
+	--color-ctp-subtext0: var(--ctp-subtext0, #a6adc8);
+	--color-ctp-subtext1: var(--ctp-subtext1, #bac2de);
+	--color-ctp-text: var(--ctp-text, #cdd6f4);
+	--color-ctp-lavender: var(--ctp-lavender, #b4befe);
+	--color-ctp-blue: var(--ctp-blue, #89b4fa);
+	--color-ctp-sapphire: var(--ctp-sapphire, #74c7ec);
+	--color-ctp-teal: var(--ctp-teal, #94e2d5);
+	--color-ctp-green: var(--ctp-green, #a6e3a1);
+	--color-ctp-yellow: var(--ctp-yellow, #f9e2af);
+	--color-ctp-peach: var(--ctp-peach, #fab387);
+	--color-ctp-red: var(--ctp-red, #f38ba8);
+	--color-ctp-mauve: var(--ctp-mauve, #cba6f7);
+	--color-ctp-pink: var(--ctp-pink, #f5c2e7);
 
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+	--font-sans:
+		"Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+		sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+	--radius-xl: 16px;
+	--radius-lg: 12px;
+	--radius-md: 8px;
+	--radius-sm: 6px;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ─── Base ─────────────────────────────────────────────── */
+@layer base {
+	html {
+		color-scheme: dark;
+	}
+
+	body {
+		font-family: var(--font-sans);
+		background:
+			radial-gradient(
+				ellipse 1100px 700px at 8% -8%,
+				color-mix(in srgb, var(--color-ctp-lavender) 10%, transparent),
+				transparent 60%
+			),
+			radial-gradient(
+				ellipse 900px 600px at 92% -4%,
+				color-mix(in srgb, var(--color-ctp-blue) 8%, transparent),
+				transparent 50%
+			),
+			radial-gradient(
+				ellipse 600px 400px at 50% 100%,
+				color-mix(in srgb, var(--color-ctp-mauve) 4%, transparent),
+				transparent 60%
+			),
+			linear-gradient(180deg, var(--color-ctp-crust), var(--color-ctp-base));
+		color: var(--color-ctp-text);
+		min-height: 100vh;
+		overflow: hidden;
+		font-size: 14px;
+		line-height: 1.45;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		letter-spacing: -0.006em;
+	}
+
+	::-webkit-scrollbar {
+		width: 5px;
+		height: 5px;
+	}
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	::-webkit-scrollbar-thumb {
+		background: color-mix(
+			in srgb,
+			var(--color-ctp-surface1) 60%,
+			transparent
+		);
+		border-radius: 99px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: color-mix(
+			in srgb,
+			var(--color-ctp-overlay0) 70%,
+			transparent
+		);
+	}
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(
+				in srgb,
+				var(--color-ctp-surface1) 60%,
+				transparent
+			)
+			transparent;
+	}
+
+	::selection {
+		background: color-mix(
+			in srgb,
+			var(--color-ctp-lavender) 28%,
+			transparent
+		);
+		color: var(--color-ctp-text);
+	}
 }
 
-html {
-  color-scheme: dark;
-}
-
-body {
-  font-family: var(--font-sans);
-  background: var(--ctp-crust, #11111b);
-  color: var(--ctp-text, #cdd6f4);
-  min-height: 100vh;
-  overflow: hidden;
-  font-size: 13px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--ctp-surface1, #45475a); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: var(--ctp-overlay0, #6c7086); }
-
-/* Selection */
-::selection {
-  background: color-mix(in srgb, var(--ctp-lavender, #b4befe) 30%, transparent);
-  color: var(--ctp-text, #cdd6f4);
-}
-
-/* Glass panels */
-.glass {
-  background: color-mix(in srgb, var(--ctp-base, #1e1e2e) 65%, transparent);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid color-mix(in srgb, var(--ctp-lavender, #b4befe) 8%, transparent);
-  box-shadow:
-    0 0 0 0.5px color-mix(in srgb, var(--ctp-lavender, #b4befe) 4%, transparent),
-    0 4px 24px -4px rgba(0, 0, 0, 0.3);
-  transition: border-color 200ms ease, box-shadow 200ms ease;
-}
-
-.glass:hover {
-  border-color: color-mix(in srgb, var(--ctp-lavender, #b4befe) 15%, transparent);
-}
-
-.glass-solid {
-  background: color-mix(in srgb, var(--ctp-mantle, #181825) 92%, transparent);
-  backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid color-mix(in srgb, var(--ctp-lavender, #b4befe) 8%, transparent);
-  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.3);
-}
-
-/* Primary button */
-.btn-primary {
-  background: linear-gradient(135deg, var(--ctp-lavender, #b4befe), var(--ctp-mauve, #cba6f7));
-  color: var(--ctp-crust, #11111b);
-  font-weight: 600;
-  box-shadow:
-    0 2px 12px color-mix(in srgb, var(--ctp-lavender, #b4befe) 35%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-primary:hover {
-  transform: translateY(-0.5px);
-  box-shadow:
-    0 4px 20px color-mix(in srgb, var(--ctp-lavender, #b4befe) 45%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.btn-primary:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Input focus ring */
-.input-focus {
-  outline: none;
-  transition: all 200ms ease;
-}
-
-.input-focus:focus {
-  border-color: color-mix(in srgb, var(--ctp-lavender, #b4befe) 50%, transparent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ctp-lavender, #b4befe) 10%, transparent);
-}
-
-/* Animations */
+/* ─── Keyframes ────────────────────────────────────────── */
 @keyframes slideUp {
-  from { transform: translateY(8px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+	from {
+		transform: translateY(6px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }
 
 @keyframes slideDown {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(8px); opacity: 0; }
+	from {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(6px);
+		opacity: 0;
+	}
+}
+
+@keyframes slideInLeft {
+	from {
+		transform: translateX(-8px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.96); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+	from {
+		transform: scale(0.95);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
 }
 
 @keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.55;
+	}
 }
 
-.animate-slide-up { animation: slideUp 250ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-scale-in { animation: scaleIn 200ms cubic-bezier(0.16, 1, 0.3, 1); }
-.animate-fade-in { animation: fadeIn 150ms ease; }
-.animate-spin-slow { animation: spin 0.8s linear infinite; }
-.animate-shimmer {
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--ctp-lavender, #b4befe) 5%, transparent),
-    color-mix(in srgb, var(--ctp-lavender, #b4befe) 20%, transparent),
-    color-mix(in srgb, var(--ctp-lavender, #b4befe) 5%, transparent));
-  background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
+@keyframes glow-pulse {
+	0%,
+	100% {
+		box-shadow: 0 0 6px
+			color-mix(in srgb, var(--color-ctp-lavender) 20%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 14px
+			color-mix(in srgb, var(--color-ctp-lavender) 35%, transparent);
+	}
 }
-.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+
+@keyframes expand {
+	from {
+		max-height: 0;
+		opacity: 0;
+	}
+	to {
+		max-height: 500px;
+		opacity: 1;
+	}
+}
+
+@keyframes collapse {
+	from {
+		max-height: 500px;
+		opacity: 1;
+	}
+	to {
+		max-height: 0;
+		opacity: 0;
+	}
+}
+
+/* ─── Custom animation / transition utilities ──────────── */
+@layer utilities {
+	.animate-slide-up {
+		animation: slideUp 220ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.animate-slide-in-left {
+		animation: slideInLeft 220ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.animate-scale-in {
+		animation: scaleIn 180ms cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.animate-fade-in {
+		animation: fadeIn 150ms ease;
+	}
+	.animate-spin-slow {
+		animation: spin 0.8s linear infinite;
+	}
+	.animate-shimmer {
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--color-ctp-lavender) 4%, transparent),
+			color-mix(in srgb, var(--color-ctp-lavender) 16%, transparent),
+			color-mix(in srgb, var(--color-ctp-lavender) 4%, transparent)
+		);
+		background-size: 200% 100%;
+		animation: shimmer 2s ease infinite;
+	}
+	.animate-pulse-soft {
+		animation: pulse-soft 2.5s ease-in-out infinite;
+	}
+	.animate-glow {
+		animation: glow-pulse 3s ease-in-out infinite;
+	}
+	.animate-expand {
+		animation: expand 250ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+		overflow: hidden;
+	}
+	.animate-collapse {
+		animation: collapse 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+		overflow: hidden;
+	}
+}

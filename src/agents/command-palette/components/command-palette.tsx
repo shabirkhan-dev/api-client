@@ -120,7 +120,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 			role="dialog"
 			aria-modal="true"
 			aria-label="Command palette"
-			className="fixed inset-0 z-50 flex items-start justify-center pt-[18vh] bg-black/50 backdrop-blur-sm animate-fade-in"
+			className="fixed inset-0 z-50 flex items-start justify-center pt-[18vh] bg-black/60 backdrop-blur-sm animate-fade-in"
 			onClick={onClose}
 			onKeyDown={(e) => {
 				if (e.key === "Escape") onClose();
@@ -128,11 +128,11 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 		>
 			<div
 				role="presentation"
-				className="glass rounded-xl w-[480px] animate-scale-in overflow-hidden"
+				className="bg-gradient-to-b from-ctp-base/72 to-ctp-mantle/82 backdrop-blur-[20px] backdrop-saturate-[1.4] border border-ctp-surface1/18 shadow-[0_0_0_0.5px_inset] shadow-ctp-lavender/5 rounded-[var(--radius-xl)] w-[520px] animate-scale-in overflow-hidden"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={handleKeyDown}
 			>
-				<div className="p-3 border-b border-ctp-surface0/20">
+				<div className="p-3.5 border-b border-ctp-surface1/20">
 					<input
 						ref={inputRef}
 						value={query}
@@ -141,7 +141,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 						className="w-full bg-transparent text-[13px] text-ctp-text outline-none placeholder:text-ctp-overlay0/50"
 					/>
 				</div>
-				<div className="max-h-[280px] overflow-y-auto p-1.5">
+				<div className="max-h-[300px] overflow-y-auto p-2">
 					{filtered.map((action, i) => (
 						<button
 							key={action.id}
@@ -153,8 +153,8 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 							className={cn(
 								"w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[12px] transition-colors",
 								i === idx
-									? "bg-ctp-lavender/10 text-ctp-lavender"
-									: "text-ctp-subtext1 hover:bg-ctp-surface0/30",
+									? "bg-ctp-lavender/12 text-ctp-lavender"
+									: "text-ctp-subtext1 hover:bg-ctp-surface0/35",
 							)}
 						>
 							<HugeiconsIcon icon={action.icon} size={14} strokeWidth={1.5} />
@@ -164,6 +164,17 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 					{filtered.length === 0 && (
 						<div className="text-[11px] text-ctp-overlay0 text-center py-6">No commands found</div>
 					)}
+				</div>
+				<div className="flex items-center justify-between px-3.5 py-2 border-t border-ctp-surface1/15 text-[10px] text-ctp-overlay0">
+					<span>Use arrow keys to navigate</span>
+					<span className="flex items-center gap-2">
+						<span className="inline-flex items-center gap-1">
+							<span className="text-ctp-subtext0">Enter</span> to run
+						</span>
+						<span className="inline-flex items-center gap-1">
+							<span className="text-ctp-subtext0">Esc</span> to close
+						</span>
+					</span>
 				</div>
 			</div>
 		</div>

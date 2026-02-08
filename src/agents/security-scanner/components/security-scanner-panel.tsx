@@ -116,7 +116,7 @@ export function SecurityScannerPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">Security Scanner</div>
 					<div className="text-[11px] text-ctp-overlay0">
@@ -128,11 +128,11 @@ export function SecurityScannerPanel() {
 				</Button>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Findings</LabelText>
 					<div className="space-y-1.5 mt-2">
 						{findings.map((f) => (
-							<div key={f.type} className="bg-ctp-crust/30 rounded-lg p-2.5">
+							<div key={f.type} className="bg-ctp-mantle/40 rounded-lg p-2.5">
 								<div className="flex items-center justify-between">
 									<span className="text-[11px] font-medium text-ctp-text">{f.type}</span>
 									<Badge variant={statusVariant(f.status)}>{f.status}</Badge>
@@ -145,7 +145,7 @@ export function SecurityScannerPanel() {
 						)}
 					</div>
 				</GlassPanel>
-				<GlassPanel className="p-3 space-y-2">
+				<GlassPanel className="p-4 space-y-2">
 					<LabelText>JWT Analyzer</LabelText>
 					<Textarea
 						value={jwtInput}
@@ -157,7 +157,7 @@ export function SecurityScannerPanel() {
 						<HugeiconsIcon icon={LockKeyIcon} size={12} /> Decode
 					</Button>
 					{jwtOutput && (
-						<pre className="text-[10px] font-mono bg-ctp-crust/30 rounded-lg p-2.5 overflow-auto max-h-44 text-ctp-subtext1 whitespace-pre-wrap">
+						<pre className="text-[10px] font-mono bg-ctp-mantle/40 rounded-lg p-2.5 overflow-auto max-h-44 text-ctp-subtext1 whitespace-pre-wrap">
 							{jwtOutput}
 						</pre>
 					)}

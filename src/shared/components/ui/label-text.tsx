@@ -7,7 +7,7 @@ export function LabelText({ className, ...props }: HTMLAttributes<HTMLDivElement
 	return (
 		<div
 			className={cn(
-				"text-[10px] uppercase tracking-[0.08em] text-ctp-overlay0 font-semibold",
+				"text-[11px] uppercase tracking-widest text-ctp-subtext0 font-semibold",
 				className,
 			)}
 			{...props}

@@ -32,7 +32,7 @@ export function ApiDocsPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">API Documentation</div>
 					<div className="text-[11px] text-ctp-overlay0">Generate from collections</div>
@@ -64,7 +64,7 @@ export function ApiDocsPanel() {
 				</div>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 flex-1">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Markdown</LabelText>
 					<Textarea
 						value={markdown}
@@ -72,7 +72,7 @@ export function ApiDocsPanel() {
 						className="h-80 mt-1.5 text-[11px]"
 					/>
 				</GlassPanel>
-				<GlassPanel className="p-3 overflow-auto">
+				<GlassPanel className="p-4 overflow-auto">
 					<LabelText>Preview</LabelText>
 					<pre className="text-[11px] text-ctp-subtext0 whitespace-pre-wrap mt-1.5 leading-relaxed">
 						{markdown || "Generate to preview"}

@@ -5,18 +5,18 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
-	"inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold tracking-wide transition-colors",
+	"inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide border transition-colors duration-150",
 	{
 		variants: {
 			variant: {
-				default: "bg-ctp-surface0/50 text-ctp-overlay1 border border-ctp-surface0/40",
-				success: "bg-ctp-green/10 text-ctp-green border border-ctp-green/15",
-				warning: "bg-ctp-yellow/10 text-ctp-yellow border border-ctp-yellow/15",
-				danger: "bg-ctp-red/10 text-ctp-red border border-ctp-red/15",
-				info: "bg-ctp-blue/10 text-ctp-blue border border-ctp-blue/15",
-				accent: "bg-ctp-lavender/10 text-ctp-lavender border border-ctp-lavender/15",
-				mauve: "bg-ctp-mauve/10 text-ctp-mauve border border-ctp-mauve/15",
-				peach: "bg-ctp-peach/10 text-ctp-peach border border-ctp-peach/15",
+				default: "bg-ctp-surface0/35 text-ctp-overlay1 border-ctp-surface1/25",
+				success: "bg-ctp-green/10 text-ctp-green border-ctp-green/18",
+				warning: "bg-ctp-yellow/10 text-ctp-yellow border-ctp-yellow/18",
+				danger: "bg-ctp-red/10 text-ctp-red border-ctp-red/18",
+				info: "bg-ctp-blue/10 text-ctp-blue border-ctp-blue/18",
+				accent: "bg-ctp-lavender/10 text-ctp-lavender border-ctp-lavender/18",
+				mauve: "bg-ctp-mauve/10 text-ctp-mauve border-ctp-mauve/18",
+				peach: "bg-ctp-peach/10 text-ctp-peach border-ctp-peach/18",
 			},
 		},
 		defaultVariants: { variant: "default" },

@@ -77,19 +77,34 @@ export default function Home() {
 	return (
 		<>
 			<ToastProvider />
-			<div className="min-h-screen flex flex-col">
-				<Header onOpenCommandPalette={openCommandPalette} />
 
-				<div className="flex flex-1 overflow-hidden">
-					<Sidebar />
+			<div className="min-h-screen p-2.5">
+				<div className="min-h-[calc(100vh-20px)] flex flex-col rounded-[calc(var(--radius-xl)+4px)] bg-gradient-to-b from-ctp-base/92 to-ctp-base/86 border border-ctp-surface1/20 shadow-[0_0_0_1px_inset] shadow-ctp-surface0/12 overflow-hidden">
+					{/* Header */}
+					<Header onOpenCommandPalette={openCommandPalette} />
 
-					<main className="flex-1 overflow-hidden p-4 flex flex-col gap-4">
-						<WorkspaceTabs />
-						<WorkspaceContent />
-					</main>
+					{/* Main Content */}
+					<div className="flex flex-1 overflow-hidden min-h-0">
+						{/* Sidebar */}
+						<Sidebar />
+
+						{/* Workspace */}
+						<main className="flex-1 flex flex-col overflow-hidden min-w-0">
+							{/* Tab Bar */}
+							<div className="shrink-0 px-4 pt-4">
+								<WorkspaceTabs />
+							</div>
+
+							{/* Active Panel */}
+							<div className="flex-1 overflow-hidden p-4 min-h-0">
+								<WorkspaceContent />
+							</div>
+						</main>
+					</div>
 				</div>
 			</div>
 
+			{/* Command Palette Overlay */}
 			<CommandPalette
 				open={commandPaletteOpen}
 				onClose={closeCommandPalette}

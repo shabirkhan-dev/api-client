@@ -7,7 +7,7 @@ const colorMap = {
 	red: "bg-ctp-red shadow-[0_0_6px] shadow-ctp-red/40",
 	yellow: "bg-ctp-yellow shadow-[0_0_6px] shadow-ctp-yellow/40",
 	blue: "bg-ctp-blue shadow-[0_0_6px] shadow-ctp-blue/40",
-	muted: "bg-ctp-overlay0",
+	muted: "bg-ctp-overlay0/70",
 };
 
 export function StatusDot({

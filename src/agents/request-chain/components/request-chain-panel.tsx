@@ -46,7 +46,7 @@ export function RequestChainPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">Request Chain</div>
 					<div className="text-[11px] text-ctp-overlay0">Extract variables, build flows</div>
@@ -56,13 +56,13 @@ export function RequestChainPanel() {
 				</Button>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Chain</LabelText>
 					<div className="space-y-1.5 mt-2">
 						{nodes.map((n, i) => (
 							<div
 								key={n.id}
-								className="bg-ctp-crust/30 rounded-lg p-2 text-[10px] flex items-center gap-2"
+								className="bg-ctp-mantle/40 rounded-lg p-2 text-[10px] flex items-center gap-2"
 							>
 								<div className="w-4 h-4 rounded-full bg-ctp-lavender/15 text-ctp-lavender flex items-center justify-center text-[9px] font-bold shrink-0">
 									{i + 1}
@@ -75,7 +75,7 @@ export function RequestChainPanel() {
 						)}
 					</div>
 				</GlassPanel>
-				<GlassPanel className="p-3 space-y-2">
+				<GlassPanel className="p-4 space-y-2">
 					<LabelText>Extract Variable</LabelText>
 					<Input
 						value={jsonPath}
@@ -102,7 +102,7 @@ export function RequestChainPanel() {
 						</div>
 					)}
 				</GlassPanel>
-				<GlassPanel className="p-3 space-y-2">
+				<GlassPanel className="p-4 space-y-2">
 					<LabelText>Conditional</LabelText>
 					<Input
 						value={condition}

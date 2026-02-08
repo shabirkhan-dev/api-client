@@ -4,7 +4,7 @@ import { PlayIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
+import { Button, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
 
 function resolveTemplate(template: string): string {
 	return template.replace(/\{\{(.*?)\}\}/g, (_, key) => {
@@ -57,7 +57,7 @@ export function DataGeneratorPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">Data Generator</div>
 					<div className="text-[11px] text-ctp-overlay0">
@@ -65,22 +65,20 @@ export function DataGeneratorPanel() {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<label className="text-[10px] text-ctp-overlay0">
-						Count:{" "}
-						<input
-							type="number"
-							value={count}
-							onChange={(e) => setCount(Number(e.target.value))}
-							className="w-12 h-6 bg-ctp-crust/50 border border-ctp-surface0/50 rounded px-1.5 text-[10px] text-ctp-text outline-none text-center"
-						/>
-					</label>
+					<label className="text-[10px] text-ctp-overlay0">Count:</label>
+					<Input
+						type="number"
+						value={count}
+						onChange={(e) => setCount(Number(e.target.value))}
+						className="w-16 h-7 text-[11px] text-center"
+					/>
 					<Button variant="primary" size="sm" onClick={generate}>
 						<HugeiconsIcon icon={PlayIcon} size={13} /> Generate
 					</Button>
 				</div>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 flex-1">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Template</LabelText>
 					<Textarea
 						value={template}
@@ -92,7 +90,7 @@ export function DataGeneratorPanel() {
 						date.recent, address.city
 					</div>
 				</GlassPanel>
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Output</LabelText>
 					<Textarea value={output} readOnly className="h-52 mt-1.5 text-[11px]" />
 				</GlassPanel>
