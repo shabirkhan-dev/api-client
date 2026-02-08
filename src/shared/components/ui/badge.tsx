@@ -5,18 +5,18 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
-	"inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide border transition-colors",
+	"inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide border transition-colors duration-150",
 	{
 		variants: {
 			variant: {
-				default: "bg-ctp-surface0/45 text-ctp-overlay1 border-ctp-surface1/30",
-				success: "bg-ctp-green/12 text-ctp-green border-ctp-green/20",
-				warning: "bg-ctp-yellow/12 text-ctp-yellow border-ctp-yellow/20",
-				danger: "bg-ctp-red/12 text-ctp-red border-ctp-red/20",
-				info: "bg-ctp-blue/12 text-ctp-blue border-ctp-blue/20",
-				accent: "bg-ctp-lavender/12 text-ctp-lavender border-ctp-lavender/20",
-				mauve: "bg-ctp-mauve/12 text-ctp-mauve border-ctp-mauve/20",
-				peach: "bg-ctp-peach/12 text-ctp-peach border-ctp-peach/20",
+				default: "bg-ctp-surface0/35 text-ctp-overlay1 border-ctp-surface1/25",
+				success: "bg-ctp-green/10 text-ctp-green border-ctp-green/18",
+				warning: "bg-ctp-yellow/10 text-ctp-yellow border-ctp-yellow/18",
+				danger: "bg-ctp-red/10 text-ctp-red border-ctp-red/18",
+				info: "bg-ctp-blue/10 text-ctp-blue border-ctp-blue/18",
+				accent: "bg-ctp-lavender/10 text-ctp-lavender border-ctp-lavender/18",
+				mauve: "bg-ctp-mauve/10 text-ctp-mauve border-ctp-mauve/18",
+				peach: "bg-ctp-peach/10 text-ctp-peach border-ctp-peach/18",
 			},
 		},
 		defaultVariants: { variant: "default" },
@@ -24,9 +24,10 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-	extends HTMLAttributes<HTMLSpanElement>,
-		VariantProps<typeof badgeVariants> {}
+	extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, ...props }: BadgeProps) {
-	return <span className={cn(badgeVariants({ variant }), className)} {...props} />;
+	return (
+		<span className={cn(badgeVariants({ variant }), className)} {...props} />
+	);
 }

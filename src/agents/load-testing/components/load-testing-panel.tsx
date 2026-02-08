@@ -108,7 +108,7 @@ export function LoadTestingPanel() {
 					<select
 						value={profile}
 						onChange={(e) => setProfile(e.target.value)}
-						className="bg-ctp-mantle/40 border border-ctp-surface1/30 rounded-lg px-2.5 py-1.5 text-[11px] text-ctp-subtext1 outline-none input-focus"
+						className="bg-ctp-mantle/40 border border-ctp-surface1/30 rounded-lg px-2.5 py-1.5 text-[11px] text-ctp-subtext1 outline-none transition-all duration-[180ms] focus-visible:border-ctp-lavender/45 focus-visible:shadow-[0_0_0_1px_inset,0_0_0_3px] focus-visible:shadow-ctp-lavender/15"
 					>
 						{["spike", "ramp", "soak", "stress"].map((p) => (
 							<option key={p} value={p} className="bg-ctp-base">

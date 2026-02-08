@@ -128,7 +128,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: Props) {
 		>
 			<div
 				role="presentation"
-				className="glass rounded-[var(--radius-xl)] w-[520px] animate-scale-in overflow-hidden"
+				className="bg-gradient-to-b from-ctp-base/72 to-ctp-mantle/82 backdrop-blur-[20px] backdrop-saturate-[1.4] border border-ctp-surface1/18 shadow-[0_0_0_0.5px_inset] shadow-ctp-lavender/5 rounded-[var(--radius-xl)] w-[520px] animate-scale-in overflow-hidden"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={handleKeyDown}
 			>
