@@ -5,23 +5,21 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
-	"inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold transition-colors",
+	"inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold tracking-wide transition-colors",
 	{
 		variants: {
 			variant: {
-				default: "border border-ctp-border bg-ctp-mantle/90 text-ctp-overlay0",
-				success: "bg-ctp-green/15 text-ctp-green",
-				warning: "bg-ctp-yellow/15 text-ctp-yellow",
-				danger: "bg-ctp-red/15 text-ctp-red",
-				info: "bg-ctp-blue/15 text-ctp-blue",
-				lavender: "bg-ctp-lavender/15 text-ctp-lavender",
-				mauve: "bg-ctp-mauve/15 text-ctp-mauve",
-				peach: "bg-ctp-peach/15 text-ctp-peach",
+				default: "bg-ctp-surface0/50 text-ctp-overlay1 border border-ctp-surface0/40",
+				success: "bg-ctp-green/10 text-ctp-green border border-ctp-green/15",
+				warning: "bg-ctp-yellow/10 text-ctp-yellow border border-ctp-yellow/15",
+				danger: "bg-ctp-red/10 text-ctp-red border border-ctp-red/15",
+				info: "bg-ctp-blue/10 text-ctp-blue border border-ctp-blue/15",
+				accent: "bg-ctp-lavender/10 text-ctp-lavender border border-ctp-lavender/15",
+				mauve: "bg-ctp-mauve/10 text-ctp-mauve border border-ctp-mauve/15",
+				peach: "bg-ctp-peach/10 text-ctp-peach border border-ctp-peach/15",
 			},
 		},
-		defaultVariants: {
-			variant: "default",
-		},
+		defaultVariants: { variant: "default" },
 	},
 );
 

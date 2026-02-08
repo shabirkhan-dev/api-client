@@ -13,6 +13,10 @@ import type {
 } from "@/shared/types";
 
 interface AppState {
+	// Theme
+	themeId: string;
+	setThemeId: (id: string) => void;
+
 	// Workspace
 	activeTab: WorkspaceTab;
 	sidebarOpen: boolean;
@@ -141,6 +145,9 @@ const DEFAULT_ENVS: EnvironmentStore = {
 export const useAppStore = create<AppState>()(
 	persist(
 		(set, get) => ({
+			themeId: "catppuccin-mocha",
+			setThemeId: (id: string) => set({ themeId: id }),
+
 			activeTab: "http",
 			sidebarOpen: true,
 			method: "GET",
@@ -266,6 +273,7 @@ export const useAppStore = create<AppState>()(
 		{
 			name: "nebula-store",
 			partialize: (state) => ({
+				themeId: state.themeId,
 				collections: state.collections,
 				favorites: state.favorites,
 				history: state.history,

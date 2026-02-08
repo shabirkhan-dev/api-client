@@ -1,9 +1,10 @@
 "use client";
 
-import { Copy, Trash2 } from "lucide-react";
+import { Copy01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
-import { Badge, Button, GlassPanel, LabelText } from "@/shared/components/ui";
+import { Badge, Button, GlassPanel } from "@/shared/components/ui";
 import { cn, formatBytes } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import type { ResponseTab } from "../types";
@@ -22,72 +23,73 @@ export function ResponsePanel() {
 	const handleCopy = useCallback(async () => {
 		if (!lastResponse) return;
 		await navigator.clipboard.writeText(lastResponse.body);
-		toast.success("Response copied to clipboard");
+		toast.success("Copied to clipboard");
 	}, [lastResponse]);
 
-	const handleClear = useCallback(() => {
-		setLastResponse(null);
-	}, [setLastResponse]);
+	const handleClear = useCallback(() => setLastResponse(null), [setLastResponse]);
 
-	const timelineSegments = lastResponse
+	const statusVariant = lastResponse
+		? lastResponse.status < 300
+			? ("success" as const)
+			: lastResponse.status < 400
+				? ("warning" as const)
+				: lastResponse.status < 500
+					? ("peach" as const)
+					: ("danger" as const)
+		: ("default" as const);
+
+	const timeline = lastResponse
 		? [
-				{ label: "DNS Lookup", value: Math.max(2, lastResponse.time * 0.1) },
-				{ label: "TCP Connect", value: Math.max(4, lastResponse.time * 0.2) },
-				{ label: "TLS Handshake", value: Math.max(4, lastResponse.time * 0.2) },
-				{ label: "TTFB", value: Math.max(6, lastResponse.time * 0.3) },
-				{ label: "Download", value: Math.max(4, lastResponse.time * 0.2) },
-			]
+				{ label: "DNS", pct: 10 },
+				{ label: "TCP", pct: 20 },
+				{ label: "TLS", pct: 20 },
+				{ label: "TTFB", pct: 30 },
+				{ label: "Download", pct: 20 },
+			].map((s) => ({ ...s, ms: Math.max(1, lastResponse.time * (s.pct / 100)) }))
 		: [];
 
 	return (
-		<GlassPanel className="p-4 flex flex-col gap-3 flex-1">
+		<GlassPanel className="p-3 flex flex-col gap-2.5 flex-1 min-h-0">
 			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-1.5">
 					{lastResponse ? (
 						<>
-							<Badge
-								variant={
-									lastResponse.status < 300
-										? "success"
-										: lastResponse.status < 400
-											? "warning"
-											: lastResponse.status < 500
-												? "peach"
-												: "danger"
-								}
-								className="text-xs px-3 py-1 font-mono"
-							>
+							<Badge variant={statusVariant} className="font-mono text-[10px] px-2">
 								{lastResponse.status} {lastResponse.statusText}
 							</Badge>
-							<Badge className="font-mono">{lastResponse.time}ms</Badge>
-							<Badge className="font-mono">{formatBytes(lastResponse.size)}</Badge>
-							{lastResponse.isMock && <Badge variant="mauve">Mock</Badge>}
+							<Badge className="font-mono text-[10px]">{lastResponse.time}ms</Badge>
+							<Badge className="font-mono text-[10px]">{formatBytes(lastResponse.size)}</Badge>
+							{lastResponse.isMock && (
+								<Badge variant="mauve" className="text-[9px]">
+									MOCK
+								</Badge>
+							)}
 						</>
 					) : (
-						<span className="text-xs text-ctp-overlay0">No response yet</span>
+						<span className="text-[11px] text-ctp-overlay0">No response</span>
 					)}
 				</div>
 				<div className="flex items-center gap-1">
-					<Button variant="kbd" size="sm" onClick={handleCopy} disabled={!lastResponse}>
-						<Copy size={12} />
+					<Button variant="subtle" size="xs" onClick={handleCopy} disabled={!lastResponse}>
+						<HugeiconsIcon icon={Copy01Icon} size={11} />
 					</Button>
-					<Button variant="kbd" size="sm" onClick={handleClear} disabled={!lastResponse}>
-						<Trash2 size={12} />
+					<Button variant="subtle" size="xs" onClick={handleClear} disabled={!lastResponse}>
+						<HugeiconsIcon icon={Delete02Icon} size={11} />
 					</Button>
 				</div>
 			</div>
 
-			<div className="flex items-center gap-1 border-b border-ctp-surface0 pb-1">
+			<div className="flex items-center gap-0.5 border-b border-ctp-surface0/30 pb-1.5">
 				{tabs.map((tab) => (
 					<button
 						key={tab.id}
 						type="button"
 						onClick={() => setActiveTab(tab.id)}
 						className={cn(
-							"px-3 py-1.5 text-xs font-medium transition-all duration-150 border-b-2",
+							"px-2.5 py-1 text-[11px] font-medium transition-all rounded-md",
 							activeTab === tab.id
-								? "text-ctp-lavender border-ctp-lavender bg-ctp-lavender/5"
-								: "text-ctp-overlay0 border-transparent hover:text-ctp-text",
+								? "text-ctp-text bg-ctp-surface0/40"
+								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
 						)}
 					>
 						{tab.label}
@@ -97,40 +99,42 @@ export function ResponsePanel() {
 
 			<div className="flex-1 overflow-auto">
 				{activeTab === "body" && (
-					<pre className="text-xs font-mono p-3 bg-ctp-crust/40 rounded-xl overflow-auto max-h-[400px] whitespace-pre-wrap break-words text-ctp-text">
-						{lastResponse?.body || "// Response body will appear here"}
+					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg overflow-auto max-h-full whitespace-pre-wrap break-words text-ctp-subtext1 leading-relaxed">
+						{lastResponse?.body
+							? (() => {
+									try {
+										return JSON.stringify(JSON.parse(lastResponse.body), null, 2);
+									} catch {
+										return lastResponse.body;
+									}
+								})()
+							: "// Response body will appear here"}
 					</pre>
 				)}
-
 				{activeTab === "headers" && (
-					<pre className="text-xs font-mono p-3 bg-ctp-crust/40 rounded-xl overflow-auto max-h-[400px] text-ctp-text">
+					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg overflow-auto text-ctp-subtext1 leading-relaxed">
 						{lastResponse
 							? JSON.stringify(lastResponse.headers, null, 2)
-							: "// Response headers will appear here"}
+							: "// Headers will appear here"}
 					</pre>
 				)}
-
 				{activeTab === "cookies" && (
-					<pre className="text-xs font-mono p-3 bg-ctp-crust/40 rounded-xl overflow-auto text-ctp-text">
-						{lastResponse?.headers["set-cookie"] || "No cookies"}
+					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg text-ctp-subtext1">
+						{lastResponse?.headers["set-cookie"] || "No cookies in response"}
 					</pre>
 				)}
-
 				{activeTab === "timeline" && lastResponse && (
-					<div className="space-y-3 p-3">
-						<LabelText>Performance Timeline</LabelText>
-						{timelineSegments.map((seg) => (
+					<div className="space-y-2.5 p-2">
+						{timeline.map((seg) => (
 							<div key={seg.label} className="space-y-1">
-								<div className="flex justify-between text-xs text-ctp-text">
-									<span>{seg.label}</span>
-									<span>{seg.value.toFixed(1)}ms</span>
+								<div className="flex justify-between text-[11px]">
+									<span className="text-ctp-subtext0">{seg.label}</span>
+									<span className="text-ctp-overlay1 font-mono">{seg.ms.toFixed(1)}ms</span>
 								</div>
-								<div className="h-2 bg-ctp-surface0 rounded-full overflow-hidden">
+								<div className="h-1.5 bg-ctp-surface0/40 rounded-full overflow-hidden">
 									<div
-										className="h-full rounded-full bg-gradient-to-r from-ctp-lavender to-transparent transition-all"
-										style={{
-											width: `${Math.min(100, (seg.value / (lastResponse.time || 1)) * 100)}%`,
-										}}
+										className="h-full rounded-full bg-gradient-to-r from-ctp-lavender/80 to-ctp-lavender/20 transition-all duration-500"
+										style={{ width: `${Math.min(100, (seg.ms / lastResponse.time) * 100)}%` }}
 									/>
 								</div>
 							</div>

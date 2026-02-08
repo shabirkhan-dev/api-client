@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import {
+	ArrowDown01Icon,
+	ArrowRight01Icon,
+	Folder01Icon,
+	FolderOpenIcon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback } from "react";
 import { MethodBadge } from "@/shared/components/ui";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
@@ -22,24 +28,29 @@ function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number })
 
 	if (node.type === "folder") {
 		return (
-			<div className="space-y-0.5">
+			<div>
 				<button
 					type="button"
 					onClick={toggleCollapse}
-					className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs hover:bg-ctp-lavender/5 transition-colors text-ctp-text"
-					style={{ paddingLeft: `${depth * 12 + 8}px` }}
+					className="w-full flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[11px] hover:bg-ctp-surface0/25 transition-colors text-ctp-subtext1 group"
+					style={{ paddingLeft: `${depth * 14 + 6}px` }}
 				>
-					{node.collapsed ? (
-						<ChevronRight size={12} className="text-ctp-overlay0" />
-					) : (
-						<ChevronDown size={12} className="text-ctp-overlay0" />
-					)}
-					{node.collapsed ? (
-						<Folder size={13} className="text-ctp-lavender" />
-					) : (
-						<FolderOpen size={13} className="text-ctp-lavender" />
-					)}
+					<HugeiconsIcon
+						icon={node.collapsed ? ArrowRight01Icon : ArrowDown01Icon}
+						size={10}
+						className="text-ctp-overlay0 shrink-0"
+					/>
+					<HugeiconsIcon
+						icon={node.collapsed ? Folder01Icon : FolderOpenIcon}
+						size={12}
+						className="text-ctp-lavender/70 shrink-0"
+					/>
 					<span className="truncate font-medium">{node.name}</span>
+					{node.children && (
+						<span className="text-[9px] text-ctp-overlay0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+							{node.children.length}
+						</span>
+					)}
 				</button>
 				{!node.collapsed && node.children && (
 					<div>
@@ -56,11 +67,13 @@ function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number })
 		<button
 			type="button"
 			onClick={() => loadRequestFromNode(node)}
-			className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs hover:bg-ctp-lavender/5 transition-colors cursor-pointer"
-			style={{ paddingLeft: `${depth * 12 + 8}px` }}
+			className="w-full flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[11px] hover:bg-ctp-surface0/25 transition-colors cursor-pointer group"
+			style={{ paddingLeft: `${depth * 14 + 6}px` }}
 		>
 			<MethodBadge method={(node.method as HttpMethod) || "GET"} />
-			<span className="truncate text-ctp-subtext1">{node.name}</span>
+			<span className="truncate text-ctp-subtext0 group-hover:text-ctp-text transition-colors">
+				{node.name}
+			</span>
 		</button>
 	);
 }
@@ -69,7 +82,7 @@ export function CollectionTree() {
 	const { collections } = useAppStore();
 
 	return (
-		<div className="flex-1 overflow-y-auto space-y-0.5 pr-1">
+		<div className="flex-1 overflow-y-auto space-y-px pr-0.5">
 			{collections.map((node) => (
 				<TreeNode key={node.id} node={node} />
 			))}

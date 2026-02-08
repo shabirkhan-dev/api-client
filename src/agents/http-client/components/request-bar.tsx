@@ -1,8 +1,9 @@
 "use client";
 
-import { Send, X } from "lucide-react";
+import { Cancel01Icon, SentIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect } from "react";
-import { Button, Input, Spinner } from "@/shared/components/ui";
+import { Button, Spinner } from "@/shared/components/ui";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
@@ -10,14 +11,12 @@ import { useHttpRequest } from "../hooks/use-http-request";
 
 const methods: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
-const methodSelectColors: Record<HttpMethod, string> = {
-	GET: "text-ctp-green border-ctp-green/40",
-	POST: "text-ctp-blue border-ctp-blue/40",
-	PUT: "text-ctp-yellow border-ctp-yellow/40",
-	DELETE: "text-ctp-red border-ctp-red/40",
-	PATCH: "text-ctp-mauve border-ctp-mauve/40",
-	OPTIONS: "text-ctp-teal border-ctp-teal/40",
-	HEAD: "text-ctp-peach border-ctp-peach/40",
+const methodColor: Record<string, string> = {
+	GET: "text-ctp-green border-ctp-green/30",
+	POST: "text-ctp-blue border-ctp-blue/30",
+	PUT: "text-ctp-yellow border-ctp-yellow/30",
+	DELETE: "text-ctp-red border-ctp-red/30",
+	PATCH: "text-ctp-mauve border-ctp-mauve/30",
 };
 
 export function RequestBar() {
@@ -40,13 +39,13 @@ export function RequestBar() {
 	}, [handleKeyDown]);
 
 	return (
-		<div className="flex items-center gap-3">
+		<div className="flex items-center gap-2">
 			<select
 				value={method}
 				onChange={(e) => setMethod(e.target.value as HttpMethod)}
 				className={cn(
-					"w-28 px-3 py-2 rounded-xl font-semibold font-mono text-xs border bg-transparent outline-none transition-all",
-					methodSelectColors[method],
+					"w-[88px] h-8 px-2 rounded-lg font-bold font-mono text-[11px] border bg-transparent outline-none transition-all cursor-pointer",
+					methodColor[method],
 				)}
 			>
 				{methods.map((m) => (
@@ -56,12 +55,12 @@ export function RequestBar() {
 				))}
 			</select>
 
-			<div className="flex-1 flex items-center gap-2 glass rounded-xl px-3 py-1.5 focus-within:ring-2 focus-within:ring-ctp-lavender/20 transition-all">
-				<Input
+			<div className="flex-1 flex items-center h-8 gap-1.5 bg-ctp-crust/40 rounded-lg border border-ctp-surface0/50 px-2.5 focus-within:border-ctp-lavender/40 focus-within:shadow-[0_0_0_3px] focus-within:shadow-ctp-lavender/8 transition-all">
+				<input
 					value={url}
 					onChange={(e) => setUrl(e.target.value)}
 					placeholder="https://api.example.com/v1/resource"
-					className="border-0 bg-transparent focus:ring-0 font-mono text-sm h-7 px-0"
+					className="flex-1 bg-transparent outline-none font-mono text-[12px] text-ctp-text placeholder:text-ctp-overlay0/50"
 				/>
 				{url && (
 					<button
@@ -69,7 +68,7 @@ export function RequestBar() {
 						onClick={() => setUrl("")}
 						className="text-ctp-overlay0 hover:text-ctp-text transition-colors"
 					>
-						<X size={14} />
+						<HugeiconsIcon icon={Cancel01Icon} size={12} />
 					</button>
 				)}
 			</div>
@@ -79,14 +78,14 @@ export function RequestBar() {
 				size="md"
 				onClick={sendRequest}
 				disabled={requestInFlight}
-				className="px-5"
+				className="px-4 min-w-[72px]"
 			>
 				{requestInFlight ? (
 					<Spinner size="sm" />
 				) : (
 					<>
-						<Send size={14} />
-						<span>Send</span>
+						<HugeiconsIcon icon={SentIcon} size={14} />
+						<span className="text-[12px]">Send</span>
 					</>
 				)}
 			</Button>

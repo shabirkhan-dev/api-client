@@ -2,27 +2,29 @@
 
 import { cn } from "@/shared/lib/utils";
 
-interface StatusDotProps {
-	color?: "green" | "red" | "yellow" | "blue" | "muted";
-	pulse?: boolean;
-	className?: string;
-}
-
 const colorMap = {
-	green: "bg-ctp-green",
-	red: "bg-ctp-red",
-	yellow: "bg-ctp-yellow",
-	blue: "bg-ctp-blue",
+	green: "bg-ctp-green shadow-[0_0_6px] shadow-ctp-green/40",
+	red: "bg-ctp-red shadow-[0_0_6px] shadow-ctp-red/40",
+	yellow: "bg-ctp-yellow shadow-[0_0_6px] shadow-ctp-yellow/40",
+	blue: "bg-ctp-blue shadow-[0_0_6px] shadow-ctp-blue/40",
 	muted: "bg-ctp-overlay0",
 };
 
-export function StatusDot({ color = "muted", pulse, className }: StatusDotProps) {
+export function StatusDot({
+	color = "muted",
+	pulse,
+	className,
+}: {
+	color?: keyof typeof colorMap;
+	pulse?: boolean;
+	className?: string;
+}) {
 	return (
 		<span
 			className={cn(
-				"inline-block w-2 h-2 rounded-full",
+				"inline-block w-1.5 h-1.5 rounded-full",
 				colorMap[color],
-				pulse && "animate-pulse-glow",
+				pulse && "animate-pulse-soft",
 				className,
 			)}
 		/>

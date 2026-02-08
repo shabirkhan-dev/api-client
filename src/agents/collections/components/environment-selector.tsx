@@ -13,14 +13,14 @@ export function EnvironmentSelector() {
 	const { activeEnv, setActiveEnv } = useAppStore();
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-1.5">
 			<LabelText>Environment</LabelText>
 			<div className="flex items-center gap-2">
 				<StatusDot color={envColors[activeEnv] || "green"} />
 				<select
 					value={activeEnv}
 					onChange={(e) => setActiveEnv(e.target.value)}
-					className="flex-1 bg-transparent border border-ctp-border rounded-lg px-3 py-1.5 text-xs text-ctp-text outline-none"
+					className="flex-1 bg-transparent border border-ctp-surface0/40 rounded-lg px-2 py-1 text-[11px] text-ctp-subtext1 outline-none"
 				>
 					<option value="development" className="bg-ctp-base">
 						Development
@@ -33,9 +33,7 @@ export function EnvironmentSelector() {
 					</option>
 				</select>
 			</div>
-			<div className="text-[10px] text-ctp-overlay0">
-				Use {"{{variable}}"} in inputs. Hover to preview.
-			</div>
+			<div className="text-[9px] text-ctp-overlay0">Use {"{{variable}}"} syntax in inputs</div>
 		</div>
 	);
 }

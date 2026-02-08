@@ -7,7 +7,7 @@ export function Kbd({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
 	return (
 		<span
 			className={cn(
-				"inline-flex items-center text-[10px] px-1.5 py-0.5 rounded-md border border-ctp-border bg-ctp-mantle/90 text-ctp-overlay0 font-mono",
+				"inline-flex items-center text-[9px] px-1 py-px rounded border border-ctp-surface0/60 bg-ctp-mantle/80 text-ctp-overlay0 font-mono leading-none",
 				className,
 			)}
 			{...props}

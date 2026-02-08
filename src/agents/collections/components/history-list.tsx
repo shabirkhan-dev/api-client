@@ -1,6 +1,7 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { StarIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useMemo, useState } from "react";
 import { Input, MethodBadge } from "@/shared/components/ui";
 import { useAppStore } from "@/shared/stores/app-store";
@@ -15,18 +16,18 @@ export function HistoryList() {
 	);
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-1.5">
 			<Input
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
-				placeholder="Search history..."
-				className="h-7 text-xs"
+				placeholder="Filter history..."
+				className="h-6 text-[11px]"
 			/>
-			<div className="max-h-40 overflow-y-auto space-y-1">
+			<div className="max-h-36 overflow-y-auto space-y-px">
 				{filtered.map((item) => (
 					<div
 						key={item.id}
-						className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs hover:bg-ctp-lavender/5 cursor-pointer transition-colors group"
+						className="flex items-center gap-1.5 px-1.5 py-1 rounded-md text-[11px] hover:bg-ctp-surface0/25 cursor-pointer transition-colors group"
 					>
 						<button
 							type="button"
@@ -34,10 +35,12 @@ export function HistoryList() {
 								setMethod(item.method);
 								setUrl(item.url);
 							}}
-							className="flex items-center gap-2 flex-1 min-w-0"
+							className="flex items-center gap-1.5 flex-1 min-w-0"
 						>
 							<MethodBadge method={item.method} />
-							<span className="truncate text-ctp-subtext0">{item.url}</span>
+							<span className="truncate text-ctp-overlay1 group-hover:text-ctp-text transition-colors">
+								{item.url}
+							</span>
 						</button>
 						<button
 							type="button"
@@ -45,21 +48,21 @@ export function HistoryList() {
 								e.stopPropagation();
 								toggleFavorite(item);
 							}}
-							className="opacity-0 group-hover:opacity-100 transition-opacity"
+							className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
 						>
-							<Star
-								size={12}
+							<HugeiconsIcon
+								icon={StarIcon}
+								size={11}
 								className={
-									isFavorite(item.url, item.method)
-										? "text-ctp-yellow fill-ctp-yellow"
-										: "text-ctp-overlay0"
+									isFavorite(item.url, item.method) ? "text-ctp-yellow" : "text-ctp-overlay0"
 								}
+								fill={isFavorite(item.url, item.method) ? "currentColor" : "none"}
 							/>
 						</button>
 					</div>
 				))}
 				{filtered.length === 0 && (
-					<div className="text-xs text-ctp-overlay0 text-center py-3">No history yet</div>
+					<div className="text-[10px] text-ctp-overlay0 text-center py-3">No history</div>
 				)}
 			</div>
 		</div>

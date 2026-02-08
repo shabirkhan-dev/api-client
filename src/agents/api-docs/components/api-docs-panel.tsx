@@ -1,6 +1,7 @@
 "use client";
 
-import { Download, FileText } from "lucide-react";
+import { Download01Icon, Note01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
@@ -12,72 +13,70 @@ export function ApiDocsPanel() {
 	const [markdown, setMarkdown] = useState("");
 
 	const generate = useCallback(() => {
-		const lines = ["# API Documentation", ""];
-		for (const collection of collections) {
-			lines.push(`## ${collection.name}`);
-			if (collection.children) {
-				for (const req of collection.children) {
-					lines.push(`### ${req.name}`);
-					lines.push(`- Method: ${req.method || "GET"}`);
-					lines.push(`- URL: ${req.url || "https://api.example.com"}`);
-					lines.push("");
+		const lines = ["# API Documentation\n"];
+		for (const c of collections) {
+			lines.push(`## ${c.name}\n`);
+			if (c.children) {
+				for (const r of c.children) {
+					lines.push(
+						`### ${r.name}`,
+						`- **Method:** \`${r.method || "GET"}\``,
+						`- **URL:** \`${r.url || "—"}\`\n`,
+					);
 				}
 			}
 		}
 		setMarkdown(lines.join("\n"));
-		toast.success("Documentation generated");
+		toast.success("Docs generated");
 	}, [collections]);
 
-	const exportMd = useCallback(() => {
-		downloadFile(markdown, "nebula-api-docs.md", "text/markdown");
-	}, [markdown]);
-
-	const exportHtml = useCallback(() => {
-		const html = `<!DOCTYPE html><html><head><title>API Docs</title></head><body><pre>${escapeHtml(markdown)}</pre></body></html>`;
-		downloadFile(html, "nebula-api-docs.html", "text/html");
-	}, [markdown]);
-
 	return (
-		<div className="flex-1 flex flex-col gap-4 overflow-auto">
-			<GlassPanel className="p-4 flex items-center justify-between">
+		<div className="flex-1 flex flex-col gap-3 overflow-auto">
+			<GlassPanel className="p-3 flex items-center justify-between">
 				<div>
-					<div className="text-sm font-semibold">API Documentation Generator</div>
-					<div className="text-xs text-ctp-overlay0">
-						Generate docs from collections and history
-					</div>
+					<div className="text-[13px] font-semibold">API Documentation</div>
+					<div className="text-[11px] text-ctp-overlay0">Generate from collections</div>
 				</div>
-				<div className="flex items-center gap-2">
+				<div className="flex gap-1.5">
 					<Button variant="primary" size="sm" onClick={generate}>
-						<FileText size={14} />
-						Generate
+						<HugeiconsIcon icon={Note01Icon} size={13} /> Generate
 					</Button>
-					<Button variant="kbd" size="sm" onClick={exportMd}>
-						<Download size={12} />
-						Markdown
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => downloadFile(markdown, "api-docs.md", "text/markdown")}
+					>
+						<HugeiconsIcon icon={Download01Icon} size={12} /> MD
 					</Button>
-					<Button variant="kbd" size="sm" onClick={exportHtml}>
-						<Download size={12} />
-						HTML
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() =>
+							downloadFile(
+								`<!DOCTYPE html><html><body><pre>${escapeHtml(markdown)}</pre></body></html>`,
+								"api-docs.html",
+								"text/html",
+							)
+						}
+					>
+						<HugeiconsIcon icon={Download01Icon} size={12} /> HTML
 					</Button>
 				</div>
 			</GlassPanel>
-
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-				<GlassPanel className="p-4">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3 flex-1">
+				<GlassPanel className="p-3">
 					<LabelText>Markdown</LabelText>
 					<Textarea
 						value={markdown}
 						onChange={(e) => setMarkdown(e.target.value)}
-						className="h-96 mt-2 text-xs"
+						className="h-80 mt-1.5 text-[11px]"
 					/>
 				</GlassPanel>
-				<GlassPanel className="p-4 overflow-auto">
+				<GlassPanel className="p-3 overflow-auto">
 					<LabelText>Preview</LabelText>
-					<div className="prose prose-invert max-w-none text-sm mt-2">
-						<pre className="text-xs text-ctp-subtext0 whitespace-pre-wrap">
-							{markdown || "Generate documentation to see preview"}
-						</pre>
-					</div>
+					<pre className="text-[11px] text-ctp-subtext0 whitespace-pre-wrap mt-1.5 leading-relaxed">
+						{markdown || "Generate to preview"}
+					</pre>
 				</GlassPanel>
 			</div>
 		</div>

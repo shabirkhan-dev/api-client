@@ -1,28 +1,30 @@
 "use client";
 
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 import { cn } from "@/shared/lib/utils";
 
 const buttonVariants = cva(
-	"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-lavender/40 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+	"inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg text-[13px] font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-lavender/30 disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none",
 	{
 		variants: {
 			variant: {
-				primary: "btn-primary",
-				ghost:
-					"bg-transparent text-ctp-overlay0 hover:text-ctp-text hover:bg-ctp-lavender/5 active:scale-[0.98]",
+				primary: "btn-primary rounded-lg",
+				secondary:
+					"bg-ctp-surface0/50 text-ctp-text border border-ctp-surface1/50 hover:bg-ctp-surface0 hover:border-ctp-surface1 active:scale-[0.98]",
+				ghost: "text-ctp-overlay1 hover:text-ctp-text hover:bg-ctp-surface0/40 active:scale-[0.98]",
 				outline:
-					"border border-ctp-border bg-transparent text-ctp-text hover:border-ctp-border-hover hover:bg-ctp-lavender/5",
-				danger: "bg-ctp-red/15 text-ctp-red border border-ctp-red/20 hover:bg-ctp-red/25",
-				kbd: "text-[10px] px-2 py-1 rounded-md border border-ctp-border bg-ctp-mantle/90 text-ctp-overlay0 hover:text-ctp-text hover:border-ctp-border-hover",
+					"border border-ctp-surface0/80 text-ctp-subtext1 hover:border-ctp-surface1 hover:bg-ctp-surface0/30 hover:text-ctp-text active:scale-[0.98]",
+				danger:
+					"bg-ctp-red/10 text-ctp-red border border-ctp-red/15 hover:bg-ctp-red/20 active:scale-[0.98]",
+				subtle:
+					"text-ctp-overlay0 text-[11px] px-1.5 py-0.5 rounded-md hover:text-ctp-text hover:bg-ctp-surface0/40",
 			},
 			size: {
-				sm: "h-8 px-3 text-xs",
-				md: "h-9 px-4 text-sm",
-				lg: "h-10 px-5 text-sm",
-				icon: "h-8 w-8",
+				xs: "h-6 px-2 text-[11px] rounded-md gap-1",
+				sm: "h-7 px-2.5 text-[12px]",
+				md: "h-8 px-3",
+				lg: "h-9 px-4",
 			},
 		},
 		defaultVariants: {
@@ -34,18 +36,18 @@ const buttonVariants = cva(
 
 export interface ButtonProps
 	extends ButtonHTMLAttributes<HTMLButtonElement>,
-		VariantProps<typeof buttonVariants> {
-	asChild?: boolean;
-}
+		VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-	({ className, variant, size, asChild = false, ...props }, ref) => {
-		const Comp = asChild ? Slot : "button";
+	({ className, variant, size, ...props }, ref) => {
 		return (
-			<Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+			<button
+				type="button"
+				className={cn(buttonVariants({ variant, size, className }))}
+				ref={ref}
+				{...props}
+			/>
 		);
 	},
 );
 Button.displayName = "Button";
-
-export { buttonVariants };

@@ -25,13 +25,13 @@
 			"style": {
 				"noNonNullAssertion": "off"
 			},
-      "suspicious": {
-        "noExplicitAny": "warn"
-      },
-      "a11y": {
-        "noLabelWithoutControl": "off",
-        "noStaticElementInteractions": "off"
-      }
+			"suspicious": {
+				"noExplicitAny": "warn"
+			},
+			"a11y": {
+				"noLabelWithoutControl": "off",
+				"noStaticElementInteractions": "off"
+			}
 		}
 	},
 	"javascript": {

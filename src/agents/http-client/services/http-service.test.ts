@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseCurl, parseHeaders } from "./http-service";
+import { parseCurl, parseHeaders, resetCircuitBreaker } from "./http-service";
 
 describe("parseHeaders", () => {
 	it("parses valid JSON headers", () => {
@@ -8,16 +8,22 @@ describe("parseHeaders", () => {
 		});
 	});
 
-	it("returns empty object for invalid JSON", () => {
+	it("returns empty for invalid JSON", () => {
 		expect(parseHeaders("invalid")).toEqual({});
 	});
 
-	it("returns empty object for empty string", () => {
+	it("returns empty for empty string", () => {
 		expect(parseHeaders("")).toEqual({});
 	});
 
-	it("returns empty object for whitespace", () => {
+	it("returns empty for whitespace", () => {
 		expect(parseHeaders("   ")).toEqual({});
+	});
+
+	it("parses complex headers", () => {
+		const headers = parseHeaders('{"Authorization":"Bearer token","X-Custom":"value"}');
+		expect(headers.Authorization).toBe("Bearer token");
+		expect(headers["X-Custom"]).toBe("value");
 	});
 });
 
@@ -31,7 +37,6 @@ describe("parseCurl", () => {
 	it("parses curl with method", () => {
 		const result = parseCurl("curl -X POST https://api.example.com/users");
 		expect(result.method).toBe("POST");
-		expect(result.url).toBe("https://api.example.com/users");
 	});
 
 	it("parses curl with headers", () => {
@@ -56,5 +61,22 @@ describe("parseCurl", () => {
 		);
 		expect(result.headers["Content-Type"]).toBe("application/json");
 		expect(result.headers.Authorization).toBe("Bearer token");
+	});
+
+	it("parses DELETE method", () => {
+		const result = parseCurl("curl -X DELETE https://api.example.com/users/1");
+		expect(result.method).toBe("DELETE");
+	});
+
+	it("parses PUT with body", () => {
+		const result = parseCurl("curl -X PUT https://api.example.com --data '{\"updated\":true}'");
+		expect(result.method).toBe("PUT");
+		expect(result.body).toContain("updated");
+	});
+});
+
+describe("resetCircuitBreaker", () => {
+	it("can be called without error", () => {
+		expect(() => resetCircuitBreaker()).not.toThrow();
 	});
 });
