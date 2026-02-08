@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: true
+  commands:
+    biome-check:
+      glob: "*.{js,ts,tsx,jsx,json}"
+      run: npx @biomejs/biome check --write --staged
+    type-check:
+      run: npx tsc --noEmit
+
+pre-push:
+  parallel: true
+  commands:
+    test:
+      run: npx vitest run
