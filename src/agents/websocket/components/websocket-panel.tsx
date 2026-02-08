@@ -88,7 +88,7 @@ export function WebSocketPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-hidden">
-			<GlassPanel className="p-3 space-y-2">
+			<GlassPanel className="p-4 space-y-2">
 				<div className="flex items-center gap-2 flex-wrap">
 					<Input
 						value={url}
@@ -112,7 +112,7 @@ export function WebSocketPanel() {
 				</div>
 			</GlassPanel>
 			<div className="flex gap-3 flex-1 overflow-hidden min-h-0">
-				<GlassPanel className="p-3 flex-1 flex flex-col">
+				<GlassPanel className="p-4 flex-1 flex flex-col">
 					<div className="flex items-center justify-between mb-2">
 						<LabelText>Messages</LabelText>
 						<div className="flex gap-1">
@@ -138,7 +138,7 @@ export function WebSocketPanel() {
 						{messages.map((msg) => (
 							<div
 								key={msg.id}
-								className={`text-[10px] font-mono p-2 rounded-md border-l-2 ${msg.direction === "sent" ? "bg-ctp-blue/5 border-ctp-blue/40 text-ctp-blue" : "bg-ctp-green/5 border-ctp-green/40 text-ctp-green"}`}
+								className={`text-[10px] font-mono p-2 rounded-lg border-l-2 ${msg.direction === "sent" ? "bg-ctp-blue/10 border-ctp-blue/40 text-ctp-blue" : "bg-ctp-green/10 border-ctp-green/40 text-ctp-green"}`}
 							>
 								<div className="flex justify-between mb-0.5 text-[9px] opacity-60">
 									<span className="uppercase font-semibold">{msg.direction}</span>
@@ -152,7 +152,7 @@ export function WebSocketPanel() {
 						)}
 					</div>
 				</GlassPanel>
-				<GlassPanel className="p-3 w-1/3 flex flex-col gap-2">
+				<GlassPanel className="p-4 w-1/3 flex flex-col gap-2">
 					<LabelText>Compose</LabelText>
 					<Textarea
 						value={message}

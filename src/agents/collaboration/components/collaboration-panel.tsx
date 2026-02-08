@@ -53,7 +53,7 @@ export function CollaborationPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-[13px] font-semibold">Collaboration</div>
 					<div className="text-[11px] text-ctp-overlay0">Share, comment, audit</div>
@@ -63,7 +63,7 @@ export function CollaborationPanel() {
 				</Button>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Workspace</LabelText>
 					<div className="text-[11px] text-ctp-overlay0 mt-1.5">Nebula Team</div>
 					<Button
@@ -78,7 +78,7 @@ export function CollaborationPanel() {
 						<HugeiconsIcon icon={Refresh01Icon} size={11} /> Sync
 					</Button>
 				</GlassPanel>
-				<GlassPanel className="p-3 space-y-2">
+				<GlassPanel className="p-4 space-y-2">
 					<LabelText>Comments</LabelText>
 					<Textarea
 						value={commentText}
@@ -93,7 +93,7 @@ export function CollaborationPanel() {
 						{comments.map((c) => (
 							<div
 								key={c.id}
-								className="bg-ctp-crust/30 rounded-md p-1.5 text-[10px] text-ctp-subtext0"
+								className="bg-ctp-mantle/40 rounded-lg p-2 text-[10px] text-ctp-subtext0"
 							>
 								{c.text}
 								<div className="text-[8px] text-ctp-overlay0 mt-0.5">
@@ -103,7 +103,7 @@ export function CollaborationPanel() {
 						))}
 					</div>
 				</GlassPanel>
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Audit Log</LabelText>
 					<div className="space-y-0.5 mt-1.5 max-h-48 overflow-y-auto">
 						{auditLog.map((e) => (

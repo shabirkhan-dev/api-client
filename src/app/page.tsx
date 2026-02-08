@@ -77,16 +77,18 @@ export default function Home() {
 	return (
 		<>
 			<ToastProvider />
-			<div className="min-h-screen flex flex-col">
-				<Header onOpenCommandPalette={openCommandPalette} />
+			<div className="app-shell">
+				<div className="app-frame">
+					<Header onOpenCommandPalette={openCommandPalette} />
 
-				<div className="flex flex-1 overflow-hidden">
-					<Sidebar />
+					<div className="flex flex-1 overflow-hidden">
+						<Sidebar />
 
-					<main className="flex-1 overflow-hidden p-4 flex flex-col gap-4">
-						<WorkspaceTabs />
-						<WorkspaceContent />
-					</main>
+						<main className="flex-1 overflow-hidden p-4 flex flex-col gap-4">
+							<WorkspaceTabs />
+							<WorkspaceContent />
+						</main>
+					</div>
 				</div>
 			</div>
 

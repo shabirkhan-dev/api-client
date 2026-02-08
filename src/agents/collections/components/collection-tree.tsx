@@ -32,7 +32,7 @@ function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number })
 				<button
 					type="button"
 					onClick={toggleCollapse}
-					className="w-full flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[11px] hover:bg-ctp-surface0/25 transition-colors text-ctp-subtext1 group"
+					className="w-full flex items-center gap-2 px-2 py-[6px] rounded-lg text-[11px] hover:bg-ctp-surface0/30 transition-colors text-ctp-subtext1 group"
 					style={{ paddingLeft: `${depth * 14 + 6}px` }}
 				>
 					<HugeiconsIcon
@@ -67,7 +67,7 @@ function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number })
 		<button
 			type="button"
 			onClick={() => loadRequestFromNode(node)}
-			className="w-full flex items-center gap-1.5 px-2 py-[5px] rounded-md text-[11px] hover:bg-ctp-surface0/25 transition-colors cursor-pointer group"
+			className="w-full flex items-center gap-2 px-2 py-[6px] rounded-lg text-[11px] hover:bg-ctp-surface0/30 transition-colors cursor-pointer group"
 			style={{ paddingLeft: `${depth * 14 + 6}px` }}
 		>
 			<MethodBadge method={(node.method as HttpMethod) || "GET"} />

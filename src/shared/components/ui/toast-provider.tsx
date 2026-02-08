@@ -9,14 +9,15 @@ export function ToastProvider() {
 			gap={6}
 			toastOptions={{
 				style: {
-					background: "var(--ctp-mantle, rgba(24, 24, 37, 0.95))",
-					border: "1px solid color-mix(in srgb, var(--ctp-lavender, #b4befe) 10%, transparent)",
+					background:
+						"linear-gradient(180deg, color-mix(in srgb, var(--ctp-mantle) 90%, transparent), color-mix(in srgb, var(--ctp-base) 90%, transparent))",
+					border: "1px solid color-mix(in srgb, var(--ctp-surface1, #45475a) 40%, transparent)",
 					color: "var(--ctp-text, #cdd6f4)",
-					backdropFilter: "blur(20px)",
+					backdropFilter: "blur(18px)",
 					fontFamily: "Inter, sans-serif",
 					fontSize: "12px",
-					borderRadius: "10px",
-					boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+					borderRadius: "14px",
+					boxShadow: "0 12px 40px -24px rgba(0, 0, 0, 0.65)",
 				},
 			}}
 			richColors

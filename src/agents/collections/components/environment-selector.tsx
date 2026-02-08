@@ -20,7 +20,7 @@ export function EnvironmentSelector() {
 				<select
 					value={activeEnv}
 					onChange={(e) => setActiveEnv(e.target.value)}
-					className="flex-1 bg-transparent border border-ctp-surface0/40 rounded-lg px-2 py-1 text-[11px] text-ctp-subtext1 outline-none"
+					className="flex-1 bg-ctp-mantle/40 border border-ctp-surface1/30 rounded-lg px-2.5 py-1 text-[11px] text-ctp-subtext1 outline-none input-focus"
 				>
 					<option value="development" className="bg-ctp-base">
 						Development

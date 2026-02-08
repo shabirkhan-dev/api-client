@@ -3,7 +3,7 @@
 import { Cancel01Icon, SentIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect } from "react";
-import { Button, Spinner } from "@/shared/components/ui";
+import { Button, GlassPanel, Spinner } from "@/shared/components/ui";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
@@ -39,12 +39,12 @@ export function RequestBar() {
 	}, [handleKeyDown]);
 
 	return (
-		<div className="flex items-center gap-2">
+		<GlassPanel className="p-3 flex items-center gap-2">
 			<select
 				value={method}
 				onChange={(e) => setMethod(e.target.value as HttpMethod)}
 				className={cn(
-					"w-[88px] h-8 px-2 rounded-lg font-bold font-mono text-[11px] border bg-transparent outline-none transition-all cursor-pointer",
+					"w-[92px] h-9 px-2.5 rounded-lg font-bold font-mono text-[11px] border bg-ctp-mantle/50 outline-none transition-all cursor-pointer",
 					methodColor[method],
 				)}
 			>
@@ -55,7 +55,7 @@ export function RequestBar() {
 				))}
 			</select>
 
-			<div className="flex-1 flex items-center h-8 gap-1.5 bg-ctp-crust/40 rounded-lg border border-ctp-surface0/50 px-2.5 focus-within:border-ctp-lavender/40 focus-within:shadow-[0_0_0_3px] focus-within:shadow-ctp-lavender/8 transition-all">
+			<div className="flex-1 flex items-center h-9 gap-1.5 bg-ctp-mantle/40 rounded-lg border border-ctp-surface1/30 px-3 focus-within:border-ctp-lavender/40 focus-within:shadow-[0_0_0_3px] focus-within:shadow-ctp-lavender/8 transition-all">
 				<input
 					value={url}
 					onChange={(e) => setUrl(e.target.value)}
@@ -78,7 +78,7 @@ export function RequestBar() {
 				size="md"
 				onClick={sendRequest}
 				disabled={requestInFlight}
-				className="px-4 min-w-[72px]"
+				className="px-4 min-w-[84px]"
 			>
 				{requestInFlight ? (
 					<Spinner size="sm" />
@@ -89,6 +89,6 @@ export function RequestBar() {
 					</>
 				)}
 			</Button>
-		</div>
+		</GlassPanel>
 	);
 }

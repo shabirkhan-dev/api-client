@@ -21,13 +21,13 @@ export function HistoryList() {
 				value={search}
 				onChange={(e) => setSearch(e.target.value)}
 				placeholder="Filter history..."
-				className="h-6 text-[11px]"
+				className="h-7 text-[11px]"
 			/>
-			<div className="max-h-36 overflow-y-auto space-y-px">
+			<div className="max-h-36 overflow-y-auto space-y-1">
 				{filtered.map((item) => (
 					<div
 						key={item.id}
-						className="flex items-center gap-1.5 px-1.5 py-1 rounded-md text-[11px] hover:bg-ctp-surface0/25 cursor-pointer transition-colors group"
+						className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] hover:bg-ctp-surface0/30 cursor-pointer transition-colors group"
 					>
 						<button
 							type="button"

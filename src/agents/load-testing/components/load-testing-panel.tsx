@@ -102,13 +102,13 @@ export function LoadTestingPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3">
+			<GlassPanel className="p-4">
 				<LabelText className="mb-2">Configuration</LabelText>
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-2">
 					<select
 						value={profile}
 						onChange={(e) => setProfile(e.target.value)}
-						className="bg-transparent border border-ctp-surface0/60 rounded-lg px-2 py-1.5 text-[11px] text-ctp-subtext1 outline-none"
+						className="bg-ctp-mantle/40 border border-ctp-surface1/30 rounded-lg px-2.5 py-1.5 text-[11px] text-ctp-subtext1 outline-none input-focus"
 					>
 						{["spike", "ramp", "soak", "stress"].map((p) => (
 							<option key={p} value={p} className="bg-ctp-base">
@@ -173,7 +173,7 @@ export function LoadTestingPanel() {
 				))}
 			</div>
 
-			<GlassPanel className="p-3">
+			<GlassPanel className="p-4">
 				<div className="flex items-center justify-between mb-2">
 					<LabelText>Results</LabelText>
 					<Button variant="subtle" size="xs" onClick={exportCsv}>

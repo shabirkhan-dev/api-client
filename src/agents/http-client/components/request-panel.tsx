@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
+import { Badge, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
 import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import type { RequestTab } from "../types";
@@ -25,23 +25,23 @@ export function RequestPanel() {
 	};
 
 	return (
-		<GlassPanel className="p-3 flex flex-col gap-2.5 flex-1 min-h-0">
-			<div className="flex items-center gap-0.5 border-b border-ctp-surface0/30 pb-1.5">
+		<GlassPanel className="p-4 flex flex-col gap-3 flex-1 min-h-0">
+			<div className="flex items-center gap-1 border-b border-ctp-surface1/20 pb-2">
 				{tabs.map((tab) => (
 					<button
 						key={tab.id}
 						type="button"
 						onClick={() => setActiveTab(tab.id)}
 						className={cn(
-							"flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium transition-all duration-150 rounded-md",
+							"flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium transition-all duration-150 rounded-lg",
 							activeTab === tab.id
-								? "text-ctp-text bg-ctp-surface0/40"
-								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
+								? "text-ctp-text bg-ctp-surface0/60"
+								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/25",
 						)}
 					>
 						{tab.label}
 						{counts[tab.id] > 0 && (
-							<Badge variant="accent" className="text-[8px] px-1 py-0">
+							<Badge variant="accent" className="text-[8px] px-1.5 py-0">
 								{counts[tab.id]}
 							</Badge>
 						)}
@@ -89,20 +89,20 @@ export function RequestPanel() {
 						<div className="grid grid-cols-2 gap-2">
 							<label className="space-y-1">
 								<span className="text-[10px] text-ctp-overlay0">Type</span>
-								<input
+								<Input
 									value={store.authType}
 									onChange={(e) => store.setAuthType(e.target.value)}
 									placeholder="Bearer / Basic / API Key"
-									className="w-full h-8 bg-ctp-crust/50 border border-ctp-surface0/60 rounded-lg px-2.5 text-[12px] text-ctp-text outline-none input-focus"
+									className="w-full h-8 text-[12px]"
 								/>
 							</label>
 							<label className="space-y-1">
 								<span className="text-[10px] text-ctp-overlay0">Value</span>
-								<input
+								<Input
 									value={store.authValue}
 									onChange={(e) => store.setAuthValue(e.target.value)}
 									placeholder="Token / credentials"
-									className="w-full h-8 bg-ctp-crust/50 border border-ctp-surface0/60 rounded-lg px-2.5 text-[12px] text-ctp-text outline-none input-focus"
+									className="w-full h-8 text-[12px]"
 								/>
 							</label>
 						</div>

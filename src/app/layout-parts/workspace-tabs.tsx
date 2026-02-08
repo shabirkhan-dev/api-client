@@ -41,7 +41,7 @@ export function WorkspaceTabs() {
 	const { activeTab, setActiveTab } = useAppStore();
 
 	return (
-		<div className="flex items-center gap-0.5 overflow-x-auto shrink-0 px-1 py-1 bg-ctp-mantle/40 rounded-lg border border-ctp-surface0/20">
+		<div className="flex items-center gap-1 overflow-x-auto shrink-0 px-1.5 py-1.5 bg-ctp-mantle/45 rounded-xl border border-ctp-surface1/20">
 			{tabs.map((tab) => {
 				const isActive = activeTab === tab.id;
 				return (
@@ -50,10 +50,10 @@ export function WorkspaceTabs() {
 						type="button"
 						onClick={() => setActiveTab(tab.id)}
 						className={cn(
-							"flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all duration-150 whitespace-nowrap",
+							"flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all duration-150 whitespace-nowrap",
 							isActive
-								? "text-ctp-text bg-ctp-surface0/60 shadow-sm"
-								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/25",
+								? "text-ctp-text bg-ctp-surface0/70 shadow-[0_8px_16px_-14px_rgba(0,0,0,0.6)]"
+								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/30",
 						)}
 					>
 						<HugeiconsIcon

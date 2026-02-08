@@ -31,14 +31,14 @@ export function DiffViewerPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center justify-between">
+			<GlassPanel className="p-4 flex items-center justify-between">
 				<div className="text-[13px] font-semibold">Diff Viewer</div>
 				<Button variant="primary" size="sm" onClick={runDiff}>
 					<HugeiconsIcon icon={GitCompareIcon} size={13} /> Compare
 				</Button>
 			</GlassPanel>
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Response A</LabelText>
 					<Textarea
 						value={left}
@@ -46,7 +46,7 @@ export function DiffViewerPanel() {
 						className="h-60 mt-1.5 text-[11px]"
 					/>
 				</GlassPanel>
-				<GlassPanel className="p-3">
+				<GlassPanel className="p-4">
 					<LabelText>Response B</LabelText>
 					<Textarea
 						value={right}
@@ -55,7 +55,7 @@ export function DiffViewerPanel() {
 					/>
 				</GlassPanel>
 			</div>
-			<GlassPanel className="p-3">
+			<GlassPanel className="p-4">
 				<LabelText>Diff</LabelText>
 				<div className="text-[10px] font-mono mt-1.5 space-y-px">
 					{diff.map((line, i) => (

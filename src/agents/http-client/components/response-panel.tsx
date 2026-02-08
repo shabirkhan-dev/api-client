@@ -49,12 +49,12 @@ export function ResponsePanel() {
 		: [];
 
 	return (
-		<GlassPanel className="p-3 flex flex-col gap-2.5 flex-1 min-h-0">
+		<GlassPanel className="p-4 flex flex-col gap-3 flex-1 min-h-0">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-1.5">
 					{lastResponse ? (
 						<>
-							<Badge variant={statusVariant} className="font-mono text-[10px] px-2">
+							<Badge variant={statusVariant} className="font-mono text-[10px] px-2.5">
 								{lastResponse.status} {lastResponse.statusText}
 							</Badge>
 							<Badge className="font-mono text-[10px]">{lastResponse.time}ms</Badge>
@@ -79,17 +79,17 @@ export function ResponsePanel() {
 				</div>
 			</div>
 
-			<div className="flex items-center gap-0.5 border-b border-ctp-surface0/30 pb-1.5">
+			<div className="flex items-center gap-1 border-b border-ctp-surface1/20 pb-2">
 				{tabs.map((tab) => (
 					<button
 						key={tab.id}
 						type="button"
 						onClick={() => setActiveTab(tab.id)}
 						className={cn(
-							"px-2.5 py-1 text-[11px] font-medium transition-all rounded-md",
+							"px-2.5 py-1.5 text-[11px] font-medium transition-all rounded-lg",
 							activeTab === tab.id
-								? "text-ctp-text bg-ctp-surface0/40"
-								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
+								? "text-ctp-text bg-ctp-surface0/60"
+								: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/25",
 						)}
 					>
 						{tab.label}
@@ -99,7 +99,7 @@ export function ResponsePanel() {
 
 			<div className="flex-1 overflow-auto">
 				{activeTab === "body" && (
-					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg overflow-auto max-h-full whitespace-pre-wrap break-words text-ctp-subtext1 leading-relaxed">
+					<pre className="text-[11px] font-mono p-3 bg-ctp-mantle/40 rounded-lg overflow-auto max-h-full whitespace-pre-wrap break-words text-ctp-subtext1 leading-relaxed">
 						{lastResponse?.body
 							? (() => {
 									try {
@@ -112,14 +112,14 @@ export function ResponsePanel() {
 					</pre>
 				)}
 				{activeTab === "headers" && (
-					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg overflow-auto text-ctp-subtext1 leading-relaxed">
+					<pre className="text-[11px] font-mono p-3 bg-ctp-mantle/40 rounded-lg overflow-auto text-ctp-subtext1 leading-relaxed">
 						{lastResponse
 							? JSON.stringify(lastResponse.headers, null, 2)
 							: "// Headers will appear here"}
 					</pre>
 				)}
 				{activeTab === "cookies" && (
-					<pre className="text-[11px] font-mono p-3 bg-ctp-crust/30 rounded-lg text-ctp-subtext1">
+					<pre className="text-[11px] font-mono p-3 bg-ctp-mantle/40 rounded-lg text-ctp-subtext1">
 						{lastResponse?.headers["set-cookie"] || "No cookies in response"}
 					</pre>
 				)}

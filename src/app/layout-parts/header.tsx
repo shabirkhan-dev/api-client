@@ -51,12 +51,12 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 	}, [interceptorEnabled, setInterceptorEnabled]);
 
 	return (
-		<header className="glass-solid h-12 flex items-center justify-between px-4 shrink-0 z-20">
-			<div className="flex items-center gap-2.5">
+		<header className="glass-solid h-14 flex items-center justify-between px-4 shrink-0 z-20">
+			<div className="flex items-center gap-3">
 				<button
 					type="button"
 					onClick={toggleSidebar}
-					className="text-ctp-overlay0 hover:text-ctp-text transition-colors p-1 rounded-md hover:bg-ctp-surface0/30"
+					className="text-ctp-overlay0 hover:text-ctp-text transition-colors p-1.5 rounded-lg hover:bg-ctp-surface0/30"
 				>
 					<HugeiconsIcon
 						icon={sidebarOpen ? SidebarLeft01Icon : SidebarRight01Icon}
@@ -65,10 +65,13 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 					/>
 				</button>
 				<div className="flex items-center gap-2">
-					<div className="w-5 h-5 rounded-md bg-gradient-to-br from-ctp-lavender to-ctp-mauve flex items-center justify-center">
-						<span className="text-[9px] font-black text-ctp-crust">N</span>
+					<div className="w-7 h-7 rounded-xl bg-gradient-to-br from-ctp-lavender to-ctp-mauve flex items-center justify-center shadow-[0_8px_18px_-12px_rgba(0,0,0,0.6)]">
+						<span className="text-[10px] font-black text-ctp-crust">N</span>
 					</div>
-					<span className="text-[13px] font-semibold text-ctp-text tracking-tight">Nebula</span>
+					<div className="leading-tight">
+						<div className="text-[13px] font-semibold text-ctp-text tracking-tight">Nebula</div>
+						<div className="text-[10px] text-ctp-overlay0">API Client</div>
+					</div>
 				</div>
 				<Badge variant="accent" className="text-[9px]">
 					v0.1
@@ -96,7 +99,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 					<select
 						value={interceptorMode}
 						onChange={(e) => setInterceptorMode(e.target.value as "request" | "response" | "both")}
-						className="h-7 px-2 text-[11px] rounded-lg border border-ctp-surface0/60 bg-transparent text-ctp-subtext0 outline-none"
+						className="h-7 px-2.5 text-[11px] rounded-lg border border-ctp-surface1/40 bg-ctp-mantle/40 text-ctp-subtext1 outline-none input-focus"
 					>
 						<option value="request" className="bg-ctp-base">
 							Req
@@ -116,7 +119,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 					</Button>
 
 					{themePicker && (
-						<div className="absolute right-0 top-full mt-2 glass rounded-xl p-2 w-48 animate-scale-in z-50">
+						<div className="absolute right-0 top-full mt-2 glass rounded-[var(--radius-xl)] p-2.5 w-52 animate-scale-in z-50">
 							<div className="text-[10px] uppercase tracking-wider text-ctp-overlay0 font-semibold px-2 py-1">
 								Theme
 							</div>
@@ -130,8 +133,8 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 									}}
 									className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-[12px] transition-colors ${
 										themeId === theme.id
-											? "bg-ctp-lavender/10 text-ctp-lavender"
-											: "text-ctp-subtext0 hover:bg-ctp-surface0/40 hover:text-ctp-text"
+											? "bg-ctp-lavender/12 text-ctp-lavender"
+											: "text-ctp-subtext0 hover:bg-ctp-surface0/35 hover:text-ctp-text"
 									}`}
 								>
 									<div className="flex gap-0.5">

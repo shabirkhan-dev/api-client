@@ -19,7 +19,7 @@ export function GlassPanel({
 		<div
 			className={cn(
 				solid ? "glass-solid" : "glass",
-				"rounded-xl",
+				"rounded-[var(--radius-xl)]",
 				!hover && "hover:border-transparent",
 				className,
 			)}

@@ -1,0 +1,18 @@
+# Cursor Rules - Nebula API Client
+
+## Code Quality
+- Follow SOLID, DRY, and KISS principles.
+- Prefer small, composable components over large monoliths.
+- Keep business logic in services/hooks; keep UI components presentational.
+- Avoid duplicate styles; reuse shared UI primitives in `src/shared/components/ui`.
+
+## UI/UX Consistency
+- Use theme tokens (`ctp-*`) instead of hard-coded colors.
+- Preserve the glass + Catppuccin-inspired aesthetic.
+- Ensure accessible focus states and keyboard navigation.
+- Favor semantic HTML and clear hierarchy in layouts.
+
+## Testing & Tooling
+- Add or update tests for new logic (Vitest).
+- Keep lint and type-check clean (Biome + TypeScript).
+- Remove unused code and props when refactoring.

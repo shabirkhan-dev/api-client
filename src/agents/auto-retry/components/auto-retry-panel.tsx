@@ -11,7 +11,7 @@ export function AutoRetryPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3">
+			<GlassPanel className="p-4">
 				<div className="flex items-center gap-2 mb-3">
 					<HugeiconsIcon icon={Refresh01Icon} size={15} className="text-ctp-lavender" />
 					<div className="text-[13px] font-semibold">Auto-Retry</div>
@@ -59,7 +59,7 @@ export function AutoRetryPanel() {
 					/>
 					Circuit breaker (pause on failures)
 				</label>
-				<div className="text-[10px] text-ctp-overlay0 mt-3 p-2.5 bg-ctp-crust/30 rounded-lg leading-relaxed">
+				<div className="text-[10px] text-ctp-overlay0 mt-3 p-2.5 bg-ctp-mantle/40 rounded-lg leading-relaxed">
 					Retry applies to HTTP requests. Matching status codes trigger exponential backoff retries.
 				</div>
 			</GlassPanel>

@@ -84,7 +84,7 @@ export function GraphQLPanel() {
 
 	return (
 		<div className="flex-1 flex flex-col gap-3 overflow-auto">
-			<GlassPanel className="p-3 flex items-center gap-2 flex-wrap">
+			<GlassPanel className="p-4 flex items-center gap-2 flex-wrap">
 				<Input
 					value={url}
 					onChange={(e) => setUrl(e.target.value)}
@@ -98,18 +98,18 @@ export function GraphQLPanel() {
 					<HugeiconsIcon icon={PlayIcon} size={13} /> Run
 				</Button>
 			</GlassPanel>
-			<GlassPanel className="p-3">
-				<div className="flex items-center gap-0.5 border-b border-ctp-surface0/30 pb-1.5 mb-2">
+			<GlassPanel className="p-4">
+				<div className="flex items-center gap-1 border-b border-ctp-surface1/20 pb-2 mb-3">
 					{tabs.map((tab) => (
 						<button
 							key={tab.id}
 							type="button"
 							onClick={() => setActiveTab(tab.id)}
 							className={cn(
-								"px-2.5 py-1 text-[11px] font-medium rounded-md transition-all",
+								"px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all",
 								activeTab === tab.id
-									? "text-ctp-text bg-ctp-surface0/40"
-									: "text-ctp-overlay0 hover:text-ctp-subtext1",
+									? "text-ctp-text bg-ctp-surface0/60"
+									: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/25",
 							)}
 						>
 							{tab.label}
@@ -151,7 +151,7 @@ export function GraphQLPanel() {
 							/>
 						)}
 					</div>
-					<div className="bg-ctp-crust/30 rounded-lg p-2.5 h-56 overflow-auto">
+					<div className="bg-ctp-mantle/40 rounded-lg p-2.5 h-56 overflow-auto">
 						<LabelText>Schema</LabelText>
 						<pre className="text-[10px] font-mono mt-1.5 text-ctp-overlay1">
 							{schema || "Introspect to view"}
@@ -159,7 +159,7 @@ export function GraphQLPanel() {
 					</div>
 				</div>
 			</GlassPanel>
-			<GlassPanel className="p-3">
+			<GlassPanel className="p-4">
 				<LabelText>Response</LabelText>
 				<pre className="text-[10px] font-mono mt-1.5 max-h-52 overflow-auto text-ctp-subtext1">
 					{response || "// Run a query"}
