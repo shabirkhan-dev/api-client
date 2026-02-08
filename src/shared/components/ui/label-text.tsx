@@ -1,0 +1,13 @@
+"use client";
+
+import { cn } from "@/shared/lib/utils";
+import type { HTMLAttributes } from "react";
+
+export function LabelText({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+	return (
+		<div
+			className={cn("text-[10px] uppercase tracking-wider text-ctp-overlay0 font-medium", className)}
+			{...props}
+		/>
+	);
+}
