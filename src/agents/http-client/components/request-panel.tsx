@@ -1,9 +1,9 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
+import { useState } from "react";
 import { Badge, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
 import { cn } from "@/shared/lib/utils";
-import { useState } from "react";
+import { useAppStore } from "@/shared/stores/app-store";
 import type { RequestTab } from "../types";
 
 const tabs: { id: RequestTab; label: string }[] = [

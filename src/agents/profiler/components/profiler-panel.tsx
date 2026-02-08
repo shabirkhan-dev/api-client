@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, GlassPanel, LabelText } from "@/shared/components/ui";
-import { Activity, RefreshCw } from "lucide-react";
-import { useState, useCallback } from "react";
+import { RefreshCw } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, LabelText } from "@/shared/components/ui";
 
 interface ProfilerMetric {
 	label: string;
@@ -30,9 +30,7 @@ export function ProfilerPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-sm font-semibold">Performance Profiler</div>
-					<div className="text-xs text-ctp-overlay0">
-						DNS, TCP, TLS, TTFB, Download
-					</div>
+					<div className="text-xs text-ctp-overlay0">DNS, TCP, TLS, TTFB, Download</div>
 				</div>
 				<Button variant="kbd" size="sm" onClick={refresh}>
 					<RefreshCw size={12} />
@@ -46,9 +44,7 @@ export function ProfilerPanel() {
 					{metrics.map((m) => (
 						<div key={m.label} className="glass rounded-xl p-3 text-center">
 							<LabelText>{m.label}</LabelText>
-							<div className="text-sm font-semibold text-ctp-text mt-1">
-								{m.value}
-							</div>
+							<div className="text-sm font-semibold text-ctp-text mt-1">{m.value}</div>
 						</div>
 					))}
 					{metrics.length === 0 && (
@@ -63,7 +59,7 @@ export function ProfilerPanel() {
 						<LabelText className="mt-4">Waterfall</LabelText>
 						<div className="space-y-2 mt-2">
 							{metrics.map((m) => {
-								const ms = Number.parseInt(m.value);
+								const ms = Number.parseInt(m.value, 10);
 								return (
 									<div key={`wf-${m.label}`} className="space-y-1">
 										<div className="flex justify-between text-xs text-ctp-text">

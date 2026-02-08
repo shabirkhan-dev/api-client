@@ -1,8 +1,8 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/shared/lib/utils";
 
 const badgeVariants = cva(
 	"inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold transition-colors",

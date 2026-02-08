@@ -1,11 +1,10 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { parseKeyValue } from "@/shared/lib/utils";
-import type { HttpMethod } from "@/shared/lib/catppuccin";
-import { performHttpRequest, parseHeaders } from "../services/http-service";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { parseKeyValue } from "@/shared/lib/utils";
+import { useAppStore } from "@/shared/stores/app-store";
+import { parseHeaders, performHttpRequest } from "../services/http-service";
 
 export function useHttpRequest() {
 	const store = useAppStore();
@@ -13,7 +12,7 @@ export function useHttpRequest() {
 	const sendRequest = useCallback(async () => {
 		if (store.requestInFlight) return;
 
-		let { url } = store;
+		const { url } = store;
 		const { method, headersText, bodyText, paramsText, authType, authValue } = store;
 
 		if (!url.trim()) {

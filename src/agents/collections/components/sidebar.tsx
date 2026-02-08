@@ -1,14 +1,13 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { GlassPanel, LabelText, Button } from "@/shared/components/ui";
-import { generateId } from "@/shared/lib/utils";
-import { cn } from "@/shared/lib/utils";
 import { Plus } from "lucide-react";
+import { Button, GlassPanel, LabelText } from "@/shared/components/ui";
+import { cn, generateId } from "@/shared/lib/utils";
+import { useAppStore } from "@/shared/stores/app-store";
 import { CollectionTree } from "./collection-tree";
-import { HistoryList } from "./history-list";
-import { FavoritesList } from "./favorites-list";
 import { EnvironmentSelector } from "./environment-selector";
+import { FavoritesList } from "./favorites-list";
+import { HistoryList } from "./history-list";
 
 export function Sidebar() {
 	const { sidebarOpen, addCollection, interceptorStats } = useAppStore();
@@ -65,13 +64,8 @@ export function Sidebar() {
 								{ label: "Modified", value: interceptorStats.modified },
 								{ label: "Blocked", value: interceptorStats.blocked },
 							].map((stat) => (
-								<div
-									key={stat.label}
-									className="glass rounded-lg p-2 text-center"
-								>
-									<div className="text-sm font-semibold text-ctp-text">
-										{stat.value}
-									</div>
+								<div key={stat.label} className="glass rounded-lg p-2 text-center">
+									<div className="text-sm font-semibold text-ctp-text">{stat.value}</div>
 									<div className="text-[9px] text-ctp-overlay0">{stat.label}</div>
 								</div>
 							))}

@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
 import { Slot } from "@radix-ui/react-slot";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
+import { cn } from "@/shared/lib/utils";
 
 const buttonVariants = cva(
 	"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ctp-lavender/40 disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
@@ -15,8 +15,7 @@ const buttonVariants = cva(
 					"bg-transparent text-ctp-overlay0 hover:text-ctp-text hover:bg-ctp-lavender/5 active:scale-[0.98]",
 				outline:
 					"border border-ctp-border bg-transparent text-ctp-text hover:border-ctp-border-hover hover:bg-ctp-lavender/5",
-				danger:
-					"bg-ctp-red/15 text-ctp-red border border-ctp-red/20 hover:bg-ctp-red/25",
+				danger: "bg-ctp-red/15 text-ctp-red border border-ctp-red/20 hover:bg-ctp-red/25",
 				kbd: "text-[10px] px-2 py-1 rounded-md border border-ctp-border bg-ctp-mantle/90 text-ctp-overlay0 hover:text-ctp-text hover:border-ctp-border-hover",
 			},
 			size: {

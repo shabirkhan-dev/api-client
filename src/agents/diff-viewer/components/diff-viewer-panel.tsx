@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
 import { GitCompare, Save } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
 
 interface DiffSnapshot {
 	id: string;
@@ -16,7 +16,9 @@ interface DiffSnapshot {
 export function DiffViewerPanel() {
 	const [left, setLeft] = useState("");
 	const [right, setRight] = useState("");
-	const [diffOutput, setDiffOutput] = useState<{ type: "add" | "remove" | "same"; text: string }[]>([]);
+	const [diffOutput, setDiffOutput] = useState<{ type: "add" | "remove" | "same"; text: string }[]>(
+		[],
+	);
 	const [snapshots, setSnapshots] = useState<DiffSnapshot[]>([]);
 
 	const runDiff = useCallback(() => {

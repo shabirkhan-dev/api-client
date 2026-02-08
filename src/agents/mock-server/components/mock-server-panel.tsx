@@ -1,9 +1,9 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { Button, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
+import { Plus, Trash2 } from "lucide-react";
+import { Button, GlassPanel, Input, Textarea } from "@/shared/components/ui";
 import { generateId } from "@/shared/lib/utils";
-import { Server, Plus, Trash2 } from "lucide-react";
+import { useAppStore } from "@/shared/stores/app-store";
 
 export function MockServerPanel() {
 	const { mockRoutes, addMockRoute, removeMockRoute, setMockRoutes } = useAppStore();
@@ -21,9 +21,7 @@ export function MockServerPanel() {
 	};
 
 	const updateRoute = (id: string, field: string, value: string | number) => {
-		setMockRoutes(
-			mockRoutes.map((r) => (r.id === id ? { ...r, [field]: value } : r)),
-		);
+		setMockRoutes(mockRoutes.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
 	};
 
 	return (
@@ -61,68 +59,54 @@ export function MockServerPanel() {
 								</Button>
 							</div>
 							<div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-								<div className="space-y-1">
-									<label className="text-[10px] uppercase text-ctp-overlay0">
-										Status
-									</label>
+								<label className="space-y-1">
+									<span className="text-[10px] uppercase text-ctp-overlay0 block">Status</span>
 									<Input
 										type="number"
 										value={route.status}
-										onChange={(e) =>
-											updateRoute(route.id, "status", Number(e.target.value))
-										}
+										onChange={(e) => updateRoute(route.id, "status", Number(e.target.value))}
 										className="text-xs"
 									/>
-								</div>
-								<div className="space-y-1">
-									<label className="text-[10px] uppercase text-ctp-overlay0">
+								</label>
+								<label className="space-y-1">
+									<span className="text-[10px] uppercase text-ctp-overlay0 block">
 										Latency (ms)
-									</label>
+									</span>
 									<Input
 										type="number"
 										value={route.latency}
-										onChange={(e) =>
-											updateRoute(route.id, "latency", Number(e.target.value))
-										}
+										onChange={(e) => updateRoute(route.id, "latency", Number(e.target.value))}
 										className="text-xs"
 									/>
-								</div>
-								<div className="space-y-1">
-									<label className="text-[10px] uppercase text-ctp-overlay0">
+								</label>
+								<label className="space-y-1">
+									<span className="text-[10px] uppercase text-ctp-overlay0 block">
 										Content Type
-									</label>
+									</span>
 									<Input
 										value={route.contentType}
-										onChange={(e) =>
-											updateRoute(route.id, "contentType", e.target.value)
-										}
+										onChange={(e) => updateRoute(route.id, "contentType", e.target.value)}
 										className="text-xs"
 									/>
-								</div>
-								<div className="space-y-1">
-									<label className="text-[10px] uppercase text-ctp-overlay0">
-										Condition
-									</label>
+								</label>
+								<label className="space-y-1">
+									<span className="text-[10px] uppercase text-ctp-overlay0 block">Condition</span>
 									<Input
 										value={route.condition}
-										onChange={(e) =>
-											updateRoute(route.id, "condition", e.target.value)
-										}
+										onChange={(e) => updateRoute(route.id, "condition", e.target.value)}
 										placeholder="Optional"
 										className="text-xs"
 									/>
-								</div>
-							</div>
-							<div className="space-y-1">
-								<label className="text-[10px] uppercase text-ctp-overlay0">
-									Response Body
 								</label>
+							</div>
+							<label className="space-y-1 block">
+								<span className="text-[10px] uppercase text-ctp-overlay0 block">Response Body</span>
 								<Textarea
 									value={route.body}
 									onChange={(e) => updateRoute(route.id, "body", e.target.value)}
 									className="h-20 text-xs"
 								/>
-							</div>
+							</label>
 						</div>
 					))}
 					{mockRoutes.length === 0 && (

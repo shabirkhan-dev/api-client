@@ -1,10 +1,10 @@
 "use client";
 
+import { Play, Search } from "lucide-react";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { Button, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
 import { cn } from "@/shared/lib/utils";
-import { Play, Search } from "lucide-react";
-import { useState, useCallback } from "react";
-import { toast } from "sonner";
 
 type GraphqlTab = "query" | "mutation" | "subscription" | "variables";
 
@@ -73,7 +73,9 @@ export function GraphQLPanel() {
 			});
 			const data = await res.json();
 			const types = data.data?.__schema?.types || [];
-			setSchema(types.map((t: { name: string; kind: string }) => `${t.name} (${t.kind})`).join("\n"));
+			setSchema(
+				types.map((t: { name: string; kind: string }) => `${t.name} (${t.kind})`).join("\n"),
+			);
 			toast.success("Schema introspected");
 		} catch {
 			toast.error("Schema introspection failed");
@@ -92,9 +94,7 @@ export function GraphQLPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between flex-wrap gap-3">
 				<div>
 					<div className="text-sm font-semibold">GraphQL Support</div>
-					<div className="text-xs text-ctp-overlay0">
-						Schema introspection, variables, and tabs
-					</div>
+					<div className="text-xs text-ctp-overlay0">Schema introspection, variables, and tabs</div>
 				</div>
 				<div className="flex items-center gap-2">
 					<Input

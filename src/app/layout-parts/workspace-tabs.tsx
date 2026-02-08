@@ -1,23 +1,23 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { cn } from "@/shared/lib/utils";
-import type { WorkspaceTab } from "@/shared/types";
 import {
-	Globe,
-	Wifi,
-	Gauge,
-	Braces,
-	FileText,
-	GitCompare,
-	Link2,
-	ShieldAlert,
-	RotateCcw,
-	Database,
-	Users,
 	Activity,
+	Braces,
+	Database,
+	FileText,
+	Gauge,
+	GitCompare,
+	Globe,
+	Link2,
+	RotateCcw,
 	Server,
+	ShieldAlert,
+	Users,
+	Wifi,
 } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
+import { useAppStore } from "@/shared/stores/app-store";
+import type { WorkspaceTab } from "@/shared/types";
 
 const tabs: { id: WorkspaceTab; label: string; icon: typeof Globe }[] = [
 	{ id: "http", label: "HTTP Client", icon: Globe },

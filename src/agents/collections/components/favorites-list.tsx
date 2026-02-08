@@ -1,7 +1,7 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
 import { MethodBadge } from "@/shared/components/ui";
+import { useAppStore } from "@/shared/stores/app-store";
 
 export function FavoritesList() {
 	const { favorites, setMethod, setUrl } = useAppStore();

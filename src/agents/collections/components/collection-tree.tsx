@@ -1,11 +1,11 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
+import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { useCallback } from "react";
 import { MethodBadge } from "@/shared/components/ui";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
+import { useAppStore } from "@/shared/stores/app-store";
 import type { CollectionNode } from "@/shared/types";
-import { ChevronDown, ChevronRight, FolderOpen, Folder } from "lucide-react";
-import { useCallback } from "react";
 
 function TreeNode({ node, depth = 0 }: { node: CollectionNode; depth?: number }) {
 	const { setCollections, collections, loadRequestFromNode } = useAppStore();

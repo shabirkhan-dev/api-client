@@ -1,26 +1,25 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { ToastProvider } from "@/shared/components/ui/toast-provider";
-import { Header } from "./layout-parts/header";
-import { WorkspaceTabs } from "./layout-parts/workspace-tabs";
-import { Sidebar } from "@/agents/collections";
-import { HttpClientPanel } from "@/agents/http-client";
-import { WebSocketPanel } from "@/agents/websocket";
-import { LoadTestingPanel } from "@/agents/load-testing";
-import { GraphQLPanel } from "@/agents/graphql";
+import { useCallback, useEffect, useState } from "react";
 import { ApiDocsPanel } from "@/agents/api-docs";
+import { AutoRetryPanel } from "@/agents/auto-retry";
+import { CollaborationPanel } from "@/agents/collaboration";
+import { Sidebar } from "@/agents/collections";
+import { CommandPalette } from "@/agents/command-palette";
+import { DataGeneratorPanel } from "@/agents/data-generator";
 import { DiffViewerPanel } from "@/agents/diff-viewer";
+import { GraphQLPanel } from "@/agents/graphql";
+import { HttpClientPanel, useHttpRequest } from "@/agents/http-client";
+import { LoadTestingPanel } from "@/agents/load-testing";
+import { MockServerPanel } from "@/agents/mock-server";
+import { ProfilerPanel } from "@/agents/profiler";
 import { RequestChainPanel } from "@/agents/request-chain";
 import { SecurityScannerPanel } from "@/agents/security-scanner";
-import { AutoRetryPanel } from "@/agents/auto-retry";
-import { DataGeneratorPanel } from "@/agents/data-generator";
-import { CollaborationPanel } from "@/agents/collaboration";
-import { ProfilerPanel } from "@/agents/profiler";
-import { MockServerPanel } from "@/agents/mock-server";
-import { CommandPalette } from "@/agents/command-palette";
-import { useHttpRequest } from "@/agents/http-client";
-import { useState, useCallback, useEffect } from "react";
+import { WebSocketPanel } from "@/agents/websocket";
+import { ToastProvider } from "@/shared/components/ui/toast-provider";
+import { useAppStore } from "@/shared/stores/app-store";
+import { Header } from "./layout-parts/header";
+import { WorkspaceTabs } from "./layout-parts/workspace-tabs";
 
 function WorkspaceContent() {
 	const { activeTab } = useAppStore();

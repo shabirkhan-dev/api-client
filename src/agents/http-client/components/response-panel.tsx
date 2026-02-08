@@ -1,12 +1,11 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { Badge, Button, GlassPanel, LabelText } from "@/shared/components/ui";
-import { getStatusClass } from "@/shared/lib/catppuccin";
-import { cn, formatBytes } from "@/shared/lib/utils";
 import { Copy, Trash2 } from "lucide-react";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Badge, Button, GlassPanel, LabelText } from "@/shared/components/ui";
+import { cn, formatBytes } from "@/shared/lib/utils";
+import { useAppStore } from "@/shared/stores/app-store";
 import type { ResponseTab } from "../types";
 
 const tabs: { id: ResponseTab; label: string }[] = [
@@ -129,7 +128,9 @@ export function ResponsePanel() {
 								<div className="h-2 bg-ctp-surface0 rounded-full overflow-hidden">
 									<div
 										className="h-full rounded-full bg-gradient-to-r from-ctp-lavender to-transparent transition-all"
-										style={{ width: `${Math.min(100, (seg.value / (lastResponse.time || 1)) * 100)}%` }}
+										style={{
+											width: `${Math.min(100, (seg.value / (lastResponse.time || 1)) * 100)}%`,
+										}}
 									/>
 								</div>
 							</div>

@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { generateId } from "@/shared/lib/utils";
 import type {
@@ -9,8 +11,6 @@ import type {
 	ResponseData,
 	WorkspaceTab,
 } from "@/shared/types";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 interface AppState {
 	// Workspace
@@ -110,8 +110,20 @@ const DEFAULT_COLLECTIONS: CollectionNode[] = [
 		type: "folder",
 		collapsed: false,
 		children: [
-			{ id: "req-1", name: "List Users", type: "request", method: "GET", url: "https://jsonplaceholder.typicode.com/users" },
-			{ id: "req-2", name: "Create User", type: "request", method: "POST", url: "https://jsonplaceholder.typicode.com/users" },
+			{
+				id: "req-1",
+				name: "List Users",
+				type: "request",
+				method: "GET",
+				url: "https://jsonplaceholder.typicode.com/users",
+			},
+			{
+				id: "req-2",
+				name: "Create User",
+				type: "request",
+				method: "POST",
+				url: "https://jsonplaceholder.typicode.com/users",
+			},
 		],
 	},
 ];
@@ -174,35 +186,31 @@ export const useAppStore = create<AppState>()(
 
 			addHistoryItem: (item) =>
 				set((s) => ({
-					history: [
-						{ ...item, id: generateId("hist"), timestamp: Date.now() },
-						...s.history,
-					].slice(0, 50),
+					history: [{ ...item, id: generateId("hist"), timestamp: Date.now() }, ...s.history].slice(
+						0,
+						50,
+					),
 				})),
 
 			toggleFavorite: (item) =>
 				set((s) => {
-					const exists = s.favorites.some(
-						(f) => f.url === item.url && f.method === item.method,
-					);
+					const exists = s.favorites.some((f) => f.url === item.url && f.method === item.method);
 					return {
 						favorites: exists
-							? s.favorites.filter(
-									(f) => !(f.url === item.url && f.method === item.method),
-								)
+							? s.favorites.filter((f) => !(f.url === item.url && f.method === item.method))
 							: [...s.favorites, item],
 					};
 				}),
 
-			isFavorite: (url, method) => get().favorites.some((f) => f.url === url && f.method === method),
+			isFavorite: (url, method) =>
+				get().favorites.some((f) => f.url === url && f.method === method),
 
 			setCollections: (collections) => set({ collections }),
 			addCollection: (node) => set((s) => ({ collections: [...s.collections, node] })),
 
 			setActiveEnv: (env) => set({ activeEnv: env }),
 			setEnvs: (envs) => set({ envs }),
-			setChainVar: (key, value) =>
-				set((s) => ({ chainVars: { ...s.chainVars, [key]: value } })),
+			setChainVar: (key, value) => set((s) => ({ chainVars: { ...s.chainVars, [key]: value } })),
 
 			setInterceptorEnabled: (enabled) => set({ interceptorEnabled: enabled }),
 			setInterceptorMode: (mode) => set({ interceptorMode: mode }),

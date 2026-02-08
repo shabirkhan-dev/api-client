@@ -1,29 +1,27 @@
 "use client";
 
+import {
+	Activity,
+	Braces,
+	Database,
+	FileText,
+	Gauge,
+	GitCompare,
+	Globe,
+	Link2,
+	PanelLeftClose,
+	RotateCcw,
+	Send,
+	Server,
+	Shield,
+	ShieldAlert,
+	Users,
+	Wifi,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import type { WorkspaceTab } from "@/shared/types";
-import { cn } from "@/shared/lib/utils";
-import {
-	Globe,
-	Wifi,
-	Gauge,
-	Braces,
-	FileText,
-	GitCompare,
-	Link2,
-	ShieldAlert,
-	RotateCcw,
-	Database,
-	Users,
-	Activity,
-	Server,
-	Send,
-	PanelLeftClose,
-	Save,
-	Shield,
-	Search,
-} from "lucide-react";
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 interface CommandAction {
 	id: string;
@@ -39,8 +37,7 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, onClose, onSendRequest }: CommandPaletteProps) {
-	const { setActiveTab, toggleSidebar, setInterceptorEnabled, interceptorEnabled } =
-		useAppStore();
+	const { setActiveTab, toggleSidebar, setInterceptorEnabled, interceptorEnabled } = useAppStore();
 	const [query, setQuery] = useState("");
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -82,10 +79,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: CommandPaletteP
 	);
 
 	const filtered = useMemo(
-		() =>
-			actions.filter((a) =>
-				a.label.toLowerCase().includes(query.toLowerCase()),
-			),
+		() => actions.filter((a) => a.label.toLowerCase().includes(query.toLowerCase())),
 		[actions, query],
 	);
 
@@ -99,7 +93,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: CommandPaletteP
 
 	useEffect(() => {
 		setSelectedIndex(0);
-	}, [query]);
+	}, []);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent) => {
@@ -140,10 +134,17 @@ export function CommandPalette({ open, onClose, onSendRequest }: CommandPaletteP
 
 	return (
 		<div
+			role="dialog"
+			aria-modal="true"
+			aria-label="Command palette"
 			className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] bg-black/60 animate-fade-in"
 			onClick={onClose}
+			onKeyDown={(e) => {
+				if (e.key === "Escape") onClose();
+			}}
 		>
 			<div
+				role="presentation"
 				className="glass rounded-xl p-4 w-[520px] animate-slide-up"
 				onClick={(e) => e.stopPropagation()}
 				onKeyDown={handleKeyDown}
@@ -179,9 +180,7 @@ export function CommandPalette({ open, onClose, onSendRequest }: CommandPaletteP
 						);
 					})}
 					{filtered.length === 0 && (
-						<div className="text-xs text-ctp-overlay0 text-center py-4">
-							No commands found
-						</div>
+						<div className="text-xs text-ctp-overlay0 text-center py-4">No commands found</div>
 					)}
 				</div>
 			</div>

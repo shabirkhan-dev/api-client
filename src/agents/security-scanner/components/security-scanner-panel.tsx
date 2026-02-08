@@ -1,10 +1,10 @@
 "use client";
 
-import { Button, GlassPanel, LabelText, Textarea, Badge } from "@/shared/components/ui";
-import type { SecurityFinding } from "@/shared/types";
-import { ShieldAlert, Lock, Search } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Lock, ShieldAlert } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Badge, Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
+import type { SecurityFinding } from "@/shared/types";
 
 export function SecurityScannerPanel() {
 	const [findings, setFindings] = useState<SecurityFinding[]>([]);
@@ -42,8 +42,7 @@ export function SecurityScannerPanel() {
 		if (!jwtInput.trim()) return;
 		try {
 			const [header, payload] = jwtInput.split(".").slice(0, 2);
-			const decode = (part: string) =>
-				JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/")));
+			const decode = (part: string) => JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/")));
 			const result = { header: decode(header), payload: decode(payload) };
 			setJwtOutput(JSON.stringify(result, null, 2));
 			toast.success("JWT decoded");
@@ -70,9 +69,7 @@ export function SecurityScannerPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-sm font-semibold">Security Scanner</div>
-					<div className="text-xs text-ctp-overlay0">
-						SQLi, XSS, JWT analysis
-					</div>
+					<div className="text-xs text-ctp-overlay0">SQLi, XSS, JWT analysis</div>
 				</div>
 				<Button variant="primary" size="sm" onClick={runScan}>
 					<ShieldAlert size={14} />
@@ -85,21 +82,12 @@ export function SecurityScannerPanel() {
 					<LabelText>Findings</LabelText>
 					<div className="space-y-2 mt-2">
 						{findings.map((finding) => (
-							<div
-								key={finding.type}
-								className="glass rounded-lg p-3"
-							>
+							<div key={finding.type} className="glass rounded-lg p-3">
 								<div className="flex items-center justify-between">
-									<span className="text-xs font-medium text-ctp-text">
-										{finding.type}
-									</span>
-									<Badge variant={statusVariant(finding.status)}>
-										{finding.status}
-									</Badge>
+									<span className="text-xs font-medium text-ctp-text">{finding.type}</span>
+									<Badge variant={statusVariant(finding.status)}>{finding.status}</Badge>
 								</div>
-								<div className="text-xs text-ctp-overlay0 mt-1">
-									{finding.detail}
-								</div>
+								<div className="text-xs text-ctp-overlay0 mt-1">{finding.detail}</div>
 							</div>
 						))}
 						{findings.length === 0 && (

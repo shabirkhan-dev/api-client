@@ -104,7 +104,9 @@ export function parseCurl(curl: string) {
 	const urlMatch = curl.match(/https?:\/\/[^\s'"]+/i);
 	const methodMatch = curl.match(/-X\s+(\w+)/i);
 	const headerMatches = [...curl.matchAll(/-H\s+['"]([^'"]+)['"]/gi)];
-	const dataMatch = curl.match(/--data(?:-raw)?\s+['"]([^'"]*)['"]/i);
+	const dataMatch =
+		curl.match(/--data(?:-raw)?\s+'((?:[^'\\]|\\.)*)'/i) ||
+		curl.match(/--data(?:-raw)?\s+"((?:[^"\\]|\\.)*)"/i);
 
 	const method = methodMatch ? methodMatch[1].toUpperCase() : "GET";
 	const url = urlMatch ? urlMatch[0] : "";

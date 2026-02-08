@@ -1,12 +1,12 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { Button, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
-import type { ChainNode } from "@/shared/types";
-import { generateId } from "@/shared/lib/utils";
-import { Link2, Plus, Zap } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Plus, Zap } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, Input, LabelText, Textarea } from "@/shared/components/ui";
+import { generateId } from "@/shared/lib/utils";
+import { useAppStore } from "@/shared/stores/app-store";
+import type { ChainNode } from "@/shared/types";
 
 export function RequestChainPanel() {
 	const { method, url, lastResponse, setChainVar, chainVars } = useAppStore();
@@ -56,9 +56,7 @@ export function RequestChainPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-sm font-semibold">Request Chaining</div>
-					<div className="text-xs text-ctp-overlay0">
-						Extract variables and branch logic
-					</div>
+					<div className="text-xs text-ctp-overlay0">Extract variables and branch logic</div>
 				</div>
 				<Button variant="kbd" size="sm" onClick={addNode}>
 					<Plus size={12} />
@@ -71,10 +69,7 @@ export function RequestChainPanel() {
 					<LabelText>Chain Builder</LabelText>
 					<div className="space-y-2 mt-2">
 						{nodes.map((node, i) => (
-							<div
-								key={node.id}
-								className="glass rounded-lg p-2 text-xs flex items-center gap-2"
-							>
+							<div key={node.id} className="glass rounded-lg p-2 text-xs flex items-center gap-2">
 								<div className="w-5 h-5 rounded-full bg-ctp-lavender/20 text-ctp-lavender flex items-center justify-center text-[10px] font-bold">
 									{i + 1}
 								</div>
@@ -132,11 +127,7 @@ export function RequestChainPanel() {
 						placeholder="then run step 2"
 						className="h-40 text-xs"
 					/>
-					<Button
-						variant="kbd"
-						size="sm"
-						onClick={() => toast.success("Branch saved")}
-					>
+					<Button variant="kbd" size="sm" onClick={() => toast.success("Branch saved")}>
 						Save Branch
 					</Button>
 				</GlassPanel>

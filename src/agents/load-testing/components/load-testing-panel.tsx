@@ -1,15 +1,15 @@
 "use client";
 
-import { Button, GlassPanel, Input, LabelText, Badge } from "@/shared/components/ui";
-import type { LoadTestResult } from "@/shared/types";
-import { downloadFile } from "@/shared/lib/utils";
-import { Play, Pause, Square, Download } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
+import { Download, Play, Square } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, Input, LabelText } from "@/shared/components/ui";
+import { downloadFile } from "@/shared/lib/utils";
+import type { LoadTestResult } from "@/shared/types";
 
 export function LoadTestingPanel() {
 	const [running, setRunning] = useState(false);
-	const [paused, setPaused] = useState(false);
+	const [_paused, setPaused] = useState(false);
 	const [total, setTotal] = useState(100);
 	const [concurrency, setConcurrency] = useState(5);
 	const [target, setTarget] = useState("");
@@ -28,40 +28,37 @@ export function LoadTestingPanel() {
 	});
 	const cancelRef = useRef(false);
 
-	const simulate = useCallback(
-		async (totalReqs: number) => {
-			cancelRef.current = false;
-			for (let i = 0; i < totalReqs; i++) {
-				if (cancelRef.current) break;
-				await new Promise((r) => setTimeout(r, 200));
+	const simulate = useCallback(async (totalReqs: number) => {
+		cancelRef.current = false;
+		for (let i = 0; i < totalReqs; i++) {
+			if (cancelRef.current) break;
+			await new Promise((r) => setTimeout(r, 200));
 
-				const sample = {
-					rps: Math.random() * 200,
-					avg: Math.round(50 + Math.random() * 100),
-					min: Math.round(20 + Math.random() * 30),
-					max: Math.round(100 + Math.random() * 200),
-					p95: Math.round(120 + Math.random() * 120),
-					errorRate: Math.round(Math.random() * 3),
-					errors: Math.round(Math.random() * 5),
-					throughput: Math.round(120 + Math.random() * 400),
-				};
+			const sample = {
+				rps: Math.random() * 200,
+				avg: Math.round(50 + Math.random() * 100),
+				min: Math.round(20 + Math.random() * 30),
+				max: Math.round(100 + Math.random() * 200),
+				p95: Math.round(120 + Math.random() * 120),
+				errorRate: Math.round(Math.random() * 3),
+				errors: Math.round(Math.random() * 5),
+				throughput: Math.round(120 + Math.random() * 400),
+			};
 
-				const result: LoadTestResult = {
-					status: Math.random() > 0.9 ? 500 : 200,
-					time: sample.avg,
-					size: `${Math.round(Math.random() * 5 + 1)} KB`,
-					timestamp: new Date().toLocaleTimeString(),
-				};
+			const result: LoadTestResult = {
+				status: Math.random() > 0.9 ? 500 : 200,
+				time: sample.avg,
+				size: `${Math.round(Math.random() * 5 + 1)} KB`,
+				timestamp: new Date().toLocaleTimeString(),
+			};
 
-				setMetrics(sample);
-				setResults((prev) => [...prev, result].slice(-100));
-				setCompleted(i + 1);
-			}
-			setRunning(false);
-			toast.success("Load test completed");
-		},
-		[],
-	);
+			setMetrics(sample);
+			setResults((prev) => [...prev, result].slice(-100));
+			setCompleted(i + 1);
+		}
+		setRunning(false);
+		toast.success("Load test completed");
+	}, []);
 
 	const startTest = useCallback(() => {
 		if (running) return;
@@ -190,9 +187,7 @@ export function LoadTestingPanel() {
 							{results.slice(-50).map((row, i) => (
 								<tr key={`${row.timestamp}-${i}`}>
 									<td className="py-1">{i + 1}</td>
-									<td
-										className={`py-1 ${row.status >= 400 ? "text-ctp-red" : "text-ctp-green"}`}
-									>
+									<td className={`py-1 ${row.status >= 400 ? "text-ctp-red" : "text-ctp-green"}`}>
 										{row.status}
 									</td>
 									<td className="py-1">{row.time}</td>

@@ -1,15 +1,9 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
+import { Command, PanelLeftClose, PanelLeftOpen, Search, Shield } from "lucide-react";
+import { useCallback, useState } from "react";
 import { Badge, Button, Kbd, StatusDot } from "@/shared/components/ui";
-import {
-	PanelLeftClose,
-	PanelLeftOpen,
-	Command,
-	Shield,
-	Search,
-} from "lucide-react";
-import { useState, useCallback } from "react";
+import { useAppStore } from "@/shared/stores/app-store";
 
 interface HeaderProps {
 	onOpenCommandPalette: () => void;
@@ -25,7 +19,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 		setInterceptorMode,
 	} = useAppStore();
 
-	const [searchOpen, setSearchOpen] = useState(false);
+	const [_searchOpen, _setSearchOpen] = useState(false);
 
 	const handleToggleInterceptor = useCallback(() => {
 		setInterceptorEnabled(!interceptorEnabled);
@@ -66,9 +60,7 @@ export function Header({ onOpenCommandPalette }: HeaderProps) {
 				{interceptorEnabled && (
 					<select
 						value={interceptorMode}
-						onChange={(e) =>
-							setInterceptorMode(e.target.value as "request" | "response" | "both")
-						}
+						onChange={(e) => setInterceptorMode(e.target.value as "request" | "response" | "both")}
 						className="h-8 px-2 text-xs rounded-lg border border-ctp-border bg-transparent text-ctp-text outline-none"
 					>
 						<option value="request">Request</option>

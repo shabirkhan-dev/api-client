@@ -1,12 +1,12 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
+import { Send, X } from "lucide-react";
+import { useCallback, useEffect } from "react";
 import { Button, Input, Spinner } from "@/shared/components/ui";
 import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { cn } from "@/shared/lib/utils";
-import { Send, X, Save } from "lucide-react";
+import { useAppStore } from "@/shared/stores/app-store";
 import { useHttpRequest } from "../hooks/use-http-request";
-import { useCallback, useEffect } from "react";
 
 const methods: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 

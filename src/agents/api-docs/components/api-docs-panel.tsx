@@ -1,11 +1,11 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
+import { Download, FileText } from "lucide-react";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
 import { downloadFile, escapeHtml } from "@/shared/lib/utils";
-import { FileText, Download } from "lucide-react";
-import { useState, useCallback } from "react";
-import { toast } from "sonner";
+import { useAppStore } from "@/shared/stores/app-store";
 
 export function ApiDocsPanel() {
 	const { collections } = useAppStore();

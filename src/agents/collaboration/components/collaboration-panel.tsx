@@ -1,10 +1,10 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
-import { Users, Share2, MessageSquare, RefreshCw } from "lucide-react";
-import { useState, useCallback } from "react";
+import { MessageSquare, RefreshCw, Share2 } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
+import { useAppStore } from "@/shared/stores/app-store";
 
 interface Comment {
 	id: string;
@@ -63,9 +63,7 @@ export function CollaborationPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-sm font-semibold">Collaboration</div>
-					<div className="text-xs text-ctp-overlay0">
-						Share links, comments, audit log
-					</div>
+					<div className="text-xs text-ctp-overlay0">Share links, comments, audit log</div>
 				</div>
 				<Button variant="primary" size="sm" onClick={shareRequest}>
 					<Share2 size={14} />
@@ -76,9 +74,7 @@ export function CollaborationPanel() {
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 				<GlassPanel className="p-4">
 					<LabelText>Team Workspace</LabelText>
-					<div className="text-xs text-ctp-overlay0 mt-2">
-						Workspace: Nebula Team
-					</div>
+					<div className="text-xs text-ctp-overlay0 mt-2">Workspace: Nebula Team</div>
 					<Button
 						variant="kbd"
 						size="sm"
@@ -123,9 +119,7 @@ export function CollaborationPanel() {
 							</div>
 						))}
 						{auditLog.length === 0 && (
-							<div className="text-xs text-ctp-overlay0 text-center py-4">
-								No activity yet
-							</div>
+							<div className="text-xs text-ctp-overlay0 text-center py-4">No activity yet</div>
 						)}
 					</div>
 				</GlassPanel>

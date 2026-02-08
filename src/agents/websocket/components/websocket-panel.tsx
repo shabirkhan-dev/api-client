@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, GlassPanel, Input, LabelText, StatusDot, Textarea } from "@/shared/components/ui";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { Download, Send, Trash2, Wifi, WifiOff } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Wifi, WifiOff, Send, Trash2, Download } from "lucide-react";
+import { Button, GlassPanel, Input, LabelText, StatusDot, Textarea } from "@/shared/components/ui";
 
 interface WsMessage {
 	id: string;
@@ -28,7 +28,7 @@ export function WebSocketPanel() {
 		if (logRef.current) {
 			logRef.current.scrollTop = logRef.current.scrollHeight;
 		}
-	}, [messages]);
+	}, []);
 
 	const connect = useCallback(() => {
 		if (!url.trim()) {
@@ -61,7 +61,7 @@ export function WebSocketPanel() {
 				toast.error("Connection error");
 			};
 			socketRef.current = ws;
-		} catch (err) {
+		} catch (_err) {
 			toast.error("Failed to connect");
 		}
 	}, [url]);
@@ -114,11 +114,7 @@ export function WebSocketPanel() {
 						placeholder="wss://echo.websocket.events"
 						className="flex-1 font-mono text-xs"
 					/>
-					<Button
-						variant="primary"
-						size="sm"
-						onClick={connected ? disconnect : connect}
-					>
+					<Button variant="primary" size="sm" onClick={connected ? disconnect : connect}>
 						{connected ? <WifiOff size={14} /> : <Wifi size={14} />}
 						{connected ? "Disconnect" : "Connect"}
 					</Button>
@@ -158,9 +154,7 @@ export function WebSocketPanel() {
 								}`}
 							>
 								<div className="flex items-center justify-between mb-1">
-									<span className="text-[10px] uppercase font-semibold">
-										{msg.direction}
-									</span>
+									<span className="text-[10px] uppercase font-semibold">{msg.direction}</span>
 									<span className="text-[10px] text-ctp-overlay0">
 										{new Date(msg.timestamp).toLocaleTimeString()}
 									</span>
@@ -169,9 +163,7 @@ export function WebSocketPanel() {
 							</div>
 						))}
 						{messages.length === 0 && (
-							<div className="text-xs text-ctp-overlay0 text-center py-8">
-								No messages yet
-							</div>
+							<div className="text-xs text-ctp-overlay0 text-center py-8">No messages yet</div>
 						)}
 					</div>
 				</GlassPanel>
@@ -183,9 +175,15 @@ export function WebSocketPanel() {
 						onChange={(e) => setFormat(e.target.value as "json" | "text" | "binary")}
 						className="bg-transparent border border-ctp-border rounded-lg px-3 py-1.5 text-xs text-ctp-text outline-none"
 					>
-						<option value="json" className="bg-ctp-base">JSON</option>
-						<option value="text" className="bg-ctp-base">Text</option>
-						<option value="binary" className="bg-ctp-base">Binary (Base64)</option>
+						<option value="json" className="bg-ctp-base">
+							JSON
+						</option>
+						<option value="text" className="bg-ctp-base">
+							Text
+						</option>
+						<option value="binary" className="bg-ctp-base">
+							Binary (Base64)
+						</option>
 					</select>
 					<Textarea
 						value={message}
@@ -193,12 +191,7 @@ export function WebSocketPanel() {
 						placeholder='{"type":"ping"}'
 						className="flex-1 text-xs"
 					/>
-					<Button
-						variant="primary"
-						size="sm"
-						onClick={sendMessage}
-						disabled={!connected}
-					>
+					<Button variant="primary" size="sm" onClick={sendMessage} disabled={!connected}>
 						<Send size={14} />
 						Send
 					</Button>

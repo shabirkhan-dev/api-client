@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
 import type { HTMLAttributes } from "react";
+import { cn } from "@/shared/lib/utils";
 
 interface GlassPanelProps extends HTMLAttributes<HTMLDivElement> {
 	solid?: boolean;

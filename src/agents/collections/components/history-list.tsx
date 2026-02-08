@@ -1,20 +1,16 @@
 "use client";
 
-import { useAppStore } from "@/shared/stores/app-store";
-import { MethodBadge, Input } from "@/shared/components/ui";
-import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { Star } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Input, MethodBadge } from "@/shared/components/ui";
+import { useAppStore } from "@/shared/stores/app-store";
 
 export function HistoryList() {
-	const { history, favorites, setMethod, setUrl, toggleFavorite, isFavorite } = useAppStore();
+	const { history, setMethod, setUrl, toggleFavorite, isFavorite } = useAppStore();
 	const [search, setSearch] = useState("");
 
 	const filtered = useMemo(
-		() =>
-			history.filter((item) =>
-				item.url.toLowerCase().includes(search.toLowerCase()),
-			),
+		() => history.filter((item) => item.url.toLowerCase().includes(search.toLowerCase())),
 		[history, search],
 	);
 
@@ -63,9 +59,7 @@ export function HistoryList() {
 					</div>
 				))}
 				{filtered.length === 0 && (
-					<div className="text-xs text-ctp-overlay0 text-center py-3">
-						No history yet
-					</div>
+					<div className="text-xs text-ctp-overlay0 text-center py-3">No history yet</div>
 				)}
 			</div>
 		</div>

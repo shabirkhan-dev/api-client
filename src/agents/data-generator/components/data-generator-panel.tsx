@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
-import { Database, Play } from "lucide-react";
-import { useState, useCallback } from "react";
+import { Play } from "lucide-react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { Button, GlassPanel, LabelText, Textarea } from "@/shared/components/ui";
 
 function resolveTemplate(template: string): string {
 	return template.replace(/\{\{(.*?)\}\}/g, (_, key) => {
@@ -13,8 +13,7 @@ function resolveTemplate(template: string): string {
 				["Alice Johnson", "Bob Smith", "Charlie Brown", "Diana Prince"][
 					Math.floor(Math.random() * 4)
 				],
-			"internet.email": () =>
-				`user${Math.floor(Math.random() * 1000)}@example.com`,
+			"internet.email": () => `user${Math.floor(Math.random() * 1000)}@example.com`,
 			"string.uuid": () =>
 				"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
 					const r = (Math.random() * 16) | 0;
@@ -58,9 +57,7 @@ export function DataGeneratorPanel() {
 			<GlassPanel className="p-4 flex items-center justify-between">
 				<div>
 					<div className="text-sm font-semibold">Data Generator</div>
-					<div className="text-xs text-ctp-overlay0">
-						Templates with dynamic rules
-					</div>
+					<div className="text-xs text-ctp-overlay0">Templates with dynamic rules</div>
 				</div>
 				<Button variant="primary" size="sm" onClick={generate}>
 					<Play size={14} />
@@ -84,11 +81,7 @@ export function DataGeneratorPanel() {
 				</GlassPanel>
 				<GlassPanel className="p-4">
 					<LabelText>Generated Output</LabelText>
-					<Textarea
-						value={output}
-						readOnly
-						className="h-64 mt-2 text-xs"
-					/>
+					<Textarea value={output} readOnly className="h-64 mt-2 text-xs" />
 				</GlassPanel>
 			</div>
 		</div>
