@@ -17,6 +17,7 @@ import { RequestChainPanel } from "@/agents/request-chain";
 import { SecurityScannerPanel } from "@/agents/security-scanner";
 import { WebSocketPanel } from "@/agents/websocket";
 import { ToastProvider } from "@/shared/components/ui/toast-provider";
+import { WorkspaceProvider } from "@/shared/providers/workspace-provider";
 import { useAppStore } from "@/shared/stores/app-store";
 import { Header } from "./layout-parts/header";
 import { WorkspaceTabs } from "./layout-parts/workspace-tabs";
@@ -75,11 +76,11 @@ export default function Home() {
 	}, []);
 
 	return (
-		<>
+		<WorkspaceProvider>
 			<ToastProvider />
 
-			<div className="min-h-screen p-2.5">
-				<div className="min-h-[calc(100vh-20px)] flex flex-col rounded-[calc(var(--radius-xl)+4px)] bg-gradient-to-b from-ctp-base/92 to-ctp-base/86 border border-ctp-surface1/20 shadow-[0_0_0_1px_inset] shadow-ctp-surface0/12 overflow-hidden">
+			<div className="min-h-screen p-[var(--space-md)]">
+				<div className="min-h-[calc(100vh-var(--space-xl))] flex flex-col rounded-[calc(var(--radius-xl)+4px)] bg-gradient-to-b from-ctp-base/92 to-ctp-base/86 border border-ctp-surface1/20 shadow-[0_0_0_1px_inset] shadow-ctp-surface0/12 overflow-hidden">
 					{/* Header */}
 					<Header onOpenCommandPalette={openCommandPalette} />
 
@@ -91,12 +92,12 @@ export default function Home() {
 						{/* Workspace */}
 						<main className="flex-1 flex flex-col overflow-hidden min-w-0">
 							{/* Tab Bar */}
-							<div className="shrink-0 px-4 pt-4">
+							<div className="shrink-0 px-[var(--space-lg)] pt-[var(--space-md)]">
 								<WorkspaceTabs />
 							</div>
 
 							{/* Active Panel */}
-							<div className="flex-1 overflow-hidden p-4 min-h-0">
+							<div className="flex-1 overflow-hidden p-[var(--space-lg)] min-h-0">
 								<WorkspaceContent />
 							</div>
 						</main>
@@ -104,12 +105,12 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* Command Palette Overlay */}
+			{/* Command Palette */}
 			<CommandPalette
 				open={commandPaletteOpen}
 				onClose={closeCommandPalette}
 				onSendRequest={sendRequest}
 			/>
-		</>
+		</WorkspaceProvider>
 	);
 }

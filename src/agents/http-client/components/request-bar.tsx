@@ -1,6 +1,6 @@
 "use client";
 
-import { Cancel01Icon, SentIcon } from "@hugeicons/core-free-icons";
+import { Cancel01Icon, FloppyDiskIcon, SentIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useCallback, useEffect } from "react";
 import { Button, GlassPanel, Spinner } from "@/shared/components/ui";
@@ -8,8 +8,9 @@ import type { HttpMethod } from "@/shared/lib/catppuccin";
 import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import { useHttpRequest } from "../hooks/use-http-request";
+import { useSaveRequest } from "../hooks/use-save-request";
 
-const ICON = 16;
+const IC = 15;
 
 const methods: HttpMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
@@ -22,8 +23,19 @@ const methodColor: Record<string, string> = {
 };
 
 export function RequestBar() {
-	const { method, url, requestInFlight, setMethod, setUrl } = useAppStore();
+	const {
+		method,
+		url,
+		requestInFlight,
+		activeRequestItemId,
+		activeRequestName,
+		requestDirty,
+		setMethod,
+		setUrl,
+		clearActiveRequest,
+	} = useAppStore();
 	const { sendRequest } = useHttpRequest();
+	const { saveRequest } = useSaveRequest();
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent) => {
@@ -31,8 +43,15 @@ export function RequestBar() {
 				e.preventDefault();
 				sendRequest();
 			}
+			// Ctrl/Cmd + S to save
+			if ((e.metaKey || e.ctrlKey) && e.key === "s") {
+				e.preventDefault();
+				if (activeRequestItemId && requestDirty) {
+					saveRequest();
+				}
+			}
 		},
-		[sendRequest],
+		[sendRequest, saveRequest, activeRequestItemId, requestDirty],
 	);
 
 	useEffect(() => {
@@ -41,62 +60,103 @@ export function RequestBar() {
 	}, [handleKeyDown]);
 
 	return (
-		<GlassPanel className="flex items-center gap-4">
-			{/* Method Selector */}
-			<select
-				value={method}
-				onChange={(e) => setMethod(e.target.value as HttpMethod)}
-				className={cn(
-					"h-10 w-28 px-3.5 rounded-lg font-bold font-mono text-[13px] tracking-wide border outline-none cursor-pointer transition-colors duration-150",
-					methodColor[method] ?? "text-ctp-text border-ctp-surface1/30 bg-ctp-mantle/40",
-				)}
-			>
-				{methods.map((m) => (
-					<option key={m} value={m} className="bg-ctp-base text-ctp-text font-mono">
-						{m}
-					</option>
-				))}
-			</select>
-
-			{/* URL Input */}
-			<div className="flex-1 flex items-center h-10 gap-3 bg-ctp-mantle/30 rounded-lg border border-ctp-surface0/30 px-4 focus-within:border-ctp-lavender/40 focus-within:shadow-[0_0_0_2px_rgba(180,190,254,0.08)] transition-all duration-200">
-				<input
-					value={url}
-					onChange={(e) => setUrl(e.target.value)}
-					placeholder="https://api.example.com/v1/resource"
-					spellCheck={false}
-					autoComplete="off"
-					className="flex-1 bg-transparent outline-none font-mono text-[14px] text-ctp-text placeholder:text-ctp-overlay0/40 min-w-0"
-				/>
-				{url && (
+		<GlassPanel className="flex flex-col gap-[var(--space-sm)]">
+			{/* Active request indicator */}
+			{activeRequestItemId && (
+				<div className="flex items-center gap-[var(--space-sm)] text-[11px]">
+					<span className="text-ctp-overlay0">Editing:</span>
+					<span className="font-medium text-ctp-text truncate max-w-[200px]">
+						{activeRequestName || "Untitled"}
+					</span>
+					{requestDirty && (
+						<span className="text-ctp-peach text-[10px] font-medium bg-ctp-peach/10 px-1.5 py-px rounded-full border border-ctp-peach/15">
+							Modified
+						</span>
+					)}
+					<div className="flex-1" />
 					<button
 						type="button"
-						onClick={() => setUrl("")}
-						className="flex items-center justify-center w-7 h-7 rounded-md text-ctp-overlay0 hover:text-ctp-text hover:bg-ctp-surface0/25 transition-colors duration-150 shrink-0"
-						aria-label="Clear URL"
+						onClick={clearActiveRequest}
+						className="text-ctp-overlay0 hover:text-ctp-text text-[10px] cursor-pointer transition-colors"
 					>
-						<HugeiconsIcon icon={Cancel01Icon} size={ICON} strokeWidth={1.5} />
+						New request
 					</button>
-				)}
-			</div>
+				</div>
+			)}
 
-			{/* Send Button */}
-			<Button
-				variant="primary"
-				size="lg"
-				onClick={sendRequest}
-				disabled={requestInFlight}
-				className="px-6 min-w-24 shrink-0"
-			>
-				{requestInFlight ? (
-					<Spinner size="sm" className="border-ctp-crust/30 border-t-ctp-crust" />
-				) : (
-					<>
-						<HugeiconsIcon icon={SentIcon} size={ICON} />
-						<span>Send</span>
-					</>
+			{/* Method + URL + Actions row */}
+			<div className="flex items-center gap-[var(--space-md)]">
+				{/* Method Selector */}
+				<select
+					value={method}
+					onChange={(e) => setMethod(e.target.value as HttpMethod)}
+					className={cn(
+						"h-9 w-24 px-[var(--space-md)] rounded-md font-bold font-mono text-[12px] tracking-wide border outline-none cursor-pointer transition-colors duration-150",
+						methodColor[method] ?? "text-ctp-text border-ctp-surface1/30 bg-ctp-mantle/40",
+					)}
+				>
+					{methods.map((m) => (
+						<option key={m} value={m} className="bg-ctp-base text-ctp-text font-mono">
+							{m}
+						</option>
+					))}
+				</select>
+
+				{/* URL Input */}
+				<div className="flex-1 flex items-center h-9 gap-[var(--space-sm)] bg-ctp-mantle/30 rounded-md border border-ctp-surface0/30 px-[var(--space-md)] focus-within:border-ctp-lavender/40 focus-within:shadow-[0_0_0_2px_rgba(180,190,254,0.08)] transition-all duration-200">
+					<input
+						value={url}
+						onChange={(e) => setUrl(e.target.value)}
+						placeholder="https://api.example.com/v1/resource"
+						spellCheck={false}
+						autoComplete="off"
+						className="flex-1 bg-transparent outline-none font-mono text-[13px] text-ctp-text placeholder:text-ctp-overlay0/40 min-w-0"
+					/>
+					{url && (
+						<button
+							type="button"
+							onClick={() => setUrl("")}
+							className="flex items-center justify-center w-6 h-6 rounded text-ctp-overlay0 hover:text-ctp-text hover:bg-ctp-surface0/25 transition-colors duration-150 shrink-0"
+							aria-label="Clear URL"
+						>
+							<HugeiconsIcon icon={Cancel01Icon} size={IC} strokeWidth={1.5} />
+						</button>
+					)}
+				</div>
+
+				{/* Save Button (only when editing a collection item) */}
+				{activeRequestItemId && (
+					<Button
+						variant="secondary"
+						size="md"
+						onClick={saveRequest}
+						disabled={!requestDirty}
+						className="px-[var(--space-lg)] shrink-0"
+						title="Save to collection (Ctrl+S)"
+					>
+						<HugeiconsIcon icon={FloppyDiskIcon} size={14} />
+						<span>Save</span>
+					</Button>
 				)}
-			</Button>
+
+				{/* Send Button */}
+				<Button
+					variant="primary"
+					size="md"
+					onClick={sendRequest}
+					disabled={requestInFlight}
+					className="px-[var(--space-xl)] min-w-20 shrink-0"
+				>
+					{requestInFlight ? (
+						<Spinner size="sm" className="border-ctp-crust/30 border-t-ctp-crust" />
+					) : (
+						<>
+							<HugeiconsIcon icon={SentIcon} size={IC} />
+							<span>Send</span>
+						</>
+					)}
+				</Button>
+			</div>
 		</GlassPanel>
 	);
 }

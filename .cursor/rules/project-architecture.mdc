@@ -1,0 +1,142 @@
+---
+description: Project architecture, data flow, and system design for Nebula API Client
+globs: ["src/**/*.{ts,tsx}"]
+alwaysApply: false
+---
+
+# Project Architecture
+
+## Overview
+
+Nebula API Client is an open-source, self-hostable API testing tool (similar to Postman/Insomnia). It runs as a Next.js application backed by PostgreSQL, deployed via Docker.
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Browser                              │
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │ Zustand Store│  │  React Query │  │  Agent Modules    │  │
+│  │ (UI cache)   │◄─┤  (sync)      │◄─┤  (feature UIs)   │  │
+│  └──────┬───────┘  └──────┬───────┘  └──────────────────┘  │
+│         │                 │                                 │
+└─────────┼─────────────────┼─────────────────────────────────┘
+          │                 │
+          ▼                 ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Next.js Server                            │
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │ API Routes   │  │ Better Auth  │  │  HTTP Proxy      │  │
+│  │ /api/*       │  │ /api/auth/*  │  │  /api/proxy      │  │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────────┘  │
+│         │                 │                  │              │
+│         ▼                 ▼                  ▼              │
+│  ┌──────────────────────────────┐  ┌────────────────────┐  │
+│  │ Service Layer                │  │ External APIs      │  │
+│  │ (business logic, validation) │  │ (user's targets)   │  │
+│  └──────────────┬───────────────┘  └────────────────────┘  │
+│                 │                                           │
+│                 ▼                                           │
+│  ┌──────────────────────────────┐                          │
+│  │ Prisma ORM                   │                          │
+│  │ (type-safe queries)          │                          │
+│  └──────────────┬───────────────┘                          │
+│                 │                                           │
+└─────────────────┼───────────────────────────────────────────┘
+                  │
+                  ▼
+         ┌────────────────┐
+         │  PostgreSQL 16  │
+         │  (Docker)       │
+         └────────────────┘
+```
+
+## Data Flow
+
+### Request Execution Flow
+1. User fills in method, URL, headers, body in the HTTP Client agent
+2. Client sends POST to `/api/proxy` with the request configuration
+3. Proxy route validates input (Zod), checks auth session
+4. Server executes the HTTP request (no CORS issues)
+5. Response logged to `request_history` table
+6. Response returned to client, displayed in Response Panel
+7. Zustand store updated, history sidebar refreshes
+
+### Auth Flow
+1. Better Auth handles `/api/auth/*` routes (sign-in, sign-up, session, OAuth)
+2. Middleware on protected routes checks session cookie
+3. Session provides `user.id` for all database operations
+4. User context available via `useSession()` hook on client
+
+### Data Persistence Flow
+1. Zustand store acts as client-side cache for fast UI
+2. Mutations (create/update/delete) go to API routes
+3. API routes validate, call service layer, write to PostgreSQL via Prisma
+4. Optimistic updates on client, rollback on server error
+5. React Query manages server state sync and cache invalidation
+
+## Database Schema
+
+Tables are defined in `prisma/schema.prisma` using Prisma ORM. The generated client lives at `src/generated/prisma/`.
+
+### Core Tables
+- `user` -- managed by Better Auth (id, email, name, image, etc.)
+- `session` -- managed by Better Auth (session tokens)
+- `account` -- managed by Better Auth (OAuth providers)
+- `verification` -- managed by Better Auth (email verification tokens)
+
+### Application Tables
+- `workspace` -- team workspace (name, slug, owner)
+- `workspace_member` -- user-workspace relationship with roles
+- `collection` -- top-level collection in a workspace
+- `collection_item` -- folder or request within a collection (self-referencing for nesting)
+- `environment` -- named set of variables scoped to a workspace
+- `request_history` -- log of executed requests
+- `mock_route` -- mock server route definitions
+
+## Agent Module Pattern
+
+Each feature is a self-contained "agent" under `src/agents/`. An agent has:
+
+```
+src/agents/http-client/
+├── components/          # UI components (panels, forms, etc.)
+│   ├── http-client-panel.tsx
+│   ├── request-bar.tsx
+│   ├── request-panel.tsx
+│   └── response-panel.tsx
+├── hooks/               # React hooks (data fetching, state)
+│   └── use-http-request.ts
+├── services/            # Pure business logic (testable)
+│   ├── http-service.ts
+│   └── http-service.test.ts
+├── types/               # Feature-specific types
+│   └── index.ts
+└── index.ts             # Barrel export (public API of this agent)
+```
+
+Rules:
+- Agents can import from `@/shared/` but NEVER from other agents
+- Cross-agent communication goes through the Zustand store or URL state
+- Each agent exports only what other modules need via `index.ts`
+
+## State Management Strategy
+
+| State Type | Where | Example |
+|---|---|---|
+| UI state (ephemeral) | Zustand store | Active tab, sidebar open, theme |
+| Server state (persistent) | PostgreSQL via API | Collections, environments, history |
+| Server state cache | React Query | Cached collections, stale-while-revalidate |
+| Form state | React local state | Input values, validation errors |
+| URL state | Next.js router | Active workspace slug, page routes |
+
+## Environment Variables
+
+All configuration via environment variables (12-factor app). See `.env.example` for the full list. Critical ones:
+
+- `DATABASE_URL` -- PostgreSQL connection string
+- `BETTER_AUTH_SECRET` -- Auth session encryption key
+- `BETTER_AUTH_URL` -- Public URL of the app (for OAuth callbacks)
+- `NEXT_PUBLIC_APP_URL` -- Public URL exposed to client

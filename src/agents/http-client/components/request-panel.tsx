@@ -21,8 +21,8 @@ export function RequestPanel() {
 	return (
 		<GlassPanel noPadding className="flex flex-col flex-1 min-h-0 overflow-hidden">
 			{/* Tab Bar */}
-			<div className="shrink-0 px-5 pt-5 pb-4">
-				<div className="flex items-center gap-1 p-1.5 rounded-xl bg-ctp-mantle/35 border border-ctp-surface0/15">
+			<div className="shrink-0 px-[var(--space-lg)] pt-[var(--space-lg)] pb-[var(--space-md)]">
+				<div className="flex items-center gap-px p-1 rounded-[var(--radius-lg)] bg-ctp-mantle/35 border border-ctp-surface0/15">
 					{tabs.map((tab) => {
 						const isActive = activeTab === tab.id;
 						return (
@@ -31,7 +31,7 @@ export function RequestPanel() {
 								type="button"
 								onClick={() => setActiveTab(tab.id)}
 								className={cn(
-									"flex items-center justify-center px-4 py-2 text-[13px] font-medium rounded-lg transition-all duration-150 cursor-pointer select-none",
+									"flex items-center justify-center px-[var(--space-md)] py-[var(--space-sm)] text-[12px] font-medium rounded-[var(--radius-sm)] transition-all duration-150 cursor-pointer select-none",
 									isActive
 										? "text-ctp-text bg-ctp-surface0/55 shadow-sm"
 										: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
@@ -45,12 +45,12 @@ export function RequestPanel() {
 			</div>
 
 			{/* Divider */}
-			<div className="mx-5 h-px bg-ctp-surface0/22 my-1" />
+			<div className="mx-[var(--space-lg)] h-px bg-ctp-surface0/18" />
 
 			{/* Tab Content */}
-			<div className="flex-1 overflow-auto p-5 min-h-0">
+			<div className="flex-1 overflow-auto p-[var(--space-lg)] min-h-0">
 				{activeTab === "params" && (
-					<div className="space-y-4">
+					<div className="space-y-[var(--space-md)]">
 						<div className="flex items-center justify-between">
 							<LabelText>Query Parameters</LabelText>
 							<span className="text-[10px] text-ctp-overlay0/60 font-mono">key=value per line</span>
@@ -66,7 +66,7 @@ export function RequestPanel() {
 				)}
 
 				{activeTab === "headers" && (
-					<div className="space-y-4">
+					<div className="space-y-[var(--space-md)]">
 						<div className="flex items-center justify-between">
 							<LabelText>Request Headers</LabelText>
 							<span className="text-[10px] text-ctp-overlay0/60 font-mono">JSON format</span>
@@ -84,7 +84,7 @@ export function RequestPanel() {
 				)}
 
 				{activeTab === "body" && (
-					<div className="space-y-4">
+					<div className="space-y-[var(--space-md)]">
 						<LabelText>Request Body</LabelText>
 						<Textarea
 							value={store.bodyText}
@@ -97,12 +97,12 @@ export function RequestPanel() {
 				)}
 
 				{activeTab === "auth" && (
-					<div className="space-y-5">
+					<div className="space-y-[var(--space-lg)]">
 						<LabelText>Authentication</LabelText>
 
-						<div className="space-y-4">
-							<label className="block space-y-2">
-								<span className="text-[12px] text-ctp-overlay1 font-medium">Type</span>
+						<div className="space-y-[var(--space-md)]">
+							<label className="block space-y-[var(--space-xs)]">
+								<span className="text-[11px] text-ctp-overlay1 font-medium">Type</span>
 								<Input
 									value={store.authType}
 									onChange={(e) => store.setAuthType(e.target.value)}
@@ -112,8 +112,8 @@ export function RequestPanel() {
 								/>
 							</label>
 
-							<label className="block space-y-2">
-								<span className="text-[12px] text-ctp-overlay1 font-medium">Credentials</span>
+							<label className="block space-y-[var(--space-xs)]">
+								<span className="text-[11px] text-ctp-overlay1 font-medium">Credentials</span>
 								<Input
 									value={store.authValue}
 									onChange={(e) => store.setAuthValue(e.target.value)}
@@ -124,10 +124,10 @@ export function RequestPanel() {
 							</label>
 						</div>
 
-						<div className="p-4 rounded-xl bg-ctp-mantle/25 border border-ctp-surface0/15">
-							<p className="text-[12px] text-ctp-overlay0/70 leading-relaxed">
+						<div className="p-[var(--space-md)] rounded-[var(--radius-md)] bg-ctp-mantle/25 border border-ctp-surface0/15">
+							<p className="text-[11px] text-ctp-overlay0/70 leading-relaxed">
 								Use{" "}
-								<code className="text-ctp-lavender/70 font-mono text-[12px] bg-ctp-surface0/20 px-1.5 py-0.5 rounded">
+								<code className="text-ctp-lavender/70 font-mono text-[11px] bg-ctp-surface0/20 px-1 py-px rounded">
 									{"{{token}}"}
 								</code>{" "}
 								to reference environment variables.
@@ -137,8 +137,8 @@ export function RequestPanel() {
 				)}
 
 				{activeTab === "tests" && (
-					<div className="space-y-6">
-						<div className="space-y-4">
+					<div className="space-y-[var(--space-xl)]">
+						<div className="space-y-[var(--space-md)]">
 							<LabelText>Pre-request Script</LabelText>
 							<Textarea
 								value={store.preRequestScript}
@@ -149,7 +149,7 @@ export function RequestPanel() {
 							/>
 						</div>
 
-						<div className="space-y-4">
+						<div className="space-y-[var(--space-md)]">
 							<LabelText>Test Script</LabelText>
 							<Textarea
 								value={store.testScript}

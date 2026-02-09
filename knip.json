@@ -2,6 +2,6 @@
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": ["src/app/**/*.{ts,tsx}", "src/agents/**/index.{ts,tsx}"],
   "project": ["src/**/*.{ts,tsx}"],
-  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
-  "ignoreDependencies": ["@biomejs/biome", "lefthook"]
+  "ignore": ["**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}", "src/generated/**"],
+  "ignoreDependencies": ["@biomejs/biome", "lefthook", "@prisma/client"]
 }

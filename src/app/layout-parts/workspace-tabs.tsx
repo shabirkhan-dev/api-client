@@ -21,7 +21,7 @@ import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import type { WorkspaceTab } from "@/shared/types";
 
-const ICON_SIZE = 14;
+const IC = 13;
 
 interface TabDef {
 	id: WorkspaceTab;
@@ -39,14 +39,14 @@ const tabGroups: TabGroup[] = [
 		label: "Core",
 		tabs: [
 			{ id: "http", label: "HTTP", icon: Globe02Icon },
-			{ id: "websocket", label: "WebSocket", icon: Wifi01Icon },
-			{ id: "graphql", label: "GraphQL", icon: CodeIcon },
+			{ id: "websocket", label: "WS", icon: Wifi01Icon },
+			{ id: "graphql", label: "GQL", icon: CodeIcon },
 		],
 	},
 	{
 		label: "Testing",
 		tabs: [
-			{ id: "loadtest", label: "Load Test", icon: Timer01Icon },
+			{ id: "loadtest", label: "Load", icon: Timer01Icon },
 			{ id: "security", label: "Security", icon: Shield01Icon },
 			{ id: "profiler", label: "Profiler", icon: Activity01Icon },
 			{ id: "mock", label: "Mock", icon: ServerStack01Icon },
@@ -57,7 +57,7 @@ const tabGroups: TabGroup[] = [
 		tabs: [
 			{ id: "chain", label: "Chain", icon: Link01Icon },
 			{ id: "retry", label: "Retry", icon: Refresh01Icon },
-			{ id: "data", label: "Data Gen", icon: Database01Icon },
+			{ id: "data", label: "Data", icon: Database01Icon },
 			{ id: "diff", label: "Diff", icon: GitCompareIcon },
 		],
 	},
@@ -74,11 +74,11 @@ export function WorkspaceTabs() {
 	const { activeTab, setActiveTab } = useAppStore();
 
 	return (
-		<div className="flex items-center gap-1 p-1.5 bg-ctp-mantle/50 rounded-[var(--radius-xl)] border border-ctp-surface0/20 overflow-x-auto overflow-y-hidden relative shrink-0 scrollbar-none">
+		<div className="flex items-center gap-px p-1 bg-ctp-mantle/40 rounded-[var(--radius-lg)] border border-ctp-surface0/15 overflow-x-auto overflow-y-hidden shrink-0 scrollbar-none">
 			{tabGroups.map((group) => (
 				<div
 					key={group.label}
-					className="flex items-center gap-0.5 relative [&+&]:before:content-[''] [&+&]:before:w-px [&+&]:before:h-5 [&+&]:before:bg-ctp-surface1/30 [&+&]:before:mx-1.5 [&+&]:before:rounded-full [&+&]:before:shrink-0"
+					className="flex items-center gap-px relative [&+&]:before:content-[''] [&+&]:before:w-px [&+&]:before:h-4 [&+&]:before:bg-ctp-surface1/25 [&+&]:before:mx-1 [&+&]:before:rounded-full [&+&]:before:shrink-0"
 				>
 					{group.tabs.map((tab) => {
 						const isActive = activeTab === tab.id;
@@ -88,18 +88,18 @@ export function WorkspaceTabs() {
 								type="button"
 								onClick={() => setActiveTab(tab.id)}
 								className={cn(
-									"flex items-center gap-[7px] px-3.5 py-2 rounded-[var(--radius-md)] text-[13px] font-medium whitespace-nowrap cursor-pointer border border-transparent transition-all duration-[180ms] ease-[cubic-bezier(0.4,0,0.2,1)] select-none",
+									"flex items-center gap-1.5 px-[var(--space-md)] py-[var(--space-sm)] rounded-[var(--radius-sm)] text-[12px] font-medium whitespace-nowrap cursor-pointer border border-transparent transition-all duration-[150ms] select-none",
 									isActive
-										? "text-ctp-text bg-gradient-to-b from-ctp-surface0/70 to-ctp-surface0/50 border-ctp-surface1/30 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.4),0_0_0_0.5px_inset] shadow-ctp-surface1/15"
-										: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/25",
+										? "text-ctp-text bg-gradient-to-b from-ctp-surface0/60 to-ctp-surface0/40 border-ctp-surface1/25 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.4),0_0_0_0.5px_inset] shadow-ctp-surface1/10"
+										: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
 								)}
 							>
 								<HugeiconsIcon
 									icon={tab.icon}
-									size={ICON_SIZE}
+									size={IC}
 									strokeWidth={isActive ? 2 : 1.5}
 									className={cn(
-										"transition-colors duration-[180ms]",
+										"transition-colors duration-[150ms]",
 										isActive && "text-ctp-lavender",
 									)}
 								/>

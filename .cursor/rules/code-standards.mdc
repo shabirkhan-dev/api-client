@@ -1,0 +1,92 @@
+---
+description: Clean code standards, naming conventions, and patterns for Nebula API Client
+globs: ["src/**/*.{ts,tsx}"]
+alwaysApply: false
+---
+
+# Code Standards
+
+## Naming Conventions
+
+- **Files**: `kebab-case.ts` / `kebab-case.tsx` (enforced by Biome `useFilenamingConvention`)
+- **React components**: `PascalCase` -- one component per file, filename matches export
+- **Functions / hooks**: `camelCase` -- hooks prefixed with `use` (e.g. `useHttpRequest`)
+- **Types / Interfaces**: `PascalCase` -- no `I` prefix (use `UserSession`, not `IUserSession`)
+- **Constants**: `UPPER_SNAKE_CASE` for true constants, `camelCase` for derived values
+- **Enums**: `PascalCase` name, `PascalCase` or `UPPER_SNAKE_CASE` members
+- **Database models**: `PascalCase` in Prisma schema, `@@map("snake_case")` for table names
+- **API routes**: `kebab-case` URL segments (e.g. `/api/mock-routes`)
+
+## Folder Structure
+
+```
+src/
+├── app/                    # Next.js App Router (pages, layouts, API routes)
+│   ├── (auth)/             # Auth pages (sign-in, sign-up) -- route group
+│   ├── api/                # API route handlers (thin, delegate to services)
+│   └── layout-parts/       # Layout components (header, tabs)
+├── agents/                 # Feature modules (one folder per feature)
+│   └── <agent-name>/
+│       ├── components/     # UI components for this feature
+│       ├── hooks/          # React hooks for this feature
+│       ├── services/       # Business logic (pure functions, testable)
+│       ├── types/          # Feature-specific types
+│       └── index.ts        # Barrel export
+├── server/                 # Server-only code (never imported by client)
+│   ├── db/                 # Prisma client singleton
+│   ├── services/           # Server-side business logic
+│   └── auth.ts             # Better Auth configuration
+├── generated/prisma/       # Auto-generated Prisma client (do NOT edit)
+└── shared/                 # Shared between client and server
+    ├── components/ui/      # Design system primitives
+    ├── hooks/              # Shared React hooks
+    ├── lib/                # Pure utility functions
+    ├── stores/             # Zustand stores (client-side cache)
+    └── types/              # Shared type definitions
+```
+
+## Patterns
+
+### API Routes (thin handlers)
+API route files in `src/app/api/` must be thin. They parse input, call a service, return a response. No business logic in route files.
+
+```typescript
+// Good: thin route handler
+export async function POST(req: Request) {
+  const session = await getSession(req);
+  if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = await req.json();
+  const parsed = createCollectionSchema.safeParse(body);
+  if (!parsed.success) return Response.json({ error: parsed.error.flatten() }, { status: 400 });
+
+  const result = await collectionService.create(session.user.id, parsed.data);
+  return Response.json(result, { status: 201 });
+}
+```
+
+### Validation (Zod schemas co-located)
+Define Zod schemas next to the API route or in a shared `validators/` file. Never trust client input.
+
+### Error Handling
+- API routes return typed error responses: `{ error: string, details?: unknown }`
+- Never expose stack traces or internal details to clients
+- Use HTTP status codes correctly (400 bad input, 401 unauthed, 403 forbidden, 404 not found, 500 server error)
+
+### Testing Strategy
+- **Service layer**: Unit tests (pure functions, mock DB)
+- **API routes**: Integration tests (test full request/response cycle)
+- **Components**: Minimal -- test complex interactions, not rendering
+- Test files co-located: `foo.ts` -> `foo.test.ts`
+
+### Imports
+- Always use absolute imports via `@/` alias
+- No circular dependencies between modules
+- `src/server/` must NEVER be imported from client components
+- Barrel exports (`index.ts`) only at module boundaries, not deep nesting
+
+### Component Patterns
+- Prefer small, composable components over large monoliths
+- Keep business logic in hooks/services, UI components stay presentational
+- Use `"use client"` only when needed (event handlers, hooks, browser APIs)
+- Prefer Server Components for data-fetching pages

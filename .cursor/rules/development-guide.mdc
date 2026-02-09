@@ -1,0 +1,135 @@
+---
+description: Development workflow, phase plan, and conventions for building Nebula API Client
+globs: ["**/*"]
+alwaysApply: false
+---
+
+# Development Guide
+
+## Development Phases
+
+This project is built phase-by-phase. Each phase builds on the previous. Do NOT skip phases.
+
+### Phase 0: Foundation [CURRENT]
+- `.cursor/rules/` governance files
+- Docker + docker-compose setup
+- Prisma ORM schema + PostgreSQL connection
+- Better Auth + Zod installed and scaffolded
+- `.env.example` with documented variables
+
+### Phase 1: Auth and User Accounts
+- Better Auth integration (email/password + GitHub OAuth)
+- Sign-in / sign-up pages at `src/app/(auth)/`
+- Auth middleware protecting `/api/*` and app routes
+- User settings page (profile, avatar, password change)
+- Auth context provider wrapping the app
+
+### Phase 2: Server-side Persistence
+- API routes for collections, environments, history, mock routes
+- Migrate from localStorage-only to database-backed storage
+- Zustand stays as client cache, React Query syncs with server
+- Offline-first: queue mutations, sync on reconnect
+
+### Phase 3: Server-side HTTP Proxy
+- `/api/proxy` route: server executes HTTP requests (no CORS)
+- Request/response logging to history table
+- Configurable timeouts, size limits
+- Response streaming for large payloads
+
+### Phase 4: Workspaces and Teams
+- Multi-workspace support with roles (owner/admin/member/viewer)
+- Team invitations via email
+- Collection sharing within workspace
+- Activity feed / audit log
+
+### Phase 5: Import / Export
+- Postman Collection v2.1 (JSON)
+- Insomnia (YAML/JSON)
+- OpenAPI / Swagger v3.x
+- cURL commands
+- Bulk workspace export
+
+### Phase 6: Production Hardening
+- Rate limiting, request size limits
+- Audit logging, backup/restore
+- Health check endpoints
+- Opt-in anonymous telemetry
+- Documentation site
+
+## How to Add a New Agent Module
+
+1. Create folder: `src/agents/<agent-name>/`
+2. Add components in `components/`, hooks in `hooks/`, services in `services/`
+3. Create `index.ts` barrel export
+4. Add the workspace tab in `src/shared/types/index.ts` (`WorkspaceTab` union)
+5. Add the tab definition in `src/app/layout-parts/workspace-tabs.tsx`
+6. Add the panel switch case in `src/app/page.tsx` (`WorkspaceContent`)
+7. Add the command palette entry in `src/agents/command-palette/`
+
+## How to Add a New API Route
+
+1. Create route file: `src/app/api/<resource>/route.ts`
+2. Define Zod schema for input validation
+3. Check auth session at the top of every handler
+4. Call service function from `src/server/services/`
+5. Return typed JSON response with correct status code
+6. Add integration test for the route
+
+## Database Migration Workflow
+
+```bash
+# After changing prisma/schema.prisma:
+bun run db:generate    # Regenerate Prisma client types
+bun run db:migrate     # Create + apply migration (dev only)
+bun run db:push        # Push schema directly (prototyping, no migration file)
+bun run db:studio      # Open Prisma Studio to inspect data
+bun run db:reset       # Reset DB + reapply all migrations (destructive)
+bun run db:migrate:prod  # Apply pending migrations (production)
+```
+
+## Docker Development Workflow
+
+```bash
+# Start PostgreSQL only (for local dev):
+docker compose up db -d
+
+# Start everything (app + db):
+docker compose up
+
+# Rebuild after dependency changes:
+docker compose up --build
+
+# Reset database:
+docker compose down -v && docker compose up db -d
+```
+
+## Testing Strategy
+
+| Layer | Tool | What to Test |
+|---|---|---|
+| Services (`src/server/services/`) | Vitest | Business logic, edge cases, error paths |
+| API routes (`src/app/api/`) | Vitest + fetch | Full request/response cycle, auth, validation |
+| Hooks (`src/agents/*/hooks/`) | Vitest + testing-library | State transitions, side effects |
+| Components | Vitest + testing-library | Complex interactions only, not rendering |
+| E2E (future) | Playwright | Critical user flows |
+
+## Commit Convention
+
+Enforced by lefthook `commit-msg` hook:
+
+```
+<type>(<scope>): <description>
+
+Types: feat | fix | docs | style | refactor | perf | test | build | ci | chore | revert
+```
+
+Examples:
+- `feat(auth): add GitHub OAuth sign-in`
+- `fix(proxy): handle timeout for large responses`
+- `refactor(collections): migrate to server-side persistence`
+
+## AI Model Recommendations
+
+- **Architecture decisions, multi-file refactors, complex features**: Use the most capable model available. These tasks require understanding the full system, making trade-offs, and coordinating changes across many files.
+- **Simple edits, single-file fixes, formatting**: A faster model works fine for mechanical, well-scoped tasks.
+- **Always**: Reference `.cursor/rules/` files before making changes. They contain the conventions and patterns that keep the codebase consistent.

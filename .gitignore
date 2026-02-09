@@ -43,6 +43,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# ─── Prisma (generated client) ────────────────────────────
+src/generated/
+
 # ─── TypeScript ───────────────────────────────────────────
 *.tsbuildinfo
 next-env.d.ts
@@ -54,3 +57,5 @@ next-env.d.ts
 # Uncomment if you don't want IDE configs committed:
 # .vscode/
 # .idea/
+
+/src/generated/prisma

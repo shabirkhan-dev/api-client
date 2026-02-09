@@ -17,9 +17,19 @@ interface AppState {
 	themeId: string;
 	setThemeId: (id: string) => void;
 
+	// Layout
+	compactMode: boolean;
+	setCompactMode: (compact: boolean) => void;
+
 	// Workspace
 	activeTab: WorkspaceTab;
 	sidebarOpen: boolean;
+
+	// Active request (from collection)
+	activeRequestItemId: string | null;
+	activeRequestCollectionId: string | null;
+	activeRequestName: string;
+	requestDirty: boolean;
 
 	// Request
 	method: HttpMethod;
@@ -64,6 +74,8 @@ interface AppState {
 	// Actions
 	setActiveTab: (tab: WorkspaceTab) => void;
 	toggleSidebar: () => void;
+	clearActiveRequest: () => void;
+	markRequestClean: () => void;
 	setMethod: (method: HttpMethod) => void;
 	setUrl: (url: string) => void;
 	setHeadersText: (text: string) => void;
@@ -148,8 +160,15 @@ export const useAppStore = create<AppState>()(
 			themeId: "catppuccin-mocha",
 			setThemeId: (id: string) => set({ themeId: id }),
 
+			compactMode: false,
+			setCompactMode: (compact: boolean) => set({ compactMode: compact }),
+
 			activeTab: "http",
 			sidebarOpen: true,
+			activeRequestItemId: null,
+			activeRequestCollectionId: null,
+			activeRequestName: "",
+			requestDirty: false,
 			method: "GET",
 			url: "",
 			headersText: "",
@@ -179,13 +198,34 @@ export const useAppStore = create<AppState>()(
 
 			setActiveTab: (tab) => set({ activeTab: tab }),
 			toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
-			setMethod: (method) => set({ method }),
-			setUrl: (url) => set({ url }),
-			setHeadersText: (text) => set({ headersText: text }),
-			setBodyText: (text) => set({ bodyText: text }),
-			setParamsText: (text) => set({ paramsText: text }),
-			setAuthType: (type) => set({ authType: type }),
-			setAuthValue: (value) => set({ authValue: value }),
+
+			clearActiveRequest: () =>
+				set({
+					activeRequestItemId: null,
+					activeRequestCollectionId: null,
+					activeRequestName: "",
+					requestDirty: false,
+					method: "GET",
+					url: "",
+					headersText: "",
+					bodyText: "",
+					paramsText: "",
+					authType: "",
+					authValue: "",
+					preRequestScript: "",
+					testScript: "",
+					lastResponse: null,
+				}),
+
+			markRequestClean: () => set({ requestDirty: false }),
+
+			setMethod: (method) => set({ method, requestDirty: true }),
+			setUrl: (url) => set({ url, requestDirty: true }),
+			setHeadersText: (text) => set({ headersText: text, requestDirty: true }),
+			setBodyText: (text) => set({ bodyText: text, requestDirty: true }),
+			setParamsText: (text) => set({ paramsText: text, requestDirty: true }),
+			setAuthType: (type) => set({ authType: type, requestDirty: true }),
+			setAuthValue: (value) => set({ authValue: value, requestDirty: true }),
 			setPreRequestScript: (script) => set({ preRequestScript: script }),
 			setTestScript: (script) => set({ testScript: script }),
 			setRequestInFlight: (loading) => set({ requestInFlight: loading }),
@@ -262,11 +302,19 @@ export const useAppStore = create<AppState>()(
 			loadRequestFromNode: (node) => {
 				if (node.type === "folder") return;
 				set({
+					activeRequestItemId: node.serverItemId ?? null,
+					activeRequestCollectionId: node.serverCollectionId ?? null,
+					activeRequestName: node.name,
+					requestDirty: false,
 					method: node.method ?? "GET",
 					url: node.url ?? "",
 					headersText: node.headers ?? "",
 					bodyText: node.body ?? "",
 					paramsText: node.params ?? "",
+					authType: "",
+					authValue: "",
+					lastResponse: null,
+					activeTab: "http",
 				});
 			},
 		}),
@@ -274,6 +322,7 @@ export const useAppStore = create<AppState>()(
 			name: "nebula-store",
 			partialize: (state) => ({
 				themeId: state.themeId,
+				compactMode: state.compactMode,
 				collections: state.collections,
 				favorites: state.favorites,
 				history: state.history,

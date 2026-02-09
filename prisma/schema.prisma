@@ -1,0 +1,258 @@
+// ─── Nebula API Client -- Prisma Schema ──────────────────
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  importFileExtension = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth (Better Auth managed) ──────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions           Session[]
+  accounts           Account[]
+  ownedWorkspaces    Workspace[]        @relation("WorkspaceOwner")
+  workspaceMembers   WorkspaceMember[]
+  createdInvites     WorkspaceInvite[]  @relation("InviteCreator")
+  requestHistory     RequestHistory[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+// ─── Workspaces ──────────────────────────────────────────
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  ownerId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     WorkspaceMember[]
+  invites     WorkspaceInvite[]
+  collections Collection[]
+  environments Environment[]
+  mockRoutes  MockRoute[]
+  history     RequestHistory[]
+
+  @@map("workspace")
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+
+  @@map("workspace_role")
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_member")
+}
+
+model WorkspaceInvite {
+  id          String        @id @default(cuid())
+  workspaceId String
+  email       String?
+  token       String        @unique @default(cuid())
+  role        WorkspaceRole @default(MEMBER)
+  expiresAt   DateTime
+  createdAt   DateTime      @default(now())
+  createdById String
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("InviteCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([workspaceId])
+  @@map("workspace_invite")
+}
+
+// ─── Collections ─────────────────────────────────────────
+
+model Collection {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  items     CollectionItem[]
+
+  @@map("collection")
+}
+
+enum CollectionItemType {
+  FOLDER
+  REQUEST
+
+  @@map("collection_item_type")
+}
+
+model CollectionItem {
+  id           String             @id @default(cuid())
+  collectionId String
+  parentId     String?
+  type         CollectionItemType
+  name         String
+  sortOrder    Int                @default(0)
+
+  // Request-specific fields (null for folders)
+  method  String?
+  url     String?
+  headers Json?
+  body    String?
+  params  String?
+  auth    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  collection Collection       @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  parent     CollectionItem?  @relation("ItemChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  children   CollectionItem[] @relation("ItemChildren")
+
+  @@map("collection_item")
+}
+
+// ─── Environments ────────────────────────────────────────
+
+model Environment {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  variables   Json     @default("{}")
+  isActive    Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, name])
+  @@map("environment")
+}
+
+// ─── Request History ─────────────────────────────────────
+
+model RequestHistory {
+  id           String   @id @default(cuid())
+  userId       String
+  workspaceId  String
+  method       String
+  url          String
+  status       Int?
+  statusText   String?
+  responseTime Int?
+  responseSize Int?
+  requestHeaders  Json?
+  requestBody     String?
+  responseHeaders Json?
+  responseBody    String?   @db.Text
+  isFavorite   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([workspaceId, createdAt(sort: Desc)])
+  @@map("request_history")
+}
+
+// ─── Mock Routes ─────────────────────────────────────────
+
+model MockRoute {
+  id          String   @id @default(cuid())
+  workspaceId String
+  method      String   @default("GET")
+  path        String
+  status      Int      @default(200)
+  contentType String   @default("application/json")
+  body        String   @default("{}")
+  latency     Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, method, path])
+  @@map("mock_route")
+}

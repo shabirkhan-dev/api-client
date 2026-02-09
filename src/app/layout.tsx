@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "API Client",
-	description: "Professional API Client - Built with Next.js",
+	title: "Nebula API Client",
+	description: "Open-source API development platform - Built with Next.js",
 };
 
 export default function RootLayout({
@@ -21,7 +22,17 @@ export default function RootLayout({
 					rel="stylesheet"
 				/>
 			</head>
-			<body>{children}</body>
+			<body>
+				{children}
+				<Toaster
+					theme="dark"
+					position="bottom-right"
+					toastOptions={{
+						className:
+							"!bg-ctp-mantle !border-ctp-surface1/25 !text-ctp-text !text-[13px] !shadow-lg",
+					}}
+				/>
+			</body>
 		</html>
 	);
 }

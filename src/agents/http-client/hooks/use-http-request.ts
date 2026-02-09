@@ -95,6 +95,33 @@ export function useHttpRequest() {
 			} else {
 				toast.success(`${response.status} ${response.statusText} — ${response.time}ms`);
 			}
+
+			// Auto-save back to collection if this request came from one
+			if (store.activeRequestItemId && store.requestDirty) {
+				try {
+					let savedHeaders: Record<string, string> = {};
+					try {
+						savedHeaders = headersText.trim() ? JSON.parse(headersText) : {};
+					} catch {
+						savedHeaders = {};
+					}
+
+					await fetch(`/api/collection-items/${store.activeRequestItemId}`, {
+						method: "PATCH",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							method,
+							url,
+							headers: savedHeaders,
+							body: bodyText || undefined,
+							params: paramsText || undefined,
+						}),
+					});
+					store.markRequestClean();
+				} catch {
+					/* auto-save is best-effort */
+				}
+			}
 		} catch (err) {
 			toast.error(`Network error: ${err instanceof Error ? err.message : "Unknown"}`);
 		} finally {

@@ -38,6 +38,9 @@ export interface CollectionNode {
 	params?: string;
 	collapsed?: boolean;
 	children?: CollectionNode[];
+	/** Server persistence IDs */
+	serverItemId?: string;
+	serverCollectionId?: string;
 }
 
 export interface EnvironmentStore {

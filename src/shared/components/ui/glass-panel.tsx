@@ -27,7 +27,7 @@ export function GlassPanel({
 
 	return (
 		<div
-			className={cn(base, "rounded-[var(--radius-xl)]", !noPadding && "p-4", className)}
+			className={cn(base, "rounded-[var(--radius-xl)]", !noPadding && "p-[var(--space-lg)]", className)}
 			{...props}
 		>
 			{children}
