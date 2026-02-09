@@ -2,11 +2,11 @@
 
 import {
 	Add01Icon,
+	Cancel01Icon,
 	Copy01Icon,
 	Delete02Icon,
 	PlayIcon,
 	SquareIcon,
-	Trash01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState } from "react";
@@ -201,7 +201,7 @@ export function MockServerPanel() {
 								className="p-1.5 rounded-md text-ctp-overlay0 hover:text-ctp-red hover:bg-ctp-red/10 transition-colors"
 								title="Clear logs"
 							>
-								<HugeiconsIcon icon={Trash01Icon} size={13} />
+								<HugeiconsIcon icon={Cancel01Icon} size={13} />
 							</button>
 						)}
 					</div>
