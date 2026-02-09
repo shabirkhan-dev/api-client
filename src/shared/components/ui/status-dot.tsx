@@ -10,19 +10,30 @@ const colorMap = {
 	muted: "bg-ctp-overlay0/70",
 };
 
+const sizeMap = {
+	sm: "w-1.5 h-1.5",
+	md: "w-2 h-2",
+	lg: "w-2.5 h-2.5",
+};
+
+interface StatusDotProps {
+	color?: keyof typeof colorMap;
+	pulse?: boolean;
+	className?: string;
+	size?: "sm" | "md" | "lg";
+}
+
 export function StatusDot({
 	color = "muted",
 	pulse,
 	className,
-}: {
-	color?: keyof typeof colorMap;
-	pulse?: boolean;
-	className?: string;
-}) {
+	size = "md",
+}: StatusDotProps) {
 	return (
 		<span
 			className={cn(
-				"inline-block w-1.5 h-1.5 rounded-full",
+				"inline-block rounded-full",
+				sizeMap[size],
 				colorMap[color],
 				pulse && "animate-pulse-soft",
 				className,

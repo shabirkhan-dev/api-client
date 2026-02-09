@@ -21,12 +21,11 @@ import { cn } from "@/shared/lib/utils";
 import { useAppStore } from "@/shared/stores/app-store";
 import type { WorkspaceTab } from "@/shared/types";
 
-const IC = 13;
-
 interface TabDef {
 	id: WorkspaceTab;
 	label: string;
 	icon: IconSvgElement;
+	description: string;
 }
 
 interface TabGroup {
@@ -38,75 +37,106 @@ const tabGroups: TabGroup[] = [
 	{
 		label: "Core",
 		tabs: [
-			{ id: "http", label: "HTTP", icon: Globe02Icon },
-			{ id: "websocket", label: "WS", icon: Wifi01Icon },
-			{ id: "graphql", label: "GQL", icon: CodeIcon },
+			{ id: "http", label: "HTTP", icon: Globe02Icon, description: "Send HTTP requests" },
+			{ id: "websocket", label: "WebSocket", icon: Wifi01Icon, description: "Real-time WebSocket connections" },
+			{ id: "graphql", label: "GraphQL", icon: CodeIcon, description: "GraphQL queries and mutations" },
 		],
 	},
 	{
 		label: "Testing",
 		tabs: [
-			{ id: "loadtest", label: "Load", icon: Timer01Icon },
-			{ id: "security", label: "Security", icon: Shield01Icon },
-			{ id: "profiler", label: "Profiler", icon: Activity01Icon },
-			{ id: "mock", label: "Mock", icon: ServerStack01Icon },
+			{ id: "loadtest", label: "Load Test", icon: Timer01Icon, description: "Performance testing" },
+			{ id: "security", label: "Security", icon: Shield01Icon, description: "Security scanner" },
+			{ id: "profiler", label: "Profiler", icon: Activity01Icon, description: "Request profiling" },
+			{ id: "mock", label: "Mock", icon: ServerStack01Icon, description: "Mock server" },
 		],
 	},
 	{
 		label: "Tools",
 		tabs: [
-			{ id: "chain", label: "Chain", icon: Link01Icon },
-			{ id: "retry", label: "Retry", icon: Refresh01Icon },
-			{ id: "data", label: "Data", icon: Database01Icon },
-			{ id: "diff", label: "Diff", icon: GitCompareIcon },
+			{ id: "chain", label: "Chain", icon: Link01Icon, description: "Request chaining" },
+			{ id: "retry", label: "Retry", icon: Refresh01Icon, description: "Auto-retry logic" },
+			{ id: "data", label: "Data", icon: Database01Icon, description: "Data generator" },
+			{ id: "diff", label: "Diff", icon: GitCompareIcon, description: "Response diff viewer" },
 		],
 	},
 	{
 		label: "More",
 		tabs: [
-			{ id: "docs", label: "Docs", icon: Note01Icon },
-			{ id: "collab", label: "Collab", icon: UserGroupIcon },
+			{ id: "docs", label: "Docs", icon: Note01Icon, description: "API documentation" },
+			{ id: "collab", label: "Collab", icon: UserGroupIcon, description: "Collaboration tools" },
 		],
 	},
 ];
 
 export function WorkspaceTabs() {
-	const { activeTab, setActiveTab } = useAppStore();
+	const { activeTab, setActiveTab, compactMode } = useAppStore();
 
 	return (
-		<div className="flex items-center gap-px p-1 bg-ctp-mantle/40 rounded-[var(--radius-lg)] border border-ctp-surface0/15 overflow-x-auto overflow-y-hidden shrink-0 scrollbar-none">
-			{tabGroups.map((group) => (
-				<div
-					key={group.label}
-					className="flex items-center gap-px relative [&+&]:before:content-[''] [&+&]:before:w-px [&+&]:before:h-4 [&+&]:before:bg-ctp-surface1/25 [&+&]:before:mx-1 [&+&]:before:rounded-full [&+&]:before:shrink-0"
-				>
-					{group.tabs.map((tab) => {
-						const isActive = activeTab === tab.id;
-						return (
-							<button
-								key={tab.id}
-								type="button"
-								onClick={() => setActiveTab(tab.id)}
-								className={cn(
-									"flex items-center gap-1.5 px-[var(--space-md)] py-[var(--space-sm)] rounded-[var(--radius-sm)] text-[12px] font-medium whitespace-nowrap cursor-pointer border border-transparent transition-all duration-[150ms] select-none",
-									isActive
-										? "text-ctp-text bg-gradient-to-b from-ctp-surface0/60 to-ctp-surface0/40 border-ctp-surface1/25 shadow-[0_1px_4px_-2px_rgba(0,0,0,0.4),0_0_0_0.5px_inset] shadow-ctp-surface1/10"
-										: "text-ctp-overlay0 hover:text-ctp-subtext1 hover:bg-ctp-surface0/20",
-								)}
-							>
-								<HugeiconsIcon
-									icon={tab.icon}
-									size={IC}
-									strokeWidth={isActive ? 2 : 1.5}
+		<div 
+			className={cn(
+				"flex items-center bg-ctp-mantle/60 backdrop-blur-xl backdrop-saturate-150 border border-ctp-surface0/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05),0_4px_16px_rgba(0,0,0,0.2)]",
+				compactMode ? "gap-0.5 p-0.5 rounded-xl" : "gap-1 p-1.5 rounded-2xl"
+			)}
+		>
+			{tabGroups.map((group, groupIndex) => (
+				<div key={group.label} className="flex items-center">
+					{/* Group label - shown on hover (hidden in compact) */}
+					{!compactMode && (
+						<div className="hidden lg:flex items-center px-2 py-1 mr-1">
+							<span className="text-[10px] font-semibold text-ctp-overlay0/60 uppercase tracking-wider">
+								{group.label}
+							</span>
+						</div>
+					)}
+
+					{/* Tabs in group */}
+					<div className={cn(
+						"flex items-center",
+						compactMode ? "gap-px" : "gap-0.5"
+					)}>
+						{group.tabs.map((tab) => {
+							const isActive = activeTab === tab.id;
+							return (
+								<button
+									key={tab.id}
+									type="button"
+									onClick={() => setActiveTab(tab.id)}
+									title={tab.description}
 									className={cn(
-										"transition-colors duration-[150ms]",
-										isActive && "text-ctp-lavender",
+										"relative flex items-center whitespace-nowrap cursor-pointer transition-all duration-200 select-none",
+										compactMode 
+											? "gap-1 px-2 py-1 rounded-lg text-[10px]" 
+											: "gap-2 px-3 py-2 rounded-xl text-[12px] font-medium",
+										isActive
+											? "text-ctp-text bg-gradient-to-b from-ctp-surface0/80 to-ctp-surface0/50 shadow-[0_2px_8px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]"
+											: "text-ctp-subtext0 hover:text-ctp-text hover:bg-ctp-surface0/30"
 									)}
-								/>
-								<span>{tab.label}</span>
-							</button>
-						);
-					})}
+								>
+									<HugeiconsIcon
+										icon={tab.icon}
+										size={compactMode ? 12 : isActive ? 15 : 14}
+										strokeWidth={isActive ? 2 : 1.5}
+										className={cn(
+											"transition-all duration-200",
+											isActive ? "text-ctp-lavender" : "text-ctp-overlay1"
+										)}
+									/>
+									{!compactMode && <span className="hidden sm:inline">{tab.label}</span>}
+									
+									{/* Active indicator dot */}
+									{isActive && !compactMode && (
+										<span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-ctp-lavender shadow-[0_0_8px_rgba(180,190,254,0.8)]" />
+									)}
+								</button>
+							);
+						})}
+					</div>
+
+					{/* Divider between groups */}
+					{groupIndex < tabGroups.length - 1 && !compactMode && (
+						<div className="w-px h-5 bg-ctp-surface0/30 mx-2" />
+					)}
 				</div>
 			))}
 		</div>

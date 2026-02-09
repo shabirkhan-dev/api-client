@@ -10,4 +10,5 @@ export { Spinner } from "./spinner";
 export { StatusDot } from "./status-dot";
 export { Textarea } from "./textarea";
 export { UserMenu } from "./user-menu";
+export { SettingsModal } from "./settings-modal";
 export { WorkspaceSwitcher } from "./workspace-switcher";

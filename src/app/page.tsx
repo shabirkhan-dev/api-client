@@ -19,6 +19,7 @@ import { WebSocketPanel } from "@/agents/websocket";
 import { ToastProvider } from "@/shared/components/ui/toast-provider";
 import { WorkspaceProvider } from "@/shared/providers/workspace-provider";
 import { useAppStore } from "@/shared/stores/app-store";
+import { cn } from "@/shared/lib/utils";
 import { Header } from "./layout-parts/header";
 import { WorkspaceTabs } from "./layout-parts/workspace-tabs";
 
@@ -60,9 +61,15 @@ function WorkspaceContent() {
 export default function Home() {
 	const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 	const { sendRequest } = useHttpRequest();
+	const { compactMode } = useAppStore();
 
 	const openCommandPalette = useCallback(() => setCommandPaletteOpen(true), []);
 	const closeCommandPalette = useCallback(() => setCommandPaletteOpen(false), []);
+
+	// Apply compact mode class to document
+	useEffect(() => {
+		document.documentElement.classList.toggle("compact", compactMode);
+	}, [compactMode]);
 
 	useEffect(() => {
 		const handler = (e: KeyboardEvent) => {
@@ -79,29 +86,50 @@ export default function Home() {
 		<WorkspaceProvider>
 			<ToastProvider />
 
-			<div className="min-h-screen p-[var(--space-md)]">
-				<div className="min-h-[calc(100vh-var(--space-xl))] flex flex-col rounded-[calc(var(--radius-xl)+4px)] bg-gradient-to-b from-ctp-base/92 to-ctp-base/86 border border-ctp-surface1/20 shadow-[0_0_0_1px_inset] shadow-ctp-surface0/12 overflow-hidden">
-					{/* Header */}
-					<Header onOpenCommandPalette={openCommandPalette} />
+			{/* Main Layout */}
+			<div className="h-screen flex flex-col overflow-hidden">
+				{/* Floating Header */}
+				<Header onOpenCommandPalette={openCommandPalette} />
 
-					{/* Main Content */}
-					<div className="flex flex-1 overflow-hidden min-h-0">
-						{/* Sidebar */}
-						<Sidebar />
+				{/* Content Area - Below header */}
+				<div 
+					className={cn(
+						"flex-1 flex overflow-hidden",
+						compactMode ? "pt-[calc(var(--header-h)+8px)]" : "pt-[calc(var(--header-h)+16px)]"
+					)}
+				>
+					{/* Sidebar */}
+					<Sidebar />
 
-						{/* Workspace */}
-						<main className="flex-1 flex flex-col overflow-hidden min-w-0">
-							{/* Tab Bar */}
-							<div className="shrink-0 px-[var(--space-lg)] pt-[var(--space-md)]">
-								<WorkspaceTabs />
-							</div>
+					{/* Main Workspace */}
+					<main 
+						className={cn(
+							"flex-1 flex flex-col overflow-hidden min-w-0",
+							compactMode ? "px-2 pb-2" : "px-3 pb-3"
+						)}
+					>
+						{/* Floating Tab Bar */}
+						<div 
+							className={cn(
+								"flex justify-center shrink-0",
+								compactMode ? "py-1" : "py-2"
+							)}
+						>
+							<WorkspaceTabs />
+						</div>
 
-							{/* Active Panel */}
-							<div className="flex-1 overflow-hidden p-[var(--space-lg)] min-h-0">
+						{/* Active Panel - Card Style */}
+						<div 
+							className={cn(
+								"flex-1 overflow-hidden bg-gradient-to-b from-ctp-mantle/60 to-ctp-crust/60 backdrop-blur-xl backdrop-saturate-150 border border-ctp-surface0/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_32px_rgba(0,0,0,0.3)]",
+								compactMode ? "rounded-xl p-2" : "rounded-2xl p-3"
+							)}
+						>
+							<div className="h-full overflow-hidden">
 								<WorkspaceContent />
 							</div>
-						</main>
-					</div>
+						</div>
+					</main>
 				</div>
 			</div>
 

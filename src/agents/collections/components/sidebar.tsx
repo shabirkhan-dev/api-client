@@ -23,9 +23,6 @@ import { EnvironmentSelector } from "./environment-selector";
 import { FavoritesList } from "./favorites-list";
 import { HistoryList } from "./history-list";
 
-const IC = 13;
-const IC_SM = 11;
-
 /** Recursively filter a tree, keeping nodes whose name matches the query */
 function filterTree(nodes: CollectionTreeNode[], query: string): CollectionTreeNode[] {
 	const lower = query.toLowerCase();
@@ -56,6 +53,8 @@ interface SidebarSectionProps {
 	busy?: boolean;
 	action?: React.ReactNode;
 	children: React.ReactNode;
+	color?: "default" | "blue" | "yellow" | "green" | "purple";
+	compactMode?: boolean;
 }
 
 function SidebarSection({
@@ -66,63 +65,91 @@ function SidebarSection({
 	busy,
 	action,
 	children,
+	color = "default",
+	compactMode = false,
 }: SidebarSectionProps) {
 	const [open, setOpen] = useState(defaultOpen);
 
+	const colorStyles = {
+		default: "text-ctp-overlay1",
+		blue: "text-ctp-blue",
+		yellow: "text-ctp-yellow",
+		green: "text-ctp-green",
+		purple: "text-ctp-mauve",
+	};
+
 	return (
-		<div className="border-b border-ctp-surface0/15 last:border-b-0">
-			<div className="flex items-center justify-between px-[var(--space-lg)] py-[var(--space-md)] hover:bg-ctp-surface0/10 transition-colors duration-150 cursor-pointer select-none">
-				<button
-					type="button"
-					onClick={() => setOpen(!open)}
-					className="flex items-center gap-[var(--space-sm)] min-w-0 bg-transparent border-none cursor-pointer"
-				>
+		<div className={compactMode ? "mb-1" : "mb-2"}>
+			{/* Section Header */}
+			<div 
+				className={cn(
+					"flex items-center justify-between transition-all duration-200 cursor-pointer select-none group",
+					compactMode 
+						? "px-2 py-1.5 rounded-lg bg-ctp-surface0/10 hover:bg-ctp-surface0/20" 
+						: "px-3 py-2 rounded-xl bg-ctp-surface0/10 hover:bg-ctp-surface0/20"
+				)}
+				onClick={() => setOpen(!open)}
+			>
+				<div className={cn(
+					"flex items-center min-w-0",
+					compactMode ? "gap-1.5" : "gap-2.5"
+				)}>
 					<HugeiconsIcon
 						icon={open ? ArrowDown01Icon : ArrowRight01Icon}
-						size={IC_SM}
-						className="text-ctp-overlay0 shrink-0"
+						size={compactMode ? 10 : 12}
+						className="text-ctp-overlay0 shrink-0 transition-transform duration-200"
 					/>
 					<HugeiconsIcon
 						icon={icon}
-						size={IC}
+						size={compactMode ? 12 : 14}
 						strokeWidth={1.5}
-						className="text-ctp-overlay1 shrink-0"
+						className={cn(colorStyles[color], "shrink-0")}
 					/>
-					<span className="text-[11px] uppercase tracking-widest text-ctp-subtext0 font-semibold truncate">
+					<span className={cn(
+						"font-semibold text-ctp-subtext0 truncate",
+						compactMode ? "text-[11px]" : "text-[12px]"
+					)}>
 						{title}
 					</span>
-				</button>
-				<div className="flex items-center gap-[var(--space-xs)] shrink-0">
-					{busy && (
-						<span className="inline-block w-3 h-3 border-[1.5px] border-ctp-lavender/25 border-t-ctp-lavender rounded-full animate-spin" />
-					)}
 					{typeof count === "number" && count > 0 && (
-						<button
-							type="button"
-							onClick={() => setOpen(!open)}
-							className="text-[10px] text-ctp-overlay0 bg-ctp-surface0/25 rounded-full px-[var(--space-sm)] py-px font-medium tabular-nums border-none cursor-pointer"
-						>
+						<span className={cn(
+							"font-medium bg-ctp-surface0/40 tabular-nums",
+							compactMode 
+								? "text-[9px] px-1.5 py-px rounded" 
+								: "text-[10px] px-2 py-0.5 rounded-full"
+						)}>
 							{count}
-						</button>
+						</span>
+					)}
+				</div>
+				<div className="flex items-center gap-1 shrink-0">
+					{busy && (
+						<span className={cn(
+							"inline-block border-2 border-ctp-lavender/30 border-t-ctp-lavender rounded-full animate-spin",
+							compactMode ? "w-3 h-3" : "w-3.5 h-3.5"
+						)} />
 					)}
 					{action}
 				</div>
 			</div>
 
+			{/* Section Content */}
 			<div
 				className={cn(
-					"overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
-					open ? "max-h-[800px] opacity-100" : "max-h-0 opacity-0",
+					"overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
+					open 
+						? (compactMode ? "max-h-[600px] opacity-100 mt-0.5" : "max-h-[600px] opacity-100 mt-1") 
+						: "max-h-0 opacity-0"
 				)}
 			>
-				<div className="px-[var(--space-lg)] pb-[var(--space-md)]">{children}</div>
+				<div className={compactMode ? "px-1 py-0.5" : "px-2 py-1"}>{children}</div>
 			</div>
 		</div>
 	);
 }
 
 export function Sidebar() {
-	const { sidebarOpen, interceptorEnabled, interceptorStats, favorites, history } = useAppStore();
+	const { sidebarOpen, interceptorEnabled, interceptorStats, favorites, history, compactMode } = useAppStore();
 
 	const { collections, collectionsLoading, collectionsBusy, collectionsCount, addCollection } =
 		useWorkspaceContext();
@@ -139,124 +166,191 @@ export function Sidebar() {
 		<>
 			<aside
 				className={cn(
-					"flex flex-col overflow-hidden transition-all duration-300 ease-in-out shrink-0",
-					sidebarOpen ? "w-[var(--sidebar-w)] opacity-100" : "w-0 opacity-0 pointer-events-none",
+					"flex flex-col overflow-hidden transition-all duration-300 ease-out shrink-0",
+					sidebarOpen ? "w-[var(--sidebar-w)] opacity-100" : "w-0 opacity-0 pointer-events-none"
 				)}
 			>
 				{sidebarOpen && (
-					<div className="bg-gradient-to-b from-ctp-mantle/50 to-ctp-crust/40 border-r border-ctp-surface0/25 flex flex-col h-full animate-fade-in">
+					<div className="flex flex-col h-full animate-slide-in-left">
+						{/* Sidebar Header */}
+						<div className={cn(
+							compactMode ? "px-3 pt-2 pb-1.5" : "px-4 pt-4 pb-3"
+						)}>
+							<h2 className={cn(
+								"font-bold text-ctp-text tracking-tight",
+								compactMode ? "text-[12px]" : "text-[13px]"
+							)}>
+								Explorer
+							</h2>
+							{!compactMode && (
+								<p className="text-[11px] text-ctp-overlay0 mt-0.5">Manage your API collections</p>
+							)}
+						</div>
+
 						{/* Search */}
-						<div className="px-[var(--space-lg)] pt-[var(--space-md)] pb-[var(--space-xs)]">
-							<div className="flex items-center gap-[var(--space-xs)] h-7 rounded-md bg-ctp-mantle/30 border border-ctp-surface0/20 px-[var(--space-sm)] focus-within:border-ctp-lavender/30 transition-colors">
+						<div className={cn(
+							compactMode ? "px-2 pb-1.5" : "px-4 pb-3"
+						)}>
+							<div className={cn(
+								"flex items-center bg-ctp-surface0/15 border border-ctp-surface0/20 focus-within:border-ctp-lavender/30 focus-within:ring-2 focus-within:ring-ctp-lavender/10 transition-all duration-200",
+								compactMode ? "h-7 gap-1.5 rounded-lg px-2" : "h-9 gap-2 rounded-xl px-3"
+							)}>
 								<HugeiconsIcon
 									icon={Search01Icon}
-									size={11}
-									className="text-ctp-overlay0/50 shrink-0"
+									size={compactMode ? 11 : 13}
+									className="text-ctp-overlay0/60 shrink-0"
 								/>
 								<input
 									value={searchQuery}
 									onChange={(e) => setSearchQuery(e.target.value)}
-									placeholder="Search collections..."
+									placeholder="Search..."
 									spellCheck={false}
-									className="flex-1 bg-transparent text-[11px] text-ctp-text placeholder:text-ctp-overlay0/35 outline-none min-w-0"
+									className={cn(
+										"flex-1 bg-transparent text-ctp-text placeholder:text-ctp-overlay0/40 outline-none min-w-0",
+									compactMode ? "text-[11px]" : "text-[12px]"
+									)}
 								/>
 								{searchQuery && (
 									<button
 										type="button"
 										onClick={() => setSearchQuery("")}
-										className="text-ctp-overlay0 hover:text-ctp-text cursor-pointer shrink-0"
+										className={cn(
+											"text-ctp-overlay0 hover:text-ctp-text transition-colors shrink-0 hover:bg-ctp-surface0/30 rounded",
+											compactMode ? "p-0.5" : "p-1 rounded-lg"
+										)}
 									>
-										<HugeiconsIcon icon={Cancel01Icon} size={10} />
+										<HugeiconsIcon icon={Cancel01Icon} size={compactMode ? 9 : 11} />
 									</button>
 								)}
 							</div>
 						</div>
 
-						{/* Collections */}
-						<SidebarSection
-							title="Collections"
-							icon={Folder01Icon}
-							defaultOpen
-							count={collectionsCount}
-							busy={collectionsBusy}
-							action={
-								<Button variant="subtle" size="sm" onClick={() => setCreateCollectionOpen(true)}>
-									<HugeiconsIcon icon={Add01Icon} size={IC} />
-									<span>New</span>
-								</Button>
-							}
-						>
-							{collectionsLoading ? (
-								<div className="flex items-center justify-center py-[var(--space-lg)]">
-									<span className="inline-block w-4 h-4 border-2 border-ctp-lavender/25 border-t-ctp-lavender rounded-full animate-spin" />
-								</div>
-							) : (
-								<div className="max-h-56 overflow-y-auto">
-									<CollectionTree collections={filteredCollections} />
-								</div>
-							)}
-						</SidebarSection>
-
-						{/* Favorites */}
-						<SidebarSection
-							title="Favorites"
-							icon={StarIcon}
-							defaultOpen={favorites.length > 0}
-							count={favorites.length}
-						>
-							<FavoritesList />
-						</SidebarSection>
-
-						{/* History */}
-						<SidebarSection
-							title="History"
-							icon={Clock01Icon}
-							defaultOpen={false}
-							count={history.length}
-						>
-							<HistoryList />
-						</SidebarSection>
-
-						{/* Interceptor Stats */}
-						{interceptorEnabled && (
-							<SidebarSection title="Interceptor" icon={Settings02Icon} defaultOpen>
-								<div className="grid grid-cols-3 gap-[var(--space-sm)]">
-									{(
-										[
-											{
-												label: "Caught",
-												value: interceptorStats.intercepted,
-												color: "text-ctp-blue",
-											},
-											{
-												label: "Edited",
-												value: interceptorStats.modified,
-												color: "text-ctp-yellow",
-											},
-											{ label: "Blocked", value: interceptorStats.blocked, color: "text-ctp-red" },
-										] as const
-									).map((s) => (
-										<div
-											key={s.label}
-											className="bg-ctp-mantle/40 rounded-[var(--radius-md)] p-[var(--space-md)] text-center border border-ctp-surface0/12 hover:bg-ctp-mantle/55 transition-colors"
-										>
-											<div className={`text-[14px] font-bold tabular-nums ${s.color}`}>
-												{s.value}
-											</div>
-											<div className="text-[9px] text-ctp-overlay0 uppercase tracking-wider font-medium mt-0.5">
-												{s.label}
-											</div>
-										</div>
-									))}
-								</div>
+						{/* Scrollable Content */}
+						<div className={cn(
+							"flex-1 overflow-y-auto min-h-0",
+							compactMode ? "px-2 pb-2" : "px-3 pb-3"
+						)}>
+							{/* Collections */}
+							<SidebarSection
+								title="Collections"
+								icon={Folder01Icon}
+								defaultOpen
+								count={collectionsCount}
+								busy={collectionsBusy}
+								color="yellow"
+								compactMode={compactMode}
+								action={
+									<Button 
+										variant="subtle" 
+										size="sm" 
+										onClick={(e) => {
+											e.stopPropagation();
+											setCreateCollectionOpen(true);
+										}}
+										className={compactMode ? "h-5 px-1.5 text-[10px]" : "h-7 px-2 text-[11px]"}
+									>
+										<HugeiconsIcon icon={Add01Icon} size={compactMode ? 11 : 13} />
+										{!compactMode && <span className="hidden xl:inline">New</span>}
+									</Button>
+								}
+							>
+								{collectionsLoading ? (
+									<div className={cn(
+										"flex items-center justify-center",
+										compactMode ? "py-4" : "py-8"
+									)}>
+										<div className={cn(
+											"border-2 border-ctp-lavender/30 border-t-ctp-lavender rounded-full animate-spin",
+											compactMode ? "w-4 h-4" : "w-5 h-5"
+										)} />
+									</div>
+								) : (
+									<div className={cn(
+										"overflow-y-auto",
+										compactMode ? "max-h-48 pr-0.5" : "max-h-64 pr-1"
+									)}>
+										<CollectionTree collections={filteredCollections} />
+									</div>
+								)}
 							</SidebarSection>
-						)}
 
-						{/* Spacer */}
-						<div className="flex-1 min-h-0" />
+							{/* Favorites */}
+							<SidebarSection
+								title="Favorites"
+								icon={StarIcon}
+								defaultOpen={favorites.length > 0}
+								count={favorites.length}
+								color="green"
+								compactMode={compactMode}
+							>
+								<FavoritesList />
+							</SidebarSection>
 
-						{/* Environment */}
-						<div className="border-t border-ctp-surface0/15 p-[var(--space-lg)]">
+							{/* History */}
+							<SidebarSection
+								title="History"
+								icon={Clock01Icon}
+								defaultOpen={false}
+								count={history.length}
+								color="blue"
+								compactMode={compactMode}
+							>
+								<HistoryList />
+							</SidebarSection>
+
+							{/* Interceptor Stats */}
+							{interceptorEnabled && (
+								<SidebarSection 
+									title="Interceptor" 
+									icon={Settings02Icon} 
+									defaultOpen
+									color="purple"
+									compactMode={compactMode}
+								>
+									<div className={cn(
+										"grid grid-cols-3 bg-ctp-surface0/10",
+										compactMode ? "gap-1 p-1.5 rounded-lg" : "gap-2 p-2 rounded-xl"
+									)}>
+										{(
+											[
+												{ label: "Caught", value: interceptorStats.intercepted, color: "text-ctp-blue", bg: "bg-ctp-blue/10" },
+												{ label: "Edited", value: interceptorStats.modified, color: "text-ctp-yellow", bg: "bg-ctp-yellow/10" },
+												{ label: "Blocked", value: interceptorStats.blocked, color: "text-ctp-red", bg: "bg-ctp-red/10" },
+											] as const
+										).map((s) => (
+											<div
+												key={s.label}
+												className={cn(
+													"flex flex-col items-center justify-center",
+													s.bg,
+													compactMode ? "p-1 rounded" : "p-2 rounded-lg"
+												)}
+											>
+												<div className={cn(
+													"font-bold tabular-nums",
+													s.color,
+													compactMode ? "text-[12px]" : "text-[16px]"
+												)}>
+													{s.value}
+												</div>
+												<div className={cn(
+													"text-ctp-overlay0 uppercase tracking-wider font-semibold",
+													compactMode ? "text-[8px] mt-0" : "text-[9px] mt-0.5"
+												)}>
+													{s.label}
+												</div>
+											</div>
+										))}
+									</div>
+								</SidebarSection>
+							)}
+						</div>
+
+						{/* Environment Selector - Fixed at bottom */}
+						<div className={cn(
+							"border-t border-ctp-surface0/15",
+							compactMode ? "px-2 pb-2 pt-1.5" : "px-3 pb-3 pt-2"
+						)}>
 							<EnvironmentSelector />
 						</div>
 					</div>
