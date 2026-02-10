@@ -52,10 +52,10 @@
 		--space-3xl: 32px;
 		--space-4xl: 48px;
 		
-		/* Sizes */
-		--header-h: 52px;
-		--sidebar-w: 280px;
-		--dock-h: 44px;
+		/* Sizes - Smaller sidebar in normal mode */
+		--header-h: 48px;
+		--sidebar-w: 220px;
+		--dock-h: 40px;
 		
 		/* Font sizes */
 		--text-xs: 10px;

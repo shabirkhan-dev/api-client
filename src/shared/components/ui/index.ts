@@ -1,5 +1,8 @@
 export { Badge } from "./badge";
 export { Button } from "./button";
+export { Checkbox } from "./checkbox";
+export { ContextMenuItems } from "./context-menu";
+export { DropdownItem, DropdownLabel, DropdownMenu, DropdownSeparator, SimpleDropdownMenu } from "./dropdown-menu";
 export { GlassPanel } from "./glass-panel";
 export { Input } from "./input";
 export { Kbd } from "./kbd";

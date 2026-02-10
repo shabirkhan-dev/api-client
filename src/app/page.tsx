@@ -17,6 +17,7 @@ import { RequestChainPanel } from "@/agents/request-chain";
 import { SecurityScannerPanel } from "@/agents/security-scanner";
 import { WebSocketPanel } from "@/agents/websocket";
 import { ToastProvider } from "@/shared/components/ui/toast-provider";
+import { applyTheme, getThemeById } from "@/shared/lib/themes";
 import { WorkspaceProvider } from "@/shared/providers/workspace-provider";
 import { useAppStore } from "@/shared/stores/app-store";
 import { cn } from "@/shared/lib/utils";
@@ -70,6 +71,12 @@ export default function Home() {
 	useEffect(() => {
 		document.documentElement.classList.toggle("compact", compactMode);
 	}, [compactMode]);
+
+	// Apply theme on load
+	useEffect(() => {
+		const savedTheme = localStorage.getItem("theme") || "catppuccin-mocha";
+		applyTheme(getThemeById(savedTheme));
+	}, []);
 
 	useEffect(() => {
 		const handler = (e: KeyboardEvent) => {
